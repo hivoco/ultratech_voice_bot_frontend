@@ -1,5 +1,7 @@
 # 04 · Photo capture
 
+Users photograph a site problem; the photo joins the chat or the live call.
+
 Figma: **04a · Camera — Crack photo**, **04b · Voice transcript — Photo diagnosis**.
 
 ## Camera screen

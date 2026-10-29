@@ -41,6 +41,32 @@ export interface CallSummary {
 /** "lk.agent.state" attribute published by LiveKit Agents 1.x workers. */
 type AgentState = "initializing" | "listening" | "thinking" | "speaking";
 
+/** Validate an agent data message into a timeline card; untrusted JSON in, typed item or null out. */
+function parseCard(topic: "video" | "expert", data: Record<string, unknown>): TimelineItem | null {
+  const str = (v: unknown, max = 200) => (typeof v === "string" ? v.slice(0, max) : undefined);
+  if (topic === "video") {
+    const url = str(data.url, 2000);
+    if (!url) return null;
+    try {
+      if (new URL(url).protocol !== "https:") return null;
+    } catch {
+      return null;
+    }
+    return { type: "video", id: uid("v"), url, title: str(data.title) ?? "" };
+  }
+  const name = str(data.name, 80);
+  if (!name) return null;
+  const phone = str(data.phone, 20);
+  return {
+    type: "expert",
+    id: uid("x"),
+    name,
+    role: str(data.role) ?? "",
+    callSlot: str(data.callSlot),
+    phone: phone && /^\+?[0-9 -]{6,20}$/.test(phone) ? phone : undefined,
+  };
+}
+
 export function turnText(turn: VoiceTurn) {
   const finalText = turn.order.filter((k) => turn.segs[k].final).map((k) => turn.segs[k].text);
   const interim = turn.order.filter((k) => !turn.segs[k].final).map((k) => turn.segs[k].text);
@@ -60,11 +86,13 @@ export function useVoiceCall(userUuid: string) {
   const [agentSpeaking, setAgentSpeaking] = useState(false);
   const [micEnabled, setMicEnabled] = useState(true);
   const [interrupted, setInterrupted] = useState(false);
-  // Mirror of `timeline` for event handlers and end(), which run outside render.
+  // Source of truth for event handlers and end(); kept in sync synchronously so a segment that
+  // lands right before end() is never lost to a pending state update.
   const timelineRef = useRef<TimelineItem[]>([]);
-  useEffect(() => {
-    timelineRef.current = timeline;
-  }, [timeline]);
+  const updateTimeline = useCallback((fn: (prev: TimelineItem[]) => TimelineItem[]) => {
+    timelineRef.current = fn(timelineRef.current);
+    setTimeline(timelineRef.current);
+  }, []);
 
   const tokenMutation = useMutation({
     mutationFn: (lang: "en" | "hi") => fetchVoiceToken(userUuid, lang),
@@ -78,7 +106,7 @@ export function useVoiceCall(userUuid: string) {
       agentTracksRef.current.forEach((t) => t.setVolume(1));
       setInterrupted(false);
     }
-    setTimeline((prev) => {
+    updateTimeline((prev) => {
       const next = [...prev];
       const lastIdx = next.findLastIndex((t) => t.type === "turn");
       const last = lastIdx >= 0 ? (next[lastIdx] as VoiceTurn) : null;
@@ -97,7 +125,7 @@ export function useVoiceCall(userUuid: string) {
       turn.endedAt = now;
       return next;
     });
-  }, []);
+  }, [updateTimeline]);
 
   const teardown = useCallback(() => {
     agentTracksRef.current.forEach((t) => t.detach().forEach((el) => el.remove()));
@@ -114,7 +142,7 @@ export function useVoiceCall(userUuid: string) {
       setStatus("connecting");
       setErrorKind(null);
       setErrorDetail("");
-      setTimeline([]);
+      updateTimeline(() => []);
       setMicEnabled(true);
 
       let token;
@@ -157,15 +185,12 @@ export function useVoiceCall(userUuid: string) {
           const state = changed["lk.agent.state"];
           if (state) setAgentState(state as AgentState);
         })
-        .on(RoomEvent.DataReceived, (payload: Uint8Array, _p?: Participant, _k?: unknown, topic?: string) => {
-          if (topic !== "video" && topic !== "expert") return;
+        .on(RoomEvent.DataReceived, (payload: Uint8Array, sender?: Participant, _k?: unknown, topic?: string) => {
+          // Cards may only come from the agent worker, never from another participant.
+          if ((topic !== "video" && topic !== "expert") || !sender?.isAgent) return;
           try {
-            const data = JSON.parse(new TextDecoder().decode(payload));
-            if (topic === "video" && data.url) {
-              setTimeline((prev) => [...prev, { type: "video", id: uid("v"), url: data.url, title: data.title ?? "" }]);
-            } else if (topic === "expert" && data.name) {
-              setTimeline((prev) => [...prev, { type: "expert", id: uid("x"), ...data }]);
-            }
+            const item = parseCard(topic, JSON.parse(new TextDecoder().decode(payload)));
+            if (item) updateTimeline((prev) => [...prev, item]);
           } catch {
             /* ignore malformed data messages */
           }
@@ -202,7 +227,7 @@ export function useVoiceCall(userUuid: string) {
       startedAtRef.current = performance.now();
       setStatus("live");
     },
-    [tokenMutation, teardown, upsertSegments, userUuid],
+    [tokenMutation, teardown, upsertSegments, updateTimeline, userUuid],
   );
 
   /** End the call and hand back everything that was said, for the chat transcript. */
@@ -216,9 +241,9 @@ export function useVoiceCall(userUuid: string) {
     setStatus("idle");
     setErrorKind(null);
     const summary: CallSummary = { timeline: timelineRef.current, durationSec };
-    setTimeline([]);
+    updateTimeline(() => []);
     return summary;
-  }, [teardown]);
+  }, [teardown, updateTimeline]);
 
   const toggleMic = useCallback(async () => {
     const room = roomRef.current;
@@ -246,9 +271,12 @@ export function useVoiceCall(userUuid: string) {
     room.localParticipant.publishData(payload, { reliable: true, topic: "control" }).catch(() => {});
   }, []);
 
-  const addPhoto = useCallback((photo: string, caption: string) => {
-    setTimeline((prev) => [...prev, { type: "photo", id: uid("p"), photo, caption }]);
-  }, []);
+  const addPhoto = useCallback(
+    (photo: string, caption: string) => {
+      updateTimeline((prev) => [...prev, { type: "photo", id: uid("p"), photo, caption }]);
+    },
+    [updateTimeline],
+  );
 
   useEffect(
     () => () => {
@@ -257,16 +285,24 @@ export function useVoiceCall(userUuid: string) {
     [],
   );
 
-  const lastTurn = timeline.findLast((t): t is VoiceTurn => t.type === "turn");
-  const lastUserTurn = timeline.findLast((t): t is VoiceTurn => t.type === "turn" && t.who === "user");
-  const lastAgentTurn = timeline.findLast((t): t is VoiceTurn => t.type === "turn" && t.who === "agent");
+  let lastTurn: VoiceTurn | undefined;
+  let lastUserTurn: VoiceTurn | undefined;
+  let lastAgentTurn: VoiceTurn | undefined;
+  for (let i = timeline.length - 1; i >= 0 && !(lastUserTurn && lastAgentTurn); i--) {
+    const t = timeline[i];
+    if (t.type !== "turn") continue;
+    lastTurn ??= t;
+    if (t.who === "user") lastUserTurn ??= t;
+    else lastAgentTurn ??= t;
+  }
+  const lastTurnText = lastTurn ? turnText(lastTurn) : null;
 
   let phase: CallPhase = "listening";
   if (status === "connecting") phase = "connecting";
   else if (interrupted) phase = "listening";
   else if (agentState === "speaking" || (agentState === null && agentSpeaking)) phase = "speaking";
   else if (agentState === "thinking") phase = "thinking";
-  else if (agentState === null && lastTurn?.who === "user" && turnText(lastTurn).interim === "" && turnText(lastTurn).final)
+  else if (agentState === null && lastTurn?.who === "user" && lastTurnText?.interim === "" && lastTurnText.final)
     phase = "thinking";
 
   return {

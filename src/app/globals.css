@@ -27,6 +27,20 @@ body {
   color: #fff;
 }
 
+html {
+  touch-action: manipulation;
+}
+
+/* One visible focus style for keyboard users across the glass UI. */
+:focus-visible {
+  outline: 2px solid var(--color-brand);
+  outline-offset: 2px;
+}
+
+input:focus-visible {
+  outline: none; /* the composer pill shows the ring instead */
+}
+
 body {
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
@@ -85,6 +99,8 @@ body {
   *::before,
   *::after {
     animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
   }
 }

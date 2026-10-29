@@ -32,6 +32,7 @@ export function CameraScreen() {
   const [torch, setTorch] = useState(false);
   const [torchSupported, setTorchSupported] = useState(false);
   const [flash, setFlash] = useState(0);
+  const [fileError, setFileError] = useState(false);
   const lastPhoto = state.messages.findLast((m) => m.kind === "user" && m.photo);
 
   useEffect(() => {
@@ -96,11 +97,16 @@ export function CameraScreen() {
 
   function onFile(file: File | undefined) {
     if (!file) return;
+    setFileError(false);
     const url = URL.createObjectURL(file);
     const img = new window.Image();
     img.onload = () => {
       capturePhoto(toDataUrl(img, img.naturalWidth, img.naturalHeight));
       URL.revokeObjectURL(url);
+    };
+    img.onerror = () => {
+      URL.revokeObjectURL(url);
+      setFileError(true);
     };
     img.src = url;
   }
@@ -116,9 +122,9 @@ export function CameraScreen() {
         >
           <Icon src="/camera/x.svg" size={22} />
         </button>
-        <h2 className="glass-chip truncate rounded-[22px] px-4 py-3 text-[15px] leading-[18px] font-[590] text-white/95">
+        <h1 className="glass-chip truncate rounded-[22px] px-4 py-3 text-[15px] leading-[18px] font-[590] text-white/95">
           Take a photo of the crack
-        </h2>
+        </h1>
         <button
           type="button"
           onClick={toggleTorch}
@@ -138,14 +144,19 @@ export function CameraScreen() {
           muted
           className={`absolute inset-0 size-full object-cover ${facing === "user" ? "-scale-x-100" : ""}`}
         />
-        {cam !== "ready" && (
-          <div className="absolute inset-0 grid place-items-center p-8 text-center">
-            {cam === "starting" ? (
+        {(cam !== "ready" || fileError) && (
+          <div
+            className={`absolute inset-0 grid place-items-center p-8 text-center ${fileError ? "bg-viewfinder/90" : ""}`}
+            role="status"
+          >
+            {cam === "starting" && !fileError ? (
               <p className="text-[14px] text-white/70">Opening camera…</p>
             ) : (
               <div className="flex flex-col items-center gap-3">
                 <p className="text-[15px] leading-[21px] text-white/85">
-                  Camera isn&apos;t available here. You can upload a photo from your gallery instead.
+                  {fileError
+                    ? "That file couldn't be opened as a photo. Please choose another one."
+                    : "Camera isn't available here. You can upload a photo from your gallery instead."}
                 </p>
                 <button
                   type="button"
@@ -225,9 +236,11 @@ export function CameraScreen() {
         ref={fileRef}
         type="file"
         accept="image/*"
-        capture="environment"
         hidden
-        onChange={(e) => onFile(e.target.files?.[0])}
+        onChange={(e) => {
+          onFile(e.target.files?.[0]);
+          e.target.value = ""; // allow picking the same file again
+        }}
       />
     </div>
   );

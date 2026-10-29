@@ -149,6 +149,8 @@ interface AppContextValue {
   endConversation: () => void;
   restart: () => void;
   changeLanguage: () => void;
+  /** Create the text-chat session early (composer focus) so the first answer starts sooner. */
+  warmSession: () => void;
 }
 
 const AppContext = createContext<AppContextValue | null>(null);
@@ -163,7 +165,17 @@ export function AppProvider({ children }: { children: ReactNode }) {
     pendingPhoto: null,
   });
   const voice = useVoiceCall(state.profile.uuid);
-  const sessionRef = useRef<string | null>(null);
+  // Text-chat session, created ahead of the first question (see warmSession) to save a round trip.
+  const sessionRef = useRef<Promise<string> | null>(null);
+  const ensureSession = useCallback(() => {
+    sessionRef.current ??= createSession(state.profile.uuid)
+      .then((r) => r.session_id)
+      .catch((e: unknown) => {
+        sessionRef.current = null;
+        throw e;
+      });
+    return sessionRef.current;
+  }, [state.profile.uuid]);
 
   // Load (or create) the stable per-device profile; the uuid doubles as the LiveKit identity.
   useEffect(() => {
@@ -194,9 +206,9 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
   const ask = useMutation({
     mutationFn: async ({ text, replyId }: { text: string; replyId: string }) => {
-      if (!sessionRef.current) sessionRef.current = (await createSession(state.profile.uuid)).session_id;
+      const sessionId = await ensureSession();
       let reply = "";
-      for await (const ev of streamTurn(sessionRef.current, text)) {
+      for await (const ev of streamTurn(sessionId, text)) {
         if (ev.type === "text") {
           reply += ev.delta;
           dispatch({ type: "patch", id: replyId, patch: { text: reply } });
@@ -209,7 +221,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
         }
       }
     },
-    onError: (err, { replyId }) => {
+    onError: (err, { text, replyId }) => {
       console.warn("[ultratech] text turn failed:", err.message);
       sessionRef.current = null;
       dispatch({
@@ -219,6 +231,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
           streaming: false,
           error: true,
           text: "Sorry, I couldn't get an answer right now. Please try again in a moment.",
+          retryText: text,
         },
       });
     },
@@ -360,8 +373,11 @@ export function AppProvider({ children }: { children: ReactNode }) {
         dispatch({ type: "reset" });
       },
       changeLanguage: () => dispatch({ type: "push", messages: [langQuestion()] }),
+      warmSession: () => {
+        if (step === "done" && state.profile.uuid) ensureSession().catch(() => {});
+      },
     }),
-    [state, step, voice, online, ask.isPending, submitText, chooseLang, chooseStage, startVoice, endVoice, capturePhoto],
+    [state, step, voice, online, ask.isPending, submitText, chooseLang, chooseStage, startVoice, endVoice, capturePhoto, ensureSession],
   );
 
   return <AppContext value={value}>{children}</AppContext>;

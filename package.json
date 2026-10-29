@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "scan": "npx react-scan@latest localhost:3000"
   },
   "dependencies": {
     "@tanstack/react-query": "^5.105.0",

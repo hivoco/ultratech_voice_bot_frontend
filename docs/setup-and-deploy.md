@@ -1,5 +1,7 @@
 # Setup, running locally, deploying
 
+How to run the frontend and backend on your machine, which keys the backend needs, and how to deploy.
+
 ## Local
 
 ```bash
@@ -12,9 +14,19 @@ npm run dev                       # http://localhost:3000
 python3 -m venv .venv && .venv/bin/pip install fastapi "uvicorn[standard]" python-dotenv \
   pydantic python-multipart livekit-api httpx requests
 .venv/bin/python -m uvicorn main:app --host 127.0.0.1 --port 8090
-# voice worker — additionally needs livekit-agents + sarvam/silero plugins:
-python -m agent.worker dev
+# voice worker (same venv):
+.venv/bin/pip install livekit-agents livekit-plugins-sarvam livekit-plugins-silero \
+  livekit-plugins-noise-cancellation
+.venv/bin/python -m agent.worker dev
 ```
+
+### Backend `.env` keys
+
+| Needed for | Keys |
+|---|---|
+| Voice calls | `LIVEKIT_URL`, `LIVEKIT_API_KEY`, `LIVEKIT_API_SECRET`, `SARVAM_API_KEY` (STT + TTS), `OPENAI_API_KEY` (live answers) |
+| Typed chat | `JEV_API_KEY` (router), `OPENAI_API_KEY`, `FISH_AUDIO_API_KEY` + `FISH_VOICE_ID` |
+| Optional | `GEMINI_API_KEY`, `GROQ_API_KEY`, `SMTP_*` + `ALERT_TO`, `DEMO_USER` / `DEMO_PASS` |
 
 Microphone and camera need `https://` or `localhost`. To test on a phone over the LAN, use an
 HTTPS tunnel (e.g. `cloudflared tunnel --url http://localhost:3000`).

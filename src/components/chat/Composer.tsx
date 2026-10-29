@@ -7,8 +7,15 @@ import { useApp } from "@/lib/store";
 import { LANG_LABEL } from "@/lib/types";
 import { Icon } from "../ui/Icon";
 
+// Start downloading a screen's code on intent (hover / focus / touch) so it opens instantly.
+const warmVoice = () => {
+  void import("../screens/VoiceScreen");
+  void import("livekit-client");
+};
+const warmCamera = () => void import("../screens/CameraScreen");
+
 export function Composer({ highlightCamera }: { highlightCamera?: boolean }) {
-  const { state, step, submitText, startVoice, openCamera, clearPendingPhoto, sending } = useApp();
+  const { state, step, submitText, startVoice, openCamera, clearPendingPhoto, sending, warmSession } = useApp();
   const [text, setText] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
   const canSend = (text.trim().length > 0 || !!state.pendingPhoto) && !sending;
@@ -54,7 +61,7 @@ export function Composer({ highlightCamera }: { highlightCamera?: boolean }) {
       </AnimatePresence>
 
       <form
-        className="glass relative flex h-[58px] items-center rounded-[29px] pr-1 pl-[9px]"
+        className="glass relative flex h-[58px] items-center rounded-[29px] pr-1 pl-[9px] has-[input:focus-visible]:outline-2 has-[input:focus-visible]:outline-brand/60"
         onSubmit={(e) => {
           e.preventDefault();
           send();
@@ -63,9 +70,12 @@ export function Composer({ highlightCamera }: { highlightCamera?: boolean }) {
         <button
           type="button"
           onClick={openCamera}
+          onPointerEnter={warmCamera}
+          onFocus={warmCamera}
           disabled={step === "name"}
           aria-label="Send a photo"
-          className="relative grid size-[38px] shrink-0 place-items-center rounded-full disabled:opacity-40"
+          aria-describedby={step === "name" ? "composer-name-hint" : undefined}
+          className="relative grid size-[38px] shrink-0 place-items-center rounded-full after:absolute after:-inset-1 after:content-[''] disabled:opacity-40"
         >
           {highlightCamera && (
             <motion.span
@@ -81,11 +91,17 @@ export function Composer({ highlightCamera }: { highlightCamera?: boolean }) {
         <label htmlFor="composer-input" className="sr-only">
           {placeholder}
         </label>
+        {step === "name" && (
+          <span id="composer-name-hint" className="sr-only">
+            Enter your name first to send photos or talk by voice.
+          </span>
+        )}
         <input
           id="composer-input"
           ref={inputRef}
           value={text}
           onChange={(e) => setText(e.target.value)}
+          onFocus={warmSession}
           placeholder={placeholder}
           autoComplete={step === "name" ? "given-name" : "off"}
           enterKeyHint="send"
@@ -93,7 +109,7 @@ export function Composer({ highlightCamera }: { highlightCamera?: boolean }) {
           className="mx-1.5 h-full min-w-0 flex-1 bg-transparent text-[16px] text-white outline-none placeholder:text-white/75"
         />
         <AnimatePresence mode="wait" initial={false}>
-          {canSend || (step === "name" && text) ? (
+          {canSend ? (
             <motion.button
               key="send"
               type="submit"
@@ -112,8 +128,11 @@ export function Composer({ highlightCamera }: { highlightCamera?: boolean }) {
               key="mic"
               type="button"
               onClick={startVoice}
+              onPointerEnter={warmVoice}
+              onFocus={warmVoice}
               disabled={step === "name"}
               aria-label="Ask by speaking"
+              aria-describedby={step === "name" ? "composer-name-hint" : undefined}
               initial={{ scale: 0.6, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.6, opacity: 0 }}

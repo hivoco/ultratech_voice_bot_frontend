@@ -5,21 +5,23 @@ import { Icon } from "../ui/Icon";
 
 interface VoiceControlsProps {
   micEnabled: boolean;
+  /** Overrides the mic button's accessible name when it does something else (e.g. retry). */
+  micLabel?: string;
   onCamera: () => void;
   onMic: () => void;
   onClose: () => void;
 }
 
 /** Bottom row: Send photo · mic (80px, glowing) · End chat. */
-export function VoiceControls({ micEnabled, onCamera, onMic, onClose }: VoiceControlsProps) {
+export function VoiceControls({ micEnabled, micLabel, onCamera, onMic, onClose }: VoiceControlsProps) {
   return (
     <div className="mx-auto grid w-full max-w-[393px] shrink-0 grid-cols-[1fr_auto_1fr] items-start px-[60px] pt-2 pb-[max(36px,env(safe-area-inset-bottom))]">
       <RoundButton icon="/icons/camera.svg" label="Send photo" onClick={onCamera} className="justify-self-start" />
       <motion.button
         type="button"
         onClick={onMic}
-        aria-label={micEnabled ? "Mute microphone" : "Unmute microphone"}
-        aria-pressed={!micEnabled}
+        aria-label={micLabel ?? "Mute microphone"}
+        aria-pressed={micLabel ? undefined : !micEnabled}
         whileTap={{ scale: 0.94 }}
         className={`relative grid size-20 place-items-center rounded-full transition-[background-color,box-shadow] ${
           micEnabled ? "bg-brand shadow-[0_0_15px_rgba(255,212,0,0.45)]" : "glass bg-white/10"

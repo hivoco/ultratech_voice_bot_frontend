@@ -20,16 +20,16 @@ interface VoiceOrbProps {
 export function VoiceOrb({ mode, active, onClick, label }: VoiceOrbProps) {
   const scale = mode === "speaking" ? 0.72 : 1;
 
+  // Interactive only while it can interrupt; otherwise a labelled status image.
+  const Root = onClick ? motion.button : motion.div;
   return (
-    <motion.button
-      type="button"
-      onClick={onClick}
+    <Root
+      {...(onClick ? { type: "button" as const, onClick } : { role: "img" })}
       aria-label={label}
-      disabled={!onClick}
       animate={{ scale }}
       transition={{ type: "spring", stiffness: 160, damping: 20 }}
       whileTap={onClick ? { scale: scale * 0.96 } : undefined}
-      className="relative size-[220px] shrink-0 rounded-full disabled:cursor-default"
+      className="relative size-[220px] shrink-0 rounded-full"
     >
       {mode === "thinking" ? (
         <motion.span
@@ -37,7 +37,7 @@ export function VoiceOrb({ mode, active, onClick, label }: VoiceOrbProps) {
           animate={{ scale: [1, 1.03, 1] }}
           transition={{ duration: 1.6, repeat: Infinity, ease: "easeInOut" }}
         >
-          <Image src="/orb/orb-thinking.svg" alt="" width={220} height={220} unoptimized priority />
+          <Image src="/orb/orb-thinking.svg" alt="" width={220} height={220} unoptimized loading="eager" />
         </motion.span>
       ) : (
         <span className="glass absolute inset-0 rounded-full">
@@ -56,7 +56,7 @@ export function VoiceOrb({ mode, active, onClick, label }: VoiceOrbProps) {
                 width={208}
                 height={208}
                 unoptimized
-                priority
+                loading="eager"
                 className="absolute top-[-44px] left-[-44px] max-w-none"
               />
             )}
@@ -82,6 +82,6 @@ export function VoiceOrb({ mode, active, onClick, label }: VoiceOrbProps) {
           </span>
         </span>
       )}
-    </motion.button>
+    </Root>
   );
 }

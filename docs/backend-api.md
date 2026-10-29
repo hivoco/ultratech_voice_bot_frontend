@@ -1,16 +1,22 @@
 # Backend API + proxy routes
 
 Backend: https://github.com/hivoco/ultratech_voice_bot_backend (FastAPI, `main.py`).
-Its own integration guide: `FRONTEND.md` in that repo.
+Its own integration guide: [FRONTEND.md](https://github.com/hivoco/ultratech_voice_bot_backend/blob/main/FRONTEND.md).
 
 ## Proxy routes (this app)
 
-The browser calls only these. They run on the server, add `Authorization: Basic …` and forward
-to `BACKEND_URL`. If the backend is down they return `502 {"detail":"Backend unreachable"}`.
+The browser calls only these. They run on the server, add `Authorization: Basic …` to every request and forward
+to `BACKEND_URL`. If the backend is down they return `502 {"detail":"Backend unreachable"}`
+(`/api/health` instead answers `200 {"ok":false}`).
+
+Every POST goes through `guardPost` (`src/lib/guard.ts`): same-origin check (403), 16 KB body
+cap (413), JSON-object check (400) and a per-IP limit per minute (429) — token 6, session 10,
+turn 30. Inputs are validated: `user_uuid` `^[A-Za-z0-9-]{8,64}$`, `session_id` 32 hex chars,
+`text` 1–1000 characters.
 
 | This app | Backend | Body → response |
 |---|---|---|
-| `POST /api/voice/token` | `POST /voice/token` (Basic auth) | `{user_uuid, lang:"en"\|"hi"}` → `{url, token, room}` |
+| `POST /api/voice/token` | `POST /voice/token` | `{user_uuid, lang:"en"\|"hi"}` → `{url, token, room}` |
 | `POST /api/session` | `POST /session` | `{user_uuid}` → `{session_id}` |
 | `POST /api/turn/stream` | `POST /turn/stream` | `{session_id, text}` → NDJSON stream |
 | `GET /api/health` | `GET /health` | → `{ok, missing_keys, kb_entries, …}` |

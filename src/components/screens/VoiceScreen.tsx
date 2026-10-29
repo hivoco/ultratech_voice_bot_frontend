@@ -4,7 +4,7 @@ import { AnimatePresence, motion } from "motion/react";
 import { useApp } from "@/lib/store";
 import { backendLang } from "@/lib/types";
 import { turnText } from "@/lib/useVoiceCall";
-import { Header } from "../ui/Header";
+import { Header, KeyboardButton } from "../ui/Header";
 import { Icon } from "../ui/Icon";
 import { VoiceControls } from "../voice/VoiceControls";
 import { VoiceOrb, type OrbMode } from "../voice/VoiceOrb";
@@ -31,6 +31,20 @@ const ERROR_COPY = {
   },
 } as const;
 
+const PHASE_ANNOUNCE = {
+  connecting: "Connecting to the UltraTech Engineer",
+  listening: "Listening",
+  thinking: "Thinking about your question",
+  speaking: "The engineer is answering",
+} as const;
+
+const ORB_LABEL: Record<OrbMode, string> = {
+  listening: "Listening",
+  thinking: "Thinking",
+  speaking: "Speaking",
+  muted: "Microphone off",
+};
+
 /** 02 listening · 02b thinking · 02c speaking · 02d couldn't hear. */
 export function VoiceScreen() {
   const { voice, state, endVoice, openCamera } = useApp();
@@ -54,12 +68,21 @@ export function VoiceScreen() {
 
   return (
     <>
-      <Header onBack={() => void endVoice()} backLabel="End voice chat" action="keyboard" onKeyboard={() => void endVoice()} />
+      <Header
+        onBack={() => void endVoice()}
+        backLabel="End voice chat"
+        trailing={<KeyboardButton onClick={() => void endVoice()} />}
+      />
 
-      <section className="relative min-h-[150px] shrink-0 px-6 pt-[34px]" aria-live="polite">
+      {/* Screen-reader announcements: phase changes only, never the live transcript. */}
+      <p role="status" className="sr-only">
+        {errored ? "" : PHASE_ANNOUNCE[phase]}
+      </p>
+
+      <section className="relative min-h-[150px] shrink-0 px-6 pt-[34px]">
         <AnimatePresence mode="wait" initial={false}>
           {errored ? (
-            <motion.div key="error" {...fade}>
+            <motion.div key="error" {...fade} role="alert">
               <h2 className="text-glow text-[32px] leading-[38px] font-bold text-white">{ERROR_COPY[voice.errorKind ?? "dropped"].title}</h2>
               <p className="text-glow mt-2 text-[18px] leading-[25px] text-white/70">{ERROR_COPY[voice.errorKind ?? "dropped"].body}</p>
             </motion.div>
@@ -105,7 +128,7 @@ export function VoiceScreen() {
           mode={orbMode}
           active={phase === "speaking" || userTalking}
           onClick={phase === "speaking" ? () => void voice.interrupt() : undefined}
-          label={phase === "speaking" ? "Interrupt the engineer" : "Voice assistant status"}
+          label={phase === "speaking" ? "Interrupt the engineer" : ORB_LABEL[orbMode]}
         />
         <div className="flex min-h-[37px] items-center">
           <AnimatePresence mode="wait">
@@ -143,6 +166,7 @@ export function VoiceScreen() {
 
       <VoiceControls
         micEnabled={voice.micEnabled || errored}
+        micLabel={errored ? "Try again" : undefined}
         onCamera={openCamera}
         onMic={() => (errored ? retry() : void voice.toggleMic())}
         onClose={() => void endVoice()}

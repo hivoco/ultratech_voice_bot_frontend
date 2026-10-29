@@ -2,26 +2,28 @@
 
 import { motion } from "motion/react";
 import { useApp } from "@/lib/store";
-import { Header } from "../ui/Header";
+import { Header, HeaderMenu } from "../ui/Header";
 
 /** 06 · Wrap-up — Thank you. */
 export function WrapUpScreen() {
   const { goTo, restart } = useApp();
   return (
     <>
-      <Header onBack={() => goTo("chat")} backLabel="Back to conversation" action="more" />
+      <Header
+        onBack={() => goTo("chat")}
+        backLabel="Back to conversation"
+        trailing={<HeaderMenu items={[{ label: "Back to conversation", run: () => goTo("chat") }]} />}
+      />
       <div className="flex min-h-0 flex-1 items-center px-6 pb-10">
-        <motion.p
+        <motion.div
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, ease: "easeOut" }}
-          className="text-glow text-[24px] leading-[29px] font-bold text-white"
+          className="text-glow space-y-[29px] text-[24px] leading-[29px] font-bold text-white"
         >
-          I hope your home-building questions have been answered. If anything else comes up, just ask.
-          <br />
-          <br />
-          Thank you.
-        </motion.p>
+          <p>I hope your home-building questions have been answered. If anything else comes up, just ask.</p>
+          <p>Thank you.</p>
+        </motion.div>
       </div>
       <div className="mx-4 shrink-0 pb-[max(32px,env(safe-area-inset-bottom))]">
         <motion.button

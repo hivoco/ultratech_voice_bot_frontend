@@ -39,7 +39,7 @@ export function EngineerBubble({
       }`}
     >
       {voiceMeta && (
-        <p className="flex w-full items-center gap-1.5 text-[12px] font-[510] text-white/70">
+        <p className="flex w-full items-center gap-1.5 text-[12px] font-[510] text-white/85">
           <Icon src="/icons/voice-wave.svg" size={14} />
           {voiceMeta}
         </p>
@@ -62,9 +62,11 @@ export function EngineerBubble({
 
 function TypingDots() {
   return (
-    <span className="flex h-[22px] items-center gap-1.5" aria-label="The engineer is typing">
+    <span className="flex h-[22px] items-center gap-1.5" role="status">
+      <span className="sr-only">The engineer is typing…</span>
       {[0, 1, 2].map((i) => (
         <motion.span
+          aria-hidden
           key={i}
           className="size-2 rounded-full bg-white/80"
           animate={{ opacity: [0.3, 1, 0.3], y: [0, -3, 0] }}
@@ -102,7 +104,7 @@ export function UserBubble({ text, photo, photoLabel }: { text: string; photo?: 
 export function DurationChip({ text }: { text: string }) {
   return (
     <motion.div {...enter} className="flex w-full justify-center">
-      <p className="glass relative flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[12px] font-[510] text-white/85">
+      <p className="glass relative flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[12px] font-[510] text-white/85 tabular-nums">
         <Icon src="/icons/mic-small.svg" size={13} />
         {text}
       </p>
@@ -130,6 +132,7 @@ export function VideoCard({ url, title }: { url: string; title: string }) {
         <span className="line-clamp-2 block text-[15px] leading-[20px] font-[590] text-white">
           {title || "Watch the related video"}
         </span>
+        <span className="sr-only"> (opens in a new tab)</span>
       </span>
     </motion.a>
   );
@@ -155,12 +158,16 @@ export function ExpertCard({ name, role, callSlot, phone }: { name: string; role
         </p>
       )}
       <div className="flex w-full gap-2">
+        {/* No booking endpoint yet (docs/05-expert-and-video-cards.md) — visible per Figma, not actionable. */}
         <button
           type="button"
-          className="flex flex-1 items-center justify-center gap-1.5 rounded-[14px] bg-brand p-3 text-[14px] font-[590] text-ink transition-transform active:scale-[0.98]"
+          aria-disabled
+          title="Site-visit booking is coming soon"
+          className="flex flex-1 cursor-not-allowed items-center justify-center gap-1.5 rounded-[14px] bg-brand p-3 text-[14px] font-[590] text-ink"
         >
           <Icon src="/icons/calendar.svg" size={16} />
           Book a site visit
+          <span className="sr-only"> (coming soon)</span>
         </button>
         {phone && (
           <a

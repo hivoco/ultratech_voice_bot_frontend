@@ -1,22 +1,23 @@
 "use client";
 
 import Image from "next/image";
-import { useState } from "react";
+import { useEffect, useRef, useState, type KeyboardEvent, type ReactNode } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import { useApp } from "@/lib/store";
 import { Icon } from "./Icon";
 
+/** Enlarges a small icon button's hit area to 44px without changing how it looks. */
+const HIT_AREA = "relative after:absolute after:-inset-1 after:content-['']";
+
 interface HeaderProps {
   onBack: () => void;
   backLabel: string;
-  /** "keyboard" on the voice screens (switch to typing), "more" on chat screens (menu). */
-  action: "keyboard" | "more";
-  onKeyboard?: () => void;
+  /** Right-hand slot: <KeyboardButton/> on voice screens, <HeaderMenu/> on chat screens. */
+  trailing?: ReactNode;
 }
 
-export function Header({ onBack, backLabel, action, onKeyboard }: HeaderProps) {
-  const { online, voice, changeLanguage, endConversation, startVoice, state } = useApp();
-  const [menuOpen, setMenuOpen] = useState(false);
+export function Header({ onBack, backLabel, trailing }: HeaderProps) {
+  const { online, voice } = useApp();
 
   const status =
     voice.status === "connecting"
@@ -34,16 +35,16 @@ export function Header({ onBack, backLabel, action, onKeyboard }: HeaderProps) {
           type="button"
           onClick={onBack}
           aria-label={backLabel}
-          className="-m-2 grid size-10 shrink-0 place-items-center rounded-full transition-colors hover:bg-white/10"
+          className="-m-2 grid size-11 shrink-0 place-items-center rounded-full transition-colors hover:bg-white/10"
         >
           <Icon src="/icons/back.svg" size={24} />
         </button>
-        <div className="ml-1.5 size-[44px] shrink-0 overflow-hidden rounded-[12px] shadow-[0_2px_9px_rgba(0,0,0,0.45),0_4px_10px_rgba(0,0,0,0.25)]">
-          <Image src="/images/ultratech-logo.png" alt="UltraTech" width={44} height={44} priority />
+        <div className="ml-1 size-[44px] shrink-0 overflow-hidden rounded-[12px] shadow-[0_2px_9px_rgba(0,0,0,0.45),0_4px_10px_rgba(0,0,0,0.25)]">
+          <Image src="/images/ultratech-logo.png" alt="UltraTech" width={44} height={44} loading="eager" />
         </div>
         <div className="ml-[10px] min-w-0 flex-1">
-          <h1 className="truncate text-[17px] leading-[20px] font-[590] text-white">UltraTech Engineer</h1>
-          <p className="mt-[3px] flex items-center gap-[6px] text-[13px] leading-[16px] text-white/82">
+          <p className="truncate text-[17px] leading-[20px] font-[590] text-white">UltraTech Engineer</p>
+          <p className="mt-[3px] flex items-center gap-[6px] text-[13px] leading-[16px] text-white/82" role="status">
             {online === false ? (
               <span className="size-[7px] rounded-full bg-white/40" aria-hidden />
             ) : (
@@ -52,71 +53,107 @@ export function Header({ onBack, backLabel, action, onKeyboard }: HeaderProps) {
             <span className="truncate">{status}</span>
           </p>
         </div>
-        {action === "keyboard" ? (
-          <button
-            type="button"
-            onClick={onKeyboard}
-            aria-label="Type instead"
-            className="grid size-9 shrink-0 place-items-center rounded-[18px] bg-white/20 transition-colors hover:bg-white/30"
-          >
-            <Icon src="/icons/keyboard.svg" size={20} />
-          </button>
-        ) : (
-          <button
-            type="button"
-            onClick={() => setMenuOpen((o) => !o)}
-            aria-label="More options"
-            aria-expanded={menuOpen}
-            aria-haspopup="menu"
-            className="grid size-9 shrink-0 place-items-center rounded-[18px] bg-white/20 transition-colors hover:bg-white/30"
-          >
-            <Icon src="/icons/more.svg" size={22} />
-          </button>
-        )}
+        {trailing}
       </div>
+    </header>
+  );
+}
 
+export function KeyboardButton({ onClick }: { onClick: () => void }) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      aria-label="Type instead"
+      className={`grid size-9 shrink-0 place-items-center rounded-[18px] bg-white/20 transition-colors hover:bg-white/30 ${HIT_AREA}`}
+    >
+      <Icon src="/icons/keyboard.svg" size={20} />
+    </button>
+  );
+}
+
+export interface MenuItem {
+  label: string;
+  run: () => void;
+}
+
+/** "More" (⋯) button with a small keyboard-accessible menu. */
+export function HeaderMenu({ items }: { items: MenuItem[] }) {
+  const [open, setOpen] = useState(false);
+  const triggerRef = useRef<HTMLButtonElement>(null);
+  const listRef = useRef<HTMLUListElement>(null);
+
+  useEffect(() => {
+    if (open) listRef.current?.querySelector<HTMLButtonElement>("[role=menuitem]")?.focus();
+  }, [open]);
+
+  function close() {
+    setOpen(false);
+    triggerRef.current?.focus();
+  }
+
+  function onKeyDown(e: KeyboardEvent<HTMLUListElement>) {
+    const buttons = [...(listRef.current?.querySelectorAll<HTMLButtonElement>("[role=menuitem]") ?? [])];
+    const i = buttons.indexOf(document.activeElement as HTMLButtonElement);
+    if (e.key === "Escape") {
+      e.preventDefault();
+      close();
+    } else if (e.key === "ArrowDown" || e.key === "ArrowUp") {
+      e.preventDefault();
+      const next = (i + (e.key === "ArrowDown" ? 1 : -1) + buttons.length) % buttons.length;
+      buttons[next]?.focus();
+    } else if (e.key === "Tab") {
+      setOpen(false);
+    }
+  }
+
+  return (
+    <>
+      <button
+        ref={triggerRef}
+        type="button"
+        onClick={() => setOpen((o) => !o)}
+        aria-label="More options"
+        aria-expanded={open}
+        aria-haspopup="menu"
+        className={`grid size-9 shrink-0 place-items-center rounded-[18px] bg-white/20 transition-colors hover:bg-white/30 ${HIT_AREA}`}
+      >
+        <Icon src="/icons/more.svg" size={22} />
+      </button>
       <AnimatePresence>
-        {menuOpen && (
+        {open && (
           <>
-            <button
-              type="button"
-              aria-label="Close menu"
-              className="fixed inset-0 z-10 cursor-default"
-              onClick={() => setMenuOpen(false)}
-            />
+            <div aria-hidden className="fixed inset-0 z-10" onClick={() => setOpen(false)} />
             <motion.ul
+              ref={listRef}
               role="menu"
+              aria-label="More options"
+              onKeyDown={onKeyDown}
               initial={{ opacity: 0, y: -6, scale: 0.97 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: -6, scale: 0.97 }}
               transition={{ duration: 0.16 }}
               className="glass absolute top-[76px] right-0 z-20 w-[220px] origin-top-right overflow-hidden rounded-[20px] bg-[#2a2218]/80 p-1.5"
             >
-              {[
-                state.profile.lang && { label: "Change language", run: changeLanguage },
-                { label: "Talk by voice", run: startVoice },
-                { label: "End conversation", run: endConversation },
-              ]
-                .filter((i): i is { label: string; run: () => void } => !!i)
-                .map((item) => (
-                  <li key={item.label} role="none">
-                    <button
-                      type="button"
-                      role="menuitem"
-                      onClick={() => {
-                        setMenuOpen(false);
-                        item.run();
-                      }}
-                      className="relative w-full rounded-[14px] px-3.5 py-2.5 text-left text-[15px] font-[510] text-white transition-colors hover:bg-white/10"
-                    >
-                      {item.label}
-                    </button>
-                  </li>
-                ))}
+              {items.map((item) => (
+                <li key={item.label} role="none">
+                  <button
+                    type="button"
+                    role="menuitem"
+                    onClick={() => {
+                      setOpen(false);
+                      item.run();
+                    }}
+                    className="relative w-full rounded-[14px] px-3.5 py-2.5 text-left text-[15px] font-[510] text-white transition-colors hover:bg-white/10 focus-visible:bg-white/10"
+                  >
+                    {item.label}
+                  </button>
+                </li>
+              ))}
             </motion.ul>
           </>
         )}
       </AnimatePresence>
-    </header>
+    </>
   );
 }

@@ -1,12 +1,14 @@
 # 03 · Text chat + call transcript
 
-Figma: **03b · Voice transcript — Direct answer** (also the layout for 04b / 05b).
+Users type a question and watch the answer stream in; a finished voice call lands here as a transcript.
+
+Figma: **03b · Voice transcript — Direct answer** (also the layout for [04b](04-photo-capture.md) and [05b](05-expert-and-video-cards.md)).
 
 ## Typed questions
 
 1. First question creates a backend session: `POST /api/session {user_uuid}` → `session_id`
    (kept in memory; reset on error or *End conversation*).
-2. `POST /api/turn/stream {session_id, text}` returns NDJSON:
+2. `POST /api/turn/stream {session_id, text}` returns NDJSON (newline-delimited JSON, one event per line):
    `meta` → many `text {delta}` → `audio …` → `done {text}` (or `error {detail}`).
 3. The user bubble is added immediately; an engineer bubble shows typing dots, then the
    streamed text with a yellow caret. The reply is marked complete at the first `audio` event

@@ -42,19 +42,20 @@ add its Basic-auth credentials server-side, so no secret reaches the client bund
 
 ```bash
 npm install
-cp .env.example .env.local      # point BACKEND_URL at the FastAPI backend
+cp .env.example .env.local      # set BACKEND_BASIC_PASS (BACKEND_URL defaults to :8090)
 npm run dev                     # http://localhost:3000
 ```
 
-Backend (separate repo): `python -m uvicorn main:app --port 8090` plus
-`python -m agent.worker dev` for voice. It needs its own `.env` with the LiveKit / OpenAI /
-Sarvam / Fish keys — without them the UI loads, but calls and answers fail gracefully.
+Backend setup (separate repo, API server + voice worker + its own `.env` of provider keys):
+see [docs/setup-and-deploy.md](docs/setup-and-deploy.md). Without the keys the UI still loads,
+but calls and answers fail gracefully.
 
 | Script | Does |
 |---|---|
 | `npm run dev` | dev server |
 | `npm run build && npm start` | production build / server |
 | `npm run lint` | ESLint (incl. React Compiler rules) |
+| `npm run scan` | React Scan overlay on the running dev server (re-render highlighting) |
 
 ## Quality
 
@@ -62,10 +63,11 @@ Lighthouse 12 on the production build (reports in [docs/lighthouse/](docs/lighth
 
 | | Performance | Accessibility | Best practices | SEO |
 |---|---|---|---|---|
-| Mobile | 97 | 100 | 100 | 100 |
+| Mobile | 96 | 100 | 100 | 100 |
 | Desktop | 100 | 100 | 100 | 100 |
 
-Details and fixes: [docs/lighthouse.md](docs/lighthouse.md).
+Details and fixes: [docs/lighthouse.md](docs/lighthouse.md). Security, accessibility, React and
+React Scan review results: [docs/reviews.md](docs/reviews.md).
 
 ## Project status
 
@@ -73,7 +75,8 @@ Details and fixes: [docs/lighthouse.md](docs/lighthouse.md).
   `/session`, `/turn/stream`, `/health`, LiveKit transcription + data topics).
 - ⚠️ Voice and answers need the backend `.env` keys (not in the repo) — verified locally that
   every proxy route reaches the backend; generation fails only on missing provider keys.
-- ⚠️ Backend gaps the UI is ready for: photo understanding (no vision endpoint), expert
-  hand-off data (`expert` topic), tap-to-interrupt (`control` topic). See the per-use-case docs.
+- ⚠️ Backend gaps the UI is ready for: [name/stage personalisation](docs/01-onboarding.md#backend-gap),
+  [tap-to-interrupt](docs/02-voice-call.md#tap-to-interrupt), [photo understanding](docs/04-photo-capture.md#backend-gap),
+  [expert hand-off](docs/05-expert-and-video-cards.md#expert-card--topic-expert-proposed-contract-backend-todo).
 
 Agent/contributor index: [AGENTS.md](AGENTS.md).

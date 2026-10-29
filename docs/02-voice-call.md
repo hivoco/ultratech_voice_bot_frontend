@@ -1,5 +1,7 @@
 # 02 · Real-time voice call (LiveKit)
 
+Users talk to the engineer in real time; the screen shows who is talking and what is being said.
+
 Figma: **02 Ask by speaking**, **02b Thinking**, **02c Speaking (live)**, **02d Couldn't hear**.
 
 ## Start / end
@@ -8,8 +10,8 @@ Figma: **02 Ask by speaking**, **02b Thinking**, **02c Speaking (live)**, **02d 
 |---|---|
 | Mic button in the composer, or menu → *Talk by voice* | screen → `voice`, `POST /api/voice/token {user_uuid, lang}` and `import("livekit-client")` in parallel, `room.connect(url, token)`, mic on |
 | Big yellow mic button | mute / unmute (muted = grey glass button with a slash, orb core dims) |
-| Camera button | opens the camera; the call stays connected (see 04) |
-| ✕ *End chat*, header back, or keyboard icon | disconnect → the whole call is appended to the chat as a transcript (see 03) |
+| Camera button | opens the camera; the call stays connected (see [04 · Photo capture](04-photo-capture.md)) |
+| ✕ *End chat*, header back, or keyboard icon | disconnect → the whole call is appended to the chat as a transcript (see [03 · Text chat](03-text-chat.md)) |
 
 The agent worker joins automatically and greets first — nothing to trigger.
 
@@ -34,7 +36,7 @@ The agent worker joins automatically and greets first — nothing to trigger.
 | `ParticipantAttributesChanged` (`lk.agent.state`) | listening / thinking / speaking |
 | `ActiveSpeakersChanged` | fallback speaking detection |
 | `TrackSubscribed` (audio) | agent voice attached as a hidden `<audio>` |
-| `DataReceived` topic `video` / `expert` | cards (see 05) |
+| `DataReceived` topic `video` / `expert` | cards (see [05 · Cards](05-expert-and-video-cards.md)) |
 | `Disconnected` | unexpected drop ⇒ error state |
 
 ## Tap-to-interrupt
@@ -47,7 +49,7 @@ that data message call `session.interrupt()` so the answer also stops server-sid
 ## Requirements
 
 - Mic needs a secure context (`https://` or `localhost`).
-- Earphones recommended for barge-in testing (see backend CLAUDE.md).
+- Earphones recommended for barge-in testing (see backend [CLAUDE.md](https://github.com/hivoco/ultratech_voice_bot_backend/blob/main/CLAUDE.md)).
 - Backend must run both `uvicorn main:app` and `python -m agent.worker dev`, with `LIVEKIT_*`,
   `SARVAM_API_KEY`, `OPENAI_API_KEY` and TTS keys in its `.env`.
 

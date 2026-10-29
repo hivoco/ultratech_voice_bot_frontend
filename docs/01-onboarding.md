@@ -1,5 +1,7 @@
 # 01 · Onboarding — name, language, home stage
 
+First-time users give their name, pick a language and their home's construction stage before asking anything.
+
 Figma: **01 · Welcome — Name & language** (`116:1814`).
 
 ## Flow

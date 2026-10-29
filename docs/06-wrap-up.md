@@ -1,5 +1,7 @@
 # 06 · Wrap-up — Thank you
 
+The closing screen that thanks the user and starts a fresh conversation.
+
 Figma: **06 · Wrap-up — Thank you** (`116:1638`).
 
 - Reached from the chat header **back** button or menu → **End conversation** (an active call is

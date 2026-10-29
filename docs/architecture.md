@@ -1,15 +1,17 @@
 # Architecture
 
+Where code lives, how state flows, and how Figma maps to components. Read before adding a screen or component.
+
 ## Folder map
 
-```
+```text
 src/
   app/
     layout.tsx            fonts (Inter + Noto Sans Devanagari), metadata, viewport
     page.tsx              renders <VoiceBotApp/>
     globals.css           Tailwind v4 theme tokens + `glass` utility
     icon.png, apple-icon.png
-    api/                  server-only proxy to the FastAPI backend (see backend-api.md)
+    api/                  server-only proxy to the FastAPI backend (see docs/backend-api.md)
   components/
     VoiceBotApp.tsx       QueryClient + MotionConfig + AppProvider, screen switcher
     screens/              ChatScreen · VoiceScreen · CameraScreen · WrapUpScreen

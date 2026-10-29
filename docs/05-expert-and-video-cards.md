@@ -1,5 +1,7 @@
 # 05 · Expert hand-off card + Baat Ghar Ki video cards
 
+The agent can attach a related video or hand the user to a human site engineer; both show as cards in the conversation.
+
 Figma: **05b · Voice transcript — Expert consult**.
 
 Both arrive as LiveKit **data messages** during a call and are rendered as cards in the
@@ -28,7 +30,7 @@ only if `phone` is present).
 
 **Backend TODO:** when the worker escalates a structural/safety question, publish this payload on
 topic `expert`. *Book a site visit* has no endpoint yet — wire it to the lead/CRM API when it
-exists (client wants name + number capture, see backend `docs/client_feedback.md` #12).
+exists (client wants name + number capture, see backend [client_feedback.md](https://github.com/hivoco/ultratech_voice_bot_backend/blob/main/docs/client_feedback.md) #12).
 
 Code: `src/components/chat/Bubbles.tsx` (`VideoCard`, `ExpertCard`),
 `src/lib/useVoiceCall.ts` (`DataReceived` handler).

@@ -1,8 +1,15 @@
 import { connection } from "next/server";
-import { proxyJson } from "@/lib/backend";
+import { backendFetch } from "@/lib/backend";
 
-// GET /api/health -> backend /health (drives the "Online" dot in the header)
+// GET /api/health -> {ok, ...} from backend /health (drives the "Online" dot in the header).
+// Always 200: "backend down" is a normal state for the UI, not a page error.
 export async function GET() {
   await connection();
-  return proxyJson("/health");
+  try {
+    const upstream = await backendFetch("/health");
+    if (!upstream.ok) return Response.json({ ok: false, missing_keys: [], kb_entries: 0 });
+    return Response.json(await upstream.json());
+  } catch {
+    return Response.json({ ok: false, missing_keys: [], kb_entries: 0 });
+  }
 }

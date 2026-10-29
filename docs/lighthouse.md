@@ -11,13 +11,17 @@ npx lighthouse@12 http://localhost:4317/ --chrome-flags="--headless=new" --view
 
 ## Results
 
+LCP = Largest Contentful Paint, TBT = Total Blocking Time, CLS = Cumulative Layout Shift.
+
 | Run | Perf | A11y | Best pr. | SEO | LCP (sim.) | TBT | CLS |
 |---|---|---|---|---|---|---|---|
 | Mobile — first build | 92 | 100 | 100 | 100 | 3.4 s | 40 ms | 0 |
-| **Mobile — final** | **97** | **100** | **100** | **100** | 2.6 s | 10 ms | 0 |
+| Mobile — after perf fixes | 97 | 100 | 100 | 100 | 2.6 s | 10 ms | 0 |
+| **Mobile — final (after security + a11y review)** | **96** | **100** | **100** | **100** | 2.8 s | 10 ms | 0 |
 | **Desktop — final** | **100** | **100** | **100** | **100** | 0.6 s | 0 ms | 0 |
 
-Observed (unthrottled) LCP is ~0.1 s; the mobile number is Lighthouse's simulation.
+Observed (unthrottled) LCP is ~0.1 s; the mobile number is Lighthouse's simulation and moves
+±1 point between runs.
 
 ## What was fixed
 
@@ -28,6 +32,8 @@ Observed (unthrottled) LCP is ~0.1 s; the mobile number is Lighthouse's simulati
 | Voice / camera / wrap-up screens in the first bundle | `next/dynamic` code-splitting |
 | 1722 px logo PNG | resized to 176 px (4× the 44 px slot); `next/image` serves AVIF/WebP |
 | Dev badge covering the composer camera button | `devIndicators: false` in `next.config.ts` |
+| `/api/health` 502 logged as a console error when the backend is down | route always answers 200 with `{ok:false}` |
+| `role="log"` not allowed on `<main>` | log role moved to an inner `<div>` |
 
 ## Rules to keep the score
 

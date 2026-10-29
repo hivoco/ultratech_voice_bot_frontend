@@ -33,6 +33,8 @@ export type ChatMessage =
       options?: OptionKind;
       streaming?: boolean;
       error?: boolean;
+      /** Question to resend from the error bubble's "Try again". */
+      retryText?: string;
     }
   | { id: string; kind: "user"; text: string; photo?: string; photoLabel?: string }
   | { id: string; kind: "divider"; text: string }
