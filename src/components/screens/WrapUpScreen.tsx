@@ -1,0 +1,38 @@
+"use client";
+
+import { motion } from "motion/react";
+import { useApp } from "@/lib/store";
+import { Header } from "../ui/Header";
+
+/** 06 · Wrap-up — Thank you. */
+export function WrapUpScreen() {
+  const { goTo, restart } = useApp();
+  return (
+    <>
+      <Header onBack={() => goTo("chat")} backLabel="Back to conversation" action="more" />
+      <div className="flex min-h-0 flex-1 items-center px-6 pb-10">
+        <motion.p
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, ease: "easeOut" }}
+          className="text-glow text-[24px] leading-[29px] font-bold text-white"
+        >
+          I hope your home-building questions have been answered. If anything else comes up, just ask.
+          <br />
+          <br />
+          Thank you.
+        </motion.p>
+      </div>
+      <div className="mx-4 shrink-0 pb-[max(32px,env(safe-area-inset-bottom))]">
+        <motion.button
+          type="button"
+          onClick={restart}
+          whileTap={{ scale: 0.98 }}
+          className="flex h-[50px] w-full items-center justify-center rounded-[18px] bg-brand text-[15px] font-[590] text-ink"
+        >
+          End conversation
+        </motion.button>
+      </div>
+    </>
+  );
+}

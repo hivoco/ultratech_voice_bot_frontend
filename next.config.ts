@@ -5,6 +5,8 @@ const nextConfig: NextConfig = {
   cacheComponents: true,
   partialPrefetching: true,
   reactCompiler: true,
+  // The floating dev badge sits on top of the composer's camera button.
+  devIndicators: false,
   turbopack: {
     rules: {
       "*.css": {

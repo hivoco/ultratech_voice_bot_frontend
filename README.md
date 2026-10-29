@@ -1,36 +1,79 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# UltraTech Engineer — Voicebot Frontend
 
-## Getting Started
+Mobile-first web app for the **UltraTech "Home-Building Expert" voicebot**. Individual home
+builders talk (or type) to the *UltraTech Engineer* in English, हिंदी or Hinglish and get calm,
+confident answers grounded on the *Baat Ghar Ki* knowledge base. Built from the Figma file
+**ULTRA-TECH PLAYER → Section 2 · v4 voice English**.
 
-First, run the development server:
+## Links
+
+| What | Link | Status |
+|---|---|---|
+| Frontend repo | this repository (`ultratech_voice_bot_frontend`) | local git repo, remote not created yet |
+| Backend repo | https://github.com/hivoco/ultratech_voice_bot_backend | private (hivoco org) |
+| API (backend) | local: `http://127.0.0.1:8090` | **no public deployment yet** |
+| Frontend URL | local: `http://localhost:3000` | **no public deployment yet** |
+| Figma | [ULTRA-TECH PLAYER · Final](https://www.figma.com/design/lu3flioWfjECGOFHBl7lQq/ULTRA-TECH-PLAYER?node-id=116-1636) | source of truth for the UI |
+
+> Fill in the public API and frontend URLs here once they are deployed (see
+> [docs/setup-and-deploy.md](docs/setup-and-deploy.md)).
+
+## What the app does
+
+| Use case | Figma frames | Doc |
+|---|---|---|
+| Onboarding — name, language, home stage | 01 Welcome | [docs/01-onboarding.md](docs/01-onboarding.md) |
+| Real-time voice call (LiveKit) — listening, thinking, speaking, couldn't hear | 02, 02b, 02c, 02d | [docs/02-voice-call.md](docs/02-voice-call.md) |
+| Typed questions with streamed answers + call transcript | 03b | [docs/03-text-chat.md](docs/03-text-chat.md) |
+| Photo of a site problem (camera / gallery) | 04a, 04b | [docs/04-photo-capture.md](docs/04-photo-capture.md) |
+| Expert hand-off card + Baat Ghar Ki video cards | 05b | [docs/05-expert-and-video-cards.md](docs/05-expert-and-video-cards.md) |
+| Wrap-up — thank you / end conversation | 06 | [docs/06-wrap-up.md](docs/06-wrap-up.md) |
+
+## Stack
+
+Next.js 16 (App Router, React 19, React Compiler) · TypeScript · Tailwind CSS v4 ·
+`motion` (animations) · `livekit-client` (WebRTC voice, lazy-loaded) ·
+`@tanstack/react-query` (token / health / chat requests).
+
+The browser only calls this app's own `/api/*` routes; those proxy to the FastAPI backend and
+add its Basic-auth credentials server-side, so no secret reaches the client bundle.
+
+## Quick start
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
+cp .env.example .env.local      # point BACKEND_URL at the FastAPI backend
+npm run dev                     # http://localhost:3000
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Backend (separate repo): `python -m uvicorn main:app --port 8090` plus
+`python -m agent.worker dev` for voice. It needs its own `.env` with the LiveKit / OpenAI /
+Sarvam / Fish keys — without them the UI loads, but calls and answers fail gracefully.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+| Script | Does |
+|---|---|
+| `npm run dev` | dev server |
+| `npm run build && npm start` | production build / server |
+| `npm run lint` | ESLint (incl. React Compiler rules) |
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Quality
 
-## Learn More
+Lighthouse 12 on the production build (reports in [docs/lighthouse/](docs/lighthouse/)):
 
-To learn more about Next.js, take a look at the following resources:
+| | Performance | Accessibility | Best practices | SEO |
+|---|---|---|---|---|
+| Mobile | 97 | 100 | 100 | 100 |
+| Desktop | 100 | 100 | 100 | 100 |
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Details and fixes: [docs/lighthouse.md](docs/lighthouse.md).
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Project status
 
-## Deploy on Vercel
+- ✅ All Figma screens built and wired to the real backend contract (`/voice/token`,
+  `/session`, `/turn/stream`, `/health`, LiveKit transcription + data topics).
+- ⚠️ Voice and answers need the backend `.env` keys (not in the repo) — verified locally that
+  every proxy route reaches the backend; generation fails only on missing provider keys.
+- ⚠️ Backend gaps the UI is ready for: photo understanding (no vision endpoint), expert
+  hand-off data (`expert` topic), tap-to-interrupt (`control` topic). See the per-use-case docs.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Agent/contributor index: [AGENTS.md](AGENTS.md).
