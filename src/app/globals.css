@@ -1,5 +1,13 @@
 @import "tailwindcss";
 
+/* Voice screen by screen height (later steps win): the orb is 220px, 80% up to 760px tall, 60% on short
+   phones (iPhone SE 1st gen), 45% on very short viewports (200% zoom, landscape). Long text scrolls instead. */
+@custom-variant mid (@media (max-height: 760px));
+@custom-variant short (@media (max-height: 640px));
+@custom-variant tiny (@media (max-height: 500px));
+/* Phones held sideways (≤420px tall): no room for the orb, the text gets the space. */
+@custom-variant flat (@media (max-height: 420px));
+
 /* Design tokens from the Figma "ULTRA-TECH PLAYER" file (Section 2 · v4 voice English). */
 @theme {
   --color-brand: #ffd400;

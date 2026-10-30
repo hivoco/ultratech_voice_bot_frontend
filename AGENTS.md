@@ -22,6 +22,7 @@ Start here. Each doc below covers **one** topic or use case; read only the ones 
 | Setup, running locally, deploying | [docs/setup-and-deploy.md](docs/setup-and-deploy.md) |
 | Lighthouse scores and performance rules | [docs/lighthouse.md](docs/lighthouse.md) |
 | Security, accessibility, React and React Scan reviews | [docs/reviews.md](docs/reviews.md) |
+| Worst-case stress test, chat and call mode (findings and fixes) | [docs/break-ui.md](docs/break-ui.md) |
 
 ## Common tasks → doc
 

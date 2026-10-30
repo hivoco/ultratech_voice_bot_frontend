@@ -39,11 +39,11 @@ export function Header({ onBack, backLabel, trailing }: HeaderProps) {
         >
           <Icon src="/icons/back.svg" size={24} />
         </button>
-        <div className="ml-1 size-[44px] shrink-0 overflow-hidden rounded-[12px] shadow-[0_2px_9px_rgba(0,0,0,0.45),0_4px_10px_rgba(0,0,0,0.25)]">
+        <div className="ml-1 size-[44px] shrink-0 overflow-hidden rounded-[12px] max-[300px]:hidden shadow-[0_2px_9px_rgba(0,0,0,0.45),0_4px_10px_rgba(0,0,0,0.25)]">
           <Image src="/images/ultratech-logo.png" alt="UltraTech" width={44} height={44} loading="eager" />
         </div>
         <div className="ml-[10px] min-w-0 flex-1">
-          <p className="truncate text-[17px] leading-[20px] font-[590] text-white">UltraTech Engineer</p>
+          <p className="truncate text-[17px] leading-[20px] font-[590] text-white max-[359px]:text-[15px]">UltraTech Engineer</p>
           <p className="mt-[3px] flex items-center gap-[6px] text-[13px] leading-[16px] text-white/82" role="status">
             {online === false ? (
               <span className="size-[7px] rounded-full bg-white/40" aria-hidden />
@@ -133,7 +133,8 @@ export function HeaderMenu({ items }: { items: MenuItem[] }) {
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: -6, scale: 0.97 }}
               transition={{ duration: 0.16 }}
-              className="glass absolute top-[76px] right-0 z-20 w-[220px] origin-top-right overflow-hidden rounded-[20px] bg-[#2a2218]/80 p-1.5"
+              // Solid, not glass: a backdrop blur nested inside the glass header doesn't blur the chat behind it.
+              className="absolute top-[76px] right-0 z-20 w-[220px] origin-top-right overflow-hidden rounded-[20px] border border-white/15 bg-surface p-1.5 shadow-[0_12px_32px_rgb(0_0_0/0.5)]"
             >
               {items.map((item) => (
                 <li key={item.label} role="none">

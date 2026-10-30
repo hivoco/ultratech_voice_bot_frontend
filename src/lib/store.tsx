@@ -214,7 +214,10 @@ export function AppProvider({ children }: { children: ReactNode }) {
           dispatch({ type: "patch", id: replyId, patch: { text: reply } });
         } else if (ev.type === "audio" || ev.type === "done") {
           // Text is complete once audio synthesis starts; no need to wait for it.
-          dispatch({ type: "patch", id: replyId, patch: { text: ev.type === "done" ? ev.text : reply, streaming: false } });
+          const final = ev.type === "done" ? ev.text || reply : reply;
+          // An empty answer gets the error bubble (with Try again), never a blank one.
+          if (!final.trim()) throw new Error("Empty answer");
+          dispatch({ type: "patch", id: replyId, patch: { text: final, streaming: false } });
           if (ev.type === "audio") return;
         } else if (ev.type === "error") {
           throw new Error(ev.detail);

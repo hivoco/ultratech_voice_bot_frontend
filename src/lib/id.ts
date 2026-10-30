@@ -12,10 +12,17 @@ export function clock(seconds: number): string {
   return `${Math.floor(s / 60)}:${String(s % 60).padStart(2, "0")}`;
 }
 
-/** Format seconds as "1 min 48 sec". */
+/** Format seconds as "1 min 48 sec" (or "1 hr 15 min" for long calls). */
 export function longDuration(seconds: number): string {
   const s = Math.max(0, Math.round(seconds));
+  const h = Math.floor(s / 3600);
   const m = Math.floor(s / 60);
+  if (h > 0) return `${h} hr ${m % 60} min`;
   const rest = String(s % 60).padStart(2, "0");
   return m > 0 ? `${m} min ${rest} sec` : `${s} sec`;
+}
+
+/** Drop markdown emphasis/heading marks the model sometimes emits; lists and text stay. */
+export function plainText(text: string): string {
+  return text.replace(/\*\*|__/g, "").replace(/^#{1,6}\s+/gm, "");
 }

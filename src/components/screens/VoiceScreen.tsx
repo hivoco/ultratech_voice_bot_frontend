@@ -1,6 +1,8 @@
 "use client";
 
 import { AnimatePresence, motion } from "motion/react";
+import { useCallback, useEffect, useLayoutEffect, useRef, useState, type ReactNode } from "react";
+import { plainText } from "@/lib/id";
 import { useApp } from "@/lib/store";
 import { backendLang } from "@/lib/types";
 import { turnText } from "@/lib/useVoiceCall";
@@ -38,6 +40,9 @@ const PHASE_ANNOUNCE = {
   speaking: "The engineer is answering",
 } as const;
 
+// Big status text; smaller on narrow screens (a phone at 200% zoom is ~215 px wide).
+const HEADING = "text-glow text-[32px] leading-[38px] font-bold text-white max-[300px]:text-[24px] max-[300px]:leading-[30px]";
+
 const ORB_LABEL: Record<OrbMode, string> = {
   listening: "Listening",
   thinking: "Thinking",
@@ -55,6 +60,7 @@ export function VoiceScreen() {
   const user = lastUserTurn ? turnText(lastUserTurn) : null;
   const agent = lastAgentTurn ? turnText(lastAgentTurn) : null;
   const question = user ? [user.final, user.interim].filter(Boolean).join(" ") : "";
+  const showQuestion = !errored && phase !== "speaking" && phase !== "connecting" && !!userTurnIsLatest && !!question;
 
   const orbMode: OrbMode = errored || !voice.micEnabled ? "muted" : phase === "thinking" ? "thinking" : phase === "speaking" ? "speaking" : "listening";
   const userTalking = phase === "listening" && !!userTurnIsLatest && !!user?.interim;
@@ -79,34 +85,37 @@ export function VoiceScreen() {
         {errored ? "" : PHASE_ANNOUNCE[phase]}
       </p>
 
-      <section className="relative min-h-[150px] shrink-0 px-6 pt-[34px]">
+      <TextArea
+        follow={!errored && (phase === "speaking" || showQuestion)}
+        resetKey={errored ? "error" : `${phase}-${lastTurn?.id ?? ""}`}
+        className="min-h-[150px] px-6 pt-[34px] pb-2 short:min-h-[120px] short:pt-4 tiny:min-h-0 tiny:pt-2"
+      >
         <AnimatePresence mode="wait" initial={false}>
           {errored ? (
             <motion.div key="error" {...fade} role="alert">
-              <h2 className="text-glow text-[32px] leading-[38px] font-bold text-white">{ERROR_COPY[voice.errorKind ?? "dropped"].title}</h2>
-              <p className="text-glow mt-2 text-[18px] leading-[25px] text-white/70">{ERROR_COPY[voice.errorKind ?? "dropped"].body}</p>
+              <h2 className={HEADING}>{ERROR_COPY[voice.errorKind ?? "dropped"].title}</h2>
+              <p className="text-glow mt-2 text-[18px] leading-[25px] text-white/70 max-[300px]:text-[15px] max-[300px]:leading-[21px]">
+                {ERROR_COPY[voice.errorKind ?? "dropped"].body}
+              </p>
             </motion.div>
           ) : phase === "speaking" ? (
-            <motion.div key="speaking" {...fade} className="-mt-3">
+            <motion.div key="speaking" {...fade}>
               {question && (
                 <>
                   <p className="text-glow text-[13px] leading-4 font-[510] text-white opacity-60">You asked</p>
-                  <p className="text-glow mt-0.5 line-clamp-2 text-[16px] leading-[22px] font-[510] text-white/75">{question}</p>
+                  <p className="text-glow mt-0.5 line-clamp-2 text-[16px] short:line-clamp-1 leading-[22px] font-[510] text-white/75">{question}</p>
                 </>
               )}
-              <p className="mt-4 flex max-h-[186px] flex-col justify-end overflow-hidden text-[23px] leading-[31px] font-bold text-white [mask-image:linear-gradient(to_bottom,transparent,#000_32px)]">
-                <span>
-                  {agent?.final}{" "}
-                  <span className="text-white/35">{agent?.interim}</span>
-                </span>
+              <p className="mt-4 text-[23px] leading-[31px] font-bold text-white tiny:mt-2 max-[300px]:text-[19px] max-[300px]:leading-[26px]">
+                {plainText(agent?.final ?? "")} <span className="text-white/35">{agent?.interim}</span>
               </p>
             </motion.div>
           ) : phase === "connecting" ? (
-            <motion.h2 key="connecting" {...fade} className="text-glow text-[32px] leading-[38px] font-bold text-white">
+            <motion.h2 key="connecting" {...fade} className={HEADING}>
               Connecting you to <span className="text-white/55">the UltraTech Engineer…</span>
             </motion.h2>
-          ) : userTurnIsLatest && question ? (
-            <motion.h2 key="question" {...fade} className="text-glow text-[32px] leading-[38px] font-bold text-white">
+          ) : showQuestion ? (
+            <motion.h2 key="question" {...fade} className={HEADING}>
               {phase === "thinking" ? (
                 question
               ) : (
@@ -116,24 +125,31 @@ export function VoiceScreen() {
               )}
             </motion.h2>
           ) : (
-            <motion.h2 key="idle" {...fade} className="text-glow text-[32px] leading-[38px] font-bold text-white">
+            <motion.h2 key="idle" {...fade} className={HEADING}>
               I&apos;m listening. <span className="text-white/55">Ask anything about building your home.</span>
             </motion.h2>
           )}
         </AnimatePresence>
-      </section>
+      </TextArea>
 
-      <div className="flex min-h-0 flex-1 flex-col items-center justify-center gap-6 pb-2">
-        <VoiceOrb
-          mode={orbMode}
-          active={phase === "speaking" || userTalking}
-          onClick={phase === "speaking" ? () => void voice.interrupt() : undefined}
-          label={phase === "speaking" ? "Interrupt the engineer" : ORB_LABEL[orbMode]}
-        />
-        <div className="flex min-h-[37px] items-center">
+      <div className="flex shrink-0 grow flex-col items-center justify-center gap-2 pb-2 short:gap-1">
+        {/* Sized by screen height only, never by how much text there is: the orb, hint and controls stay
+            put in every state. On the smallest screens the error screen drops it (only a status picture there), and
+            phones held sideways drop it in every state so the text stays readable. */}
+        <div className={`flex h-[220px] w-full items-center justify-center mid:h-[176px] short:h-[132px] tiny:h-[99px] flat:hidden ${errored ? "tiny:hidden" : ""}`}>
+          <div className="mid:scale-[0.8] short:scale-[0.6] tiny:scale-[0.45]">
+            <VoiceOrb
+              mode={orbMode}
+              active={phase === "speaking" || userTalking}
+              onClick={phase === "speaking" ? () => void voice.interrupt() : undefined}
+              label={phase === "speaking" ? "Interrupt the engineer" : ORB_LABEL[orbMode]}
+            />
+          </div>
+        </div>
+        <div className="flex min-h-[37px] items-center justify-center px-4 text-center">
           <AnimatePresence mode="wait">
             {errored ? (
-              <motion.div key="retry" {...fade} className="flex gap-2.5">
+              <motion.div key="retry" {...fade} className="flex flex-wrap justify-center gap-2.5">
                 <button
                   type="button"
                   onClick={retry}
@@ -157,7 +173,15 @@ export function VoiceScreen() {
                 {...fade}
                 className={phase === "thinking" ? "text-[14px] text-white/80" : "text-[13px] text-white/70"}
               >
-                {hint}
+                {phase === "speaking" ? (
+                  // Without the orb (phones held sideways) talking over the engineer interrupts it.
+                  <>
+                    <span className="flat:hidden">{hint}</span>
+                    <span className="hidden flat:inline">Start talking to interrupt</span>
+                  </>
+                ) : (
+                  hint
+                )}
               </motion.p>
             ) : null}
           </AnimatePresence>
@@ -172,5 +196,62 @@ export function VoiceScreen() {
         onClose={() => void endVoice()}
       />
     </>
+  );
+}
+
+/**
+ * The status / transcript text. It takes the room the orb and controls leave and scrolls when the text is
+ * longer. While `follow` is on (a live transcript) it stays on the newest line, unless the user scrolls up
+ * to read; scrolling back to the bottom follows again. A new turn or state starts over.
+ */
+function TextArea({ follow, resetKey, className, children }: { follow: boolean; resetKey: string; className: string; children: ReactNode }) {
+  const ref = useRef<HTMLElement>(null);
+  const contentRef = useRef<HTMLDivElement>(null);
+  const pinned = useRef(true);
+  const followRef = useRef(follow);
+  const [moreAbove, setMoreAbove] = useState(false);
+  const [scrollable, setScrollable] = useState(false);
+
+  const sync = useCallback(() => {
+    const el = ref.current;
+    if (!el) return;
+    if (pinned.current) el.scrollTop = followRef.current ? el.scrollHeight : 0;
+    setMoreAbove(el.scrollTop > 1);
+    setScrollable(el.scrollHeight > el.clientHeight + 1);
+  }, []);
+
+  useLayoutEffect(() => {
+    followRef.current = follow;
+    pinned.current = true;
+    sync();
+  }, [follow, resetKey, sync]);
+
+  // Text arrives word by word and enters with an animation: follow every size change.
+  useEffect(() => {
+    const ro = new ResizeObserver(sync);
+    if (ref.current) ro.observe(ref.current);
+    if (contentRef.current) ro.observe(contentRef.current);
+    return () => ro.disconnect();
+  }, [sync]);
+
+  return (
+    <section
+      ref={ref}
+      // A scrollable region must be reachable by keyboard.
+      tabIndex={scrollable ? 0 : undefined}
+      aria-label={scrollable ? "Conversation text" : undefined}
+      onScroll={() => {
+        const el = ref.current;
+        if (!el) return;
+        const atEnd = followRef.current ? el.scrollHeight - el.scrollTop - el.clientHeight < 8 : el.scrollTop < 8;
+        pinned.current = atEnd;
+        setMoreAbove(el.scrollTop > 1);
+      }}
+      className={`no-scrollbar relative shrink overflow-y-auto overscroll-contain wrap-anywhere focus-visible:outline-offset-[-2px] ${
+        moreAbove ? "[mask-image:linear-gradient(to_bottom,transparent,#000_32px)]" : ""
+      } ${className}`}
+    >
+      <div ref={contentRef}>{children}</div>
+    </section>
   );
 }

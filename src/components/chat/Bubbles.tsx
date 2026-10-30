@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { motion } from "motion/react";
 import type { ReactNode } from "react";
+import { plainText } from "@/lib/id";
 import { Icon } from "../ui/Icon";
 
 const enter = {
@@ -51,7 +52,7 @@ export function EngineerBubble({
           <TypingDots />
         ) : (
           <p className="text-[15px] leading-[22px] break-words whitespace-pre-line text-white/94">
-            {text}
+            {plainText(text)}
             {streaming && <span className="ml-0.5 inline-block h-4 w-[2px] animate-pulse bg-brand align-[-2px]" />}
           </p>
         ))}
@@ -81,8 +82,8 @@ export function UserBubble({ text, photo, photoLabel }: { text: string; photo?: 
   return (
     <motion.div {...enter} className="flex w-full justify-end">
       {photo ? (
-        <div className="flex max-w-[260px] flex-col gap-2.5 rounded-[22px] rounded-br-[6px] bg-brand px-1.5 pt-1.5 pb-3">
-          <div className="relative h-[118px] w-[248px] overflow-hidden rounded-2xl bg-viewfinder">
+        <div className="flex w-[260px] max-w-[85%] flex-col gap-2.5 rounded-[22px] rounded-br-[6px] bg-brand px-1.5 pt-1.5 pb-3">
+          <div className="relative h-[118px] w-full overflow-hidden rounded-2xl bg-viewfinder">
             <Image src={photo} alt="Photo you shared" fill unoptimized className="object-cover" />
             {photoLabel && (
               <span className="absolute bottom-[11px] left-2.5 rounded-full bg-black/45 px-2 py-1 text-[11px] font-[510] text-white">
@@ -90,10 +91,10 @@ export function UserBubble({ text, photo, photoLabel }: { text: string; photo?: 
               </span>
             )}
           </div>
-          <p className="px-1.5 text-[16px] leading-[22px] font-[510] text-ink">{text}</p>
+          <p className="px-1.5 text-[16px] leading-[22px] font-[510] break-words text-ink">{text}</p>
         </div>
       ) : (
-        <p className="max-w-[292px] rounded-[22px] rounded-br-[6px] bg-brand px-4 py-3 text-[16px] leading-[22px] font-[510] break-words text-ink">
+        <p className="max-w-[min(292px,85%)] rounded-[22px] rounded-br-[6px] bg-brand px-4 py-3 text-[16px] leading-[22px] font-[510] break-words text-ink">
           {text}
         </p>
       )}
@@ -129,7 +130,7 @@ export function VideoCard({ url, title }: { url: string; title: string }) {
       </span>
       <span className="min-w-0 flex-1">
         <span className="block text-[12px] font-[510] text-white/70">Baat Ghar Ki · Video</span>
-        <span className="line-clamp-2 block text-[15px] leading-[20px] font-[590] text-white">
+        <span className="line-clamp-2 text-[15px] leading-[20px] font-[590] text-white">
           {title || "Watch the related video"}
         </span>
         <span className="sr-only"> (opens in a new tab)</span>
@@ -146,8 +147,12 @@ export function ExpertCard({ name, role, callSlot, phone }: { name: string; role
           <Icon src="/icons/hat.svg" size={22} />
         </span>
         <div className="min-w-0 flex-1">
-          <p className="truncate text-[15px] font-[590] text-white">{name}</p>
-          <p className="mt-0.5 truncate text-[12px] text-white/78">{role}</p>
+          <p className="line-clamp-2 text-[15px] leading-[19px] font-[590] break-words text-white">{name}</p>
+          {role && (
+            <p className="mt-0.5 truncate text-[12px] text-white/78" title={role}>
+              {role}
+            </p>
+          )}
         </div>
         <Icon src="/icons/shield.svg" size={22} />
       </div>

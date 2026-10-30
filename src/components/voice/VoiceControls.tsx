@@ -15,7 +15,7 @@ interface VoiceControlsProps {
 /** Bottom row: Send photo · mic (80px, glowing) · End chat. */
 export function VoiceControls({ micEnabled, micLabel, onCamera, onMic, onClose }: VoiceControlsProps) {
   return (
-    <div className="mx-auto grid w-full max-w-[393px] shrink-0 grid-cols-[1fr_auto_1fr] items-start px-[60px] pt-2 pb-[max(36px,env(safe-area-inset-bottom))]">
+    <div className="mx-auto grid w-full max-w-[393px] shrink-0 grid-cols-[1fr_auto_1fr] items-start px-[60px] pt-2 pb-[max(36px,env(safe-area-inset-bottom))] max-[300px]:px-3 short:pb-[max(24px,env(safe-area-inset-bottom))] tiny:pb-[max(16px,env(safe-area-inset-bottom))]">
       <RoundButton icon="/icons/camera.svg" label="Send photo" onClick={onCamera} className="justify-self-start" />
       <motion.button
         type="button"
@@ -23,7 +23,7 @@ export function VoiceControls({ micEnabled, micLabel, onCamera, onMic, onClose }
         aria-label={micLabel ?? "Mute microphone"}
         aria-pressed={micLabel ? undefined : !micEnabled}
         whileTap={{ scale: 0.94 }}
-        className={`relative grid size-20 place-items-center rounded-full transition-[background-color,box-shadow] ${
+        className={`relative grid size-20 place-items-center rounded-full max-[300px]:size-16 transition-[background-color,box-shadow] ${
           micEnabled ? "bg-brand shadow-[0_0_15px_rgba(255,212,0,0.45)]" : "glass bg-white/10"
         }`}
       >
@@ -55,13 +55,13 @@ function RoundButton({
   className?: string;
 }) {
   return (
-    <div className={`mt-3 flex w-14 flex-col items-center gap-2.5 ${className}`}>
+    <div className={`mt-3 flex w-14 flex-col items-center gap-2.5 max-[300px]:mt-2 max-[300px]:w-12 ${className}`}>
       <motion.button
         type="button"
         onClick={onClick}
         whileTap={{ scale: 0.92 }}
         aria-label={label}
-        className="glass relative grid size-14 place-items-center rounded-full"
+        className="glass relative grid size-14 place-items-center rounded-full max-[300px]:size-12"
       >
         <Icon src={icon} size={24} />
       </motion.button>
