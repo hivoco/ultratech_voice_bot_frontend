@@ -23,10 +23,19 @@ The agent worker joins automatically and greets first — nothing to trigger.
 | phase | Figma | Top text | Orb |
 |---|---|---|---|
 | `connecting` | — | *Connecting you to the UltraTech Engineer…* | listening |
-| `listening` | 02 | user's words: final = white, interim = 55 % white (or *I'm listening…*) | 220 px, bars animate while the user talks |
+| `listening` | 02 | user's words at 23/31: final = white, interim = 75 % white (or *I'm listening…*) | bars animate while the user talks |
 | `thinking` | 02b | the question, all white · hint *Thinking about your question…* | `orb-thinking.svg`, gentle pulse |
-| `speaking` | 02c | *You asked* + question, live caption (spoken = white, in-flight = 35 %) · hint *Tap the orb if you want to interrupt* | shrinks to 72 % (158 px), bars animate |
+| `speaking` | 02c | *You asked* + question, live caption, all white (LiveKit only sends words as they are spoken) · hint *Tap the orb if you want to interrupt* | bars animate |
 | error | 02d | *Couldn't hear you* (mic blocked) / *Couldn't connect* (token or room failed) / *Couldn't hear that clearly* (dropped) + **Try again** / **Type instead** | muted core, bars 35 % |
+
+## Layout
+
+The text area and the orb block each get half of the free height (`flex-basis: 0`), so the orb, hint
+and mic never move when the text grows. Long text scrolls inside its area and follows the newest line;
+fades at the top and bottom show there is more. The answer text arrives at speaking speed, because the
+worker syncs transcription to its audio.
+
+The orb is one size in every state: 158 px, or smaller on short screens (`short:` 132 px, `tiny:` 99 px).
 
 ## LiveKit events used
 

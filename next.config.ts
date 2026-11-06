@@ -1,7 +1,16 @@
 import type { NextConfig } from "next";
 
+// Public site URL for the canonical link, social cards, robots.txt and sitemap. Fixed into the build
+// because link-preview bots (WhatsApp, Facebook, X…) get a fresh server render instead of the static
+// page: read at run time, a server without SITE_URL would send them a localhost image URL.
+const vercelHost = process.env.VERCEL_PROJECT_PRODUCTION_URL;
+const siteUrl = process.env.SITE_URL || (vercelHost ? `https://${vercelHost}` : "");
+if (process.env.NODE_ENV === "production" && (!siteUrl || /localhost|127\.0\.0\.1/.test(siteUrl))) {
+  console.warn("[seo] SITE_URL is not a public URL: social link previews will not show the image.");
+}
+
 const nextConfig: NextConfig = {
-  /* config options here */
+  env: { SITE_URL: siteUrl || "http://localhost:3000" },
   cacheComponents: true,
   partialPrefetching: true,
   reactCompiler: true,

@@ -40,7 +40,7 @@ turn 30. Inputs are validated: `user_uuid` `^[A-Za-z0-9-]{8,64}$`, `session_id` 
 | `BACKEND_URL` | `http://127.0.0.1:8090` | FastAPI base URL |
 | `BACKEND_BASIC_USER` | — | backend `DEMO_USER` |
 | `BACKEND_BASIC_PASS` | — | backend `DEMO_PASS` |
-| `SITE_URL` | Vercel production domain, else `http://localhost:3000` | public URL for the canonical link, social cards, `robots.txt` and `sitemap.xml`; read at build time |
+| `SITE_URL` | Vercel production domain, else `http://localhost:3000` | public URL for the canonical link, social cards, `robots.txt` and `sitemap.xml`. Must be set at build time; `next.config.ts` fixes it into the build, because link-preview bots get a fresh server render, and warns if it isn't public |
 
 ## Verified locally (2026-10-29)
 

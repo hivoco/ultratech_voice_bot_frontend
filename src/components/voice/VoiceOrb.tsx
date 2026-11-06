@@ -16,19 +16,15 @@ interface VoiceOrbProps {
   label: string;
 }
 
-/** The 220px glass orb with a glowing yellow core. Speaking mode shrinks it to 72% (158px). */
+/** The glass orb with a glowing yellow core, drawn at 220px. It keeps one size in every mode; the voice screen scales it to fit. */
 export function VoiceOrb({ mode, active, onClick, label }: VoiceOrbProps) {
-  const scale = mode === "speaking" ? 0.72 : 1;
-
   // Interactive only while it can interrupt; otherwise a labelled status image.
   const Root = onClick ? motion.button : motion.div;
   return (
     <Root
       {...(onClick ? { type: "button" as const, onClick } : { role: "img" })}
       aria-label={label}
-      animate={{ scale }}
-      transition={{ type: "spring", stiffness: 160, damping: 20 }}
-      whileTap={onClick ? { scale: scale * 0.96 } : undefined}
+      whileTap={onClick ? { scale: 0.96 } : undefined}
       className="relative size-[220px] shrink-0 rounded-full"
     >
       {mode === "thinking" ? (

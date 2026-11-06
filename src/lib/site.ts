@@ -1,10 +1,5 @@
-// Public site URL, used for the canonical link, social-card URLs, robots.txt and sitemap.xml.
-// Set SITE_URL in production. Vercel supplies its production domain as a fallback.
-const vercelHost = process.env.VERCEL_PROJECT_PRODUCTION_URL;
-
-export const SITE_URL = (
-  process.env.SITE_URL || (vercelHost ? `https://${vercelHost}` : "http://localhost:3000")
-).replace(/\/$/, "");
+// Public site URL, resolved and fixed into the build by next.config.ts.
+export const SITE_URL = (process.env.SITE_URL ?? "http://localhost:3000").replace(/\/$/, "");
 
 export const SITE_NAME = "UltraTech Engineer";
 export const SITE_TITLE = "UltraTech Engineer — Home-Building Voice Assistant";

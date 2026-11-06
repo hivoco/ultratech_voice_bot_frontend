@@ -43,6 +43,9 @@ const PHASE_ANNOUNCE = {
 // Big status text; smaller on narrow screens (a phone at 200% zoom is ~215 px wide).
 const HEADING = "text-glow text-[32px] leading-[38px] font-bold text-white max-[300px]:text-[24px] max-[300px]:leading-[30px]";
 
+// The live question: same size as the answer, so long speech stays readable and doesn't jump between states.
+const LIVE_TEXT = "text-glow text-[23px] leading-[31px] font-bold text-white max-[300px]:text-[19px] max-[300px]:leading-[26px]";
+
 const ORB_LABEL: Record<OrbMode, string> = {
   listening: "Listening",
   thinking: "Thinking",
@@ -107,7 +110,7 @@ export function VoiceScreen() {
                 </>
               )}
               <p className="mt-4 text-[23px] leading-[31px] font-bold text-white tiny:mt-2 max-[300px]:text-[19px] max-[300px]:leading-[26px]">
-                {plainText(agent?.final ?? "")} <span className="text-white/35">{agent?.interim}</span>
+                {plainText([agent?.final, agent?.interim].filter(Boolean).join(" "))}
               </p>
             </motion.div>
           ) : phase === "connecting" ? (
@@ -115,12 +118,12 @@ export function VoiceScreen() {
               Connecting you to <span className="text-white/55">the UltraTech Engineer…</span>
             </motion.h2>
           ) : showQuestion ? (
-            <motion.h2 key="question" {...fade} className={HEADING}>
+            <motion.h2 key="question" {...fade} className={LIVE_TEXT}>
               {phase === "thinking" ? (
                 question
               ) : (
                 <>
-                  {user?.final} <span className="text-white/55">{user?.interim}</span>
+                  {user?.final} <span className="text-white/75">{user?.interim}</span>
                 </>
               )}
             </motion.h2>
@@ -132,12 +135,12 @@ export function VoiceScreen() {
         </AnimatePresence>
       </TextArea>
 
-      <div className="flex shrink-0 grow flex-col items-center justify-center gap-2 pb-2 short:gap-1">
-        {/* Sized by screen height only, never by how much text there is: the orb, hint and controls stay
-            put in every state. On the smallest screens the error screen drops it (only a status picture there), and
+      <div className="flex flex-[1_0_0] flex-col items-center justify-center gap-2 pb-2 short:gap-1">
+        {/* The text area and this block split the free height evenly, whatever the text length (see TextArea),
+            and the orb is sized by screen height only: the orb, hint and controls stay put in every state. On the smallest screens the error screen drops it (only a status picture there), and
             phones held sideways drop it in every state so the text stays readable. */}
-        <div className={`flex h-[220px] w-full items-center justify-center mid:h-[176px] short:h-[132px] tiny:h-[99px] flat:hidden ${errored ? "tiny:hidden" : ""}`}>
-          <div className="mid:scale-[0.8] short:scale-[0.6] tiny:scale-[0.45]">
+        <div className={`flex h-[158px] w-full items-center justify-center short:h-[132px] tiny:h-[99px] flat:hidden ${errored ? "tiny:hidden" : ""}`}>
+          <div className="scale-[0.72] short:scale-[0.6] tiny:scale-[0.45]">
             <VoiceOrb
               mode={orbMode}
               active={phase === "speaking" || userTalking}
@@ -200,8 +203,8 @@ export function VoiceScreen() {
 }
 
 /**
- * The status / transcript text. It takes the room the orb and controls leave and scrolls when the text is
- * longer. While `follow` is on (a live transcript) it stays on the newest line, unless the user scrolls up
+ * The status / transcript text. Its height never depends on the text (flex-basis 0), so long text scrolls
+ * here instead of pushing the orb down. While `follow` is on (a live transcript) it stays on the newest line, unless the user scrolls up
  * to read; scrolling back to the bottom follows again. A new turn or state starts over.
  */
 function TextArea({ follow, resetKey, className, children }: { follow: boolean; resetKey: string; className: string; children: ReactNode }) {
@@ -210,6 +213,7 @@ function TextArea({ follow, resetKey, className, children }: { follow: boolean; 
   const pinned = useRef(true);
   const followRef = useRef(follow);
   const [moreAbove, setMoreAbove] = useState(false);
+  const [moreBelow, setMoreBelow] = useState(false);
   const [scrollable, setScrollable] = useState(false);
 
   const sync = useCallback(() => {
@@ -217,6 +221,7 @@ function TextArea({ follow, resetKey, className, children }: { follow: boolean; 
     if (!el) return;
     if (pinned.current) el.scrollTop = followRef.current ? el.scrollHeight : 0;
     setMoreAbove(el.scrollTop > 1);
+    setMoreBelow(el.scrollHeight - el.scrollTop - el.clientHeight > 1);
     setScrollable(el.scrollHeight > el.clientHeight + 1);
   }, []);
 
@@ -246,9 +251,16 @@ function TextArea({ follow, resetKey, className, children }: { follow: boolean; 
         const atEnd = followRef.current ? el.scrollHeight - el.scrollTop - el.clientHeight < 8 : el.scrollTop < 8;
         pinned.current = atEnd;
         setMoreAbove(el.scrollTop > 1);
+        setMoreBelow(el.scrollHeight - el.scrollTop - el.clientHeight > 1);
       }}
-      className={`no-scrollbar relative shrink overflow-y-auto overscroll-contain wrap-anywhere focus-visible:outline-offset-[-2px] ${
-        moreAbove ? "[mask-image:linear-gradient(to_bottom,transparent,#000_32px)]" : ""
+      className={`no-scrollbar relative flex-[1_1_0] overflow-y-auto overscroll-contain wrap-anywhere focus-visible:outline-offset-[-2px] ${
+        moreAbove && moreBelow
+          ? "[mask-image:linear-gradient(to_bottom,transparent,#000_32px,#000_calc(100%-32px),transparent)]"
+          : moreAbove
+            ? "[mask-image:linear-gradient(to_bottom,transparent,#000_32px)]"
+            : moreBelow
+              ? "[mask-image:linear-gradient(to_top,transparent,#000_32px)]"
+              : ""
       } ${className}`}
     >
       <div ref={contentRef}>{children}</div>
