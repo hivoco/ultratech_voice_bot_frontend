@@ -7,9 +7,10 @@ Its own integration guide: [FRONTEND.md](https://github.com/hivoco/ultratech_voi
 
 The browser calls only these. They run on the server, add `Authorization: Basic …` to every request and forward
 to `BACKEND_URL`. If the backend is down they return `502 {"detail":"Backend unreachable"}`
-(`/api/health` instead answers `200 {"ok":false}`).
+or `502 {"detail":"Backend error"}` if it answers with a 5xx, whose body is logged on the server and
+not relayed (`/api/health` always answers `200 {"ok":true|false}`). JSON calls time out after 15 s.
 
-Every POST goes through `guardPost` (`src/lib/guard.ts`): same-origin check (403), 16 KB body
+Every POST goes through `guardPost` (`src/lib/guard.ts`): same-origin check, `Origin` required (403), 16 KB body
 cap (413), JSON-object check (400) and a per-IP limit per minute (429) — token 6, session 10,
 turn 30. Inputs are validated: `user_uuid` `^[A-Za-z0-9-]{8,64}$`, `session_id` 32 hex chars,
 `text` 1–1000 characters.
@@ -19,7 +20,7 @@ turn 30. Inputs are validated: `user_uuid` `^[A-Za-z0-9-]{8,64}$`, `session_id` 
 | `POST /api/voice/token` | `POST /voice/token` | `{user_uuid, lang:"en"\|"hi"}` → `{url, token, room}` |
 | `POST /api/session` | `POST /session` | `{user_uuid}` → `{session_id}` |
 | `POST /api/turn/stream` | `POST /turn/stream` | `{session_id, text}` → NDJSON stream |
-| `GET /api/health` | `GET /health` | → `{ok, missing_keys, kb_entries, …}` |
+| `GET /api/health` | `GET /health` | → `{ok}` (other backend fields are dropped) |
 
 ## Realtime contract (LiveKit, direct browser ⇄ LiveKit Cloud)
 
@@ -39,12 +40,13 @@ turn 30. Inputs are validated: `user_uuid` `^[A-Za-z0-9-]{8,64}$`, `session_id` 
 | `BACKEND_URL` | `http://127.0.0.1:8090` | FastAPI base URL |
 | `BACKEND_BASIC_USER` | — | backend `DEMO_USER` |
 | `BACKEND_BASIC_PASS` | — | backend `DEMO_PASS` |
+| `SITE_URL` | Vercel production domain, else `http://localhost:3000` | public URL for the canonical link, social cards, `robots.txt` and `sitemap.xml`; read at build time |
 
 ## Verified locally (2026-10-29)
 
 With the backend running without its `.env`:
 
-- `/api/health` → 200, `kb_entries: 100`, `missing_keys: [OPENAI, GEMINI, GROQ, FISH]`
+- `/api/health` → 200 (at the time the proxy also relayed `kb_entries: 100` and `missing_keys: [OPENAI, GEMINI, GROQ, FISH]`; call the backend's `/health` directly to see these now)
 - `/api/session` → 200 with a `session_id`
 - `/api/turn/stream` → streams, then `{"type":"error"}` (router/LLM key missing) — the UI shows
   the friendly error bubble

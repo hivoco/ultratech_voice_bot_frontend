@@ -36,7 +36,7 @@ HTTPS tunnel (e.g. `cloudflared tunnel --url http://localhost:3000`).
 1. **Backend**: deploy the FastAPI app *and* the LiveKit agent worker somewhere long-running
    (a VM / container — the worker is a persistent process). Note its public HTTPS URL.
 2. **Frontend** (e.g. Vercel): set `BACKEND_URL`, `BACKEND_BASIC_USER`, `BACKEND_BASIC_PASS`
-   as server env vars, then `vercel deploy --prod`.
+   and `SITE_URL` as server env vars, then `vercel deploy --prod`.
 3. Put both URLs in the **Links** table of `README.md`.
 
 The frontend is a standard Next.js 16 app; any Node host that runs `npm run build && npm start`

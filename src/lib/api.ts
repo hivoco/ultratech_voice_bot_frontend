@@ -8,8 +8,6 @@ export interface VoiceToken {
 
 export interface Health {
   ok: boolean;
-  missing_keys: string[];
-  kb_entries: number;
 }
 
 export type StreamEvent =

@@ -24,6 +24,22 @@ Left for deployment / backend (not changed here):
   default `DEMO_PASS`, keep the FastAPI port private so the proxy can't be bypassed.
 - Optional: Turnstile/captcha before a call starts.
 
+Second pass (2026-11-06), fixed:
+
+| Finding | Fix |
+|---|---|
+| Public `/api/health` relayed internal backend fields such as `missing_keys` | passes on `ok` only, 5 s timeout |
+| Rate limit keyed on the first `x-forwarded-for` entry, which the client controls | keyed on the last entry, added by our proxy |
+| `Origin` check skipped when the header was missing | `Origin` required on POST (stops casual scripts only, not a real auth check) |
+| Chunked bodies were read in full before the size check | body read is capped at 16 KB as it streams |
+| Backend 5xx bodies and content type relayed to the browser, no timeout | 5xx logged and replaced with a generic 502; JSON content type forced; 15 s timeout |
+| No HSTS; CSP covered framing only | HSTS added; CSP adds `object-src 'none'`, `base-uri 'self'`, `form-action 'self'` |
+
+Still open: `/api/voice/token` has no real authentication, so a script that forges `Origin` and
+rotates IPs can still start paid calls. The WAF rule and Turnstile below address this. A full
+`script-src` CSP is not set: nonces need request-time rendering, which conflicts with the static
+first paint in [lighthouse.md](lighthouse.md).
+
 ## Accessibility & UX (`web-design-guidelines`)
 
 Fixed: visible `:focus-visible` ring app-wide (composer pill gets the ring), 44 px hit areas on

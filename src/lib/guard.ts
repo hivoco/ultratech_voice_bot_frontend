@@ -24,6 +24,25 @@ function rateLimited(key: string, limit: number, windowMs: number): boolean {
   return bucket.count > limit;
 }
 
+/** Read the body up to the cap, or null if it is larger. A chunked body has no content-length to check. */
+async function readCapped(request: Request): Promise<string | null> {
+  if (!request.body) return "";
+  const reader = request.body.getReader();
+  const decoder = new TextDecoder();
+  let bytes = 0;
+  let text = "";
+  for (;;) {
+    const { value, done } = await reader.read();
+    if (done) return text + decoder.decode();
+    bytes += value.byteLength;
+    if (bytes > MAX_BODY_BYTES) {
+      await reader.cancel();
+      return null;
+    }
+    text += decoder.decode(value, { stream: true });
+  }
+}
+
 const bad = (status: number, detail: string) => Response.json({ detail }, { status });
 
 /**
@@ -31,23 +50,23 @@ const bad = (status: number, detail: string) => Response.json({ detail }, { stat
  * `limit` = max requests per IP per minute for this route.
  */
 export async function guardPost(request: Request, route: string, limit: number): Promise<Record<string, unknown> | Response> {
-  const origin = request.headers.get("origin");
-  if (origin) {
-    let originHost = "";
-    try {
-      originHost = new URL(origin).host;
-    } catch {
-      /* "null" or malformed origin */
-    }
-    if (originHost !== request.headers.get("host")) return bad(403, "Cross-origin request blocked");
+  // Browsers always send Origin on a POST, so a missing one is not our page.
+  let originHost = "";
+  try {
+    originHost = new URL(request.headers.get("origin") ?? "").host;
+  } catch {
+    /* missing, "null" or malformed origin */
   }
+  if (originHost !== request.headers.get("host")) return bad(403, "Cross-origin request blocked");
 
-  const ip = request.headers.get("x-forwarded-for")?.split(",")[0].trim() || request.headers.get("x-real-ip") || "local";
+  // The last x-forwarded-for entry is the one added by our own proxy. Earlier entries come from
+  // the client, which could otherwise send a new fake IP each time to dodge the limit.
+  const ip = request.headers.get("x-forwarded-for")?.split(",").at(-1)?.trim() || request.headers.get("x-real-ip") || "local";
   if (rateLimited(`${route}:${ip}`, limit, 60_000)) return bad(429, "Too many requests — try again in a minute");
 
   if (Number(request.headers.get("content-length") ?? 0) > MAX_BODY_BYTES) return bad(413, "Request too large");
-  const raw = await request.text();
-  if (raw.length > MAX_BODY_BYTES) return bad(413, "Request too large");
+  const raw = await readCapped(request);
+  if (raw === null) return bad(413, "Request too large");
   try {
     const body: unknown = JSON.parse(raw);
     if (!body || typeof body !== "object" || Array.isArray(body)) return bad(400, "Expected a JSON object");
