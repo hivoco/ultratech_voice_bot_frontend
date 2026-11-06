@@ -1,7 +1,1 @@
-<svg preserveAspectRatio="none" overflow="visible" style="display: block;" width="104" height="104" viewBox="0 0 104 104" fill="none" xmlns="http://www.w3.org/2000/svg">
-<g id="shutter (pressed)">
-<circle id="tap ripple" cx="52" cy="52" r="52" fill="#FFD400" fill-opacity="0.22"/>
-<path id="ring" d="M90 52C90 72.9868 72.9868 90 52 90C31.0132 90 14 72.9868 14 52C14 31.0132 31.0132 14 52 14C72.9868 14 90 31.0132 90 52Z" stroke-width="4" stroke="white"/>
-<circle id="shutter core" cx="52" cy="52" r="29" fill="#FFD400"/>
-</g>
-</svg>
+<svg xmlns="http://www.w3.org/2000/svg" width="104" height="104" fill="none" overflow="visible" preserveAspectRatio="none" style="display:block" viewBox="0 0 104 104"><g><circle cx="52" cy="52" r="52" fill="#ffd400" fill-opacity="0.22"/><path stroke="#fff" stroke-width="4" d="M90 52C90 72.9868 72.9868 90 52 90C31.0132 90 14 72.9868 14 52C14 31.0132 31.0132 14 52 14C72.9868 14 90 31.0132 90 52Z"/><circle cx="52" cy="52" r="29" fill="#ffd400"/></g></svg>

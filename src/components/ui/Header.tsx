@@ -40,7 +40,7 @@ export function Header({ onBack, backLabel, trailing }: HeaderProps) {
           <Icon src="/icons/back.svg" size={24} />
         </button>
         <div className="ml-1 size-[44px] shrink-0 overflow-hidden rounded-[12px] max-[300px]:hidden shadow-[0_2px_9px_rgba(0,0,0,0.45),0_4px_10px_rgba(0,0,0,0.25)]">
-          <Image src="/images/ultratech-logo.png" alt="UltraTech" width={44} height={44} loading="eager" />
+          <Image src="/images/ultratech-logo.webp" alt="UltraTech" width={44} height={44} loading="eager" />
         </div>
         <div className="ml-[10px] min-w-0 flex-1">
           <p className="truncate text-[17px] leading-[20px] font-[590] text-white max-[359px]:text-[15px]">UltraTech Engineer</p>
