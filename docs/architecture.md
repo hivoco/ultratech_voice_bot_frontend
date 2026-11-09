@@ -14,7 +14,7 @@ src/
     api/                  server-only proxy to the FastAPI backend (see docs/backend-api.md)
   components/
     VoiceBotApp.tsx       QueryClient + MotionConfig + AppProvider, screen switcher
-    screens/              ChatScreen · VoiceScreen · CameraScreen · WrapUpScreen
+    screens/              LanguageScreen (first on every load) · ChatScreen · VoiceScreen · CameraScreen · WrapUpScreen
     chat/                 Bubbles (engineer/user/duration/video/expert), Composer
     voice/                VoiceOrb, VoiceControls
     ui/                   Header, Chip, Icon

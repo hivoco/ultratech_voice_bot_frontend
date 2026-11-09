@@ -6,8 +6,9 @@ import { AnimatePresence, MotionConfig, motion } from "motion/react";
 import dynamic from "next/dynamic";
 import { AppProvider, useApp } from "@/lib/store";
 import { ChatScreen } from "./screens/ChatScreen";
+import { LanguageScreen } from "./screens/LanguageScreen";
 
-// The first paint is always the chat screen; the rest load on demand.
+// The first paint is always the language screen and chat comes right after it; the rest load on demand.
 const VoiceScreen = dynamic(() => import("./screens/VoiceScreen").then((m) => m.VoiceScreen));
 const CameraScreen = dynamic(() => import("./screens/CameraScreen").then((m) => m.CameraScreen));
 const WrapUpScreen = dynamic(() => import("./screens/WrapUpScreen").then((m) => m.WrapUpScreen));
@@ -52,6 +53,9 @@ function Shell() {
         className="pointer-events-none absolute inset-0 bg-[linear-gradient(to_bottom,rgba(20,15,8,0.1),rgba(20,15,8,0.35)_55%,rgba(15,10,5,0.62))]"
       />
 
+      {/* Not in AnimatePresence below: it would overlap the chat while animating out. */}
+      {screen === "language" && <LanguageScreen />}
+
       {/* Chat stays mounted while other screens are open: draft text, scroll and bubbles survive. */}
       <Activity mode={screen === "chat" ? "visible" : "hidden"}>
         <div ref={chatRef} tabIndex={-1} className="relative flex min-h-0 flex-1 flex-col focus:outline-none">
@@ -60,7 +64,7 @@ function Shell() {
       </Activity>
 
       <AnimatePresence mode="wait" initial={false}>
-        {screen !== "chat" && (
+        {screen !== "chat" && screen !== "language" && (
           <motion.div
             key={screen}
             ref={focusScreen}

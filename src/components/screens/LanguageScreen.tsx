@@ -1,0 +1,55 @@
+"use client";
+
+import Image from "next/image";
+import { useApp } from "@/lib/store";
+import { LANG_LABEL, type LangChoice } from "@/lib/types";
+import { Icon } from "../ui/Icon";
+
+const LANGS: LangChoice[] = ["en", "hi", "hinglish"];
+
+/**
+ * First screen on every page load, for new and returning users alike. It is the page's LCP element,
+ * so it is server-rendered with no entrance animation (see docs/lighthouse.md).
+ */
+export function LanguageScreen() {
+  const { state, pickLanguage } = useApp();
+
+  return (
+    <main className="no-scrollbar relative flex min-h-0 flex-1 flex-col overflow-y-auto px-6 pt-[max(24px,env(safe-area-inset-top))] pb-[max(24px,env(safe-area-inset-bottom))]">
+      <div className="my-auto flex w-full flex-col items-center">
+        <div className="size-16 overflow-hidden rounded-[16px] shadow-[0_2px_9px_rgba(0,0,0,0.45),0_4px_10px_rgba(0,0,0,0.25)]">
+          <Image src="/images/ultratech-logo.webp" alt="UltraTech" width={64} height={64} loading="eager" />
+        </div>
+
+        <h1 className="mt-6 text-center text-[24px] leading-[30px] font-[590] text-white">
+          Choose your language
+          <span lang="hi" className="mt-1 block text-[17px] leading-[24px] font-[510] text-white/82">
+            अपनी भाषा चुनें
+          </span>
+        </h1>
+
+        {/* Disabled until hydrated: a tap must not race the saved profile being loaded. */}
+        <div role="group" aria-label="Language" className="mt-8 flex w-full flex-col gap-3">
+          {LANGS.map((lang) => {
+            const lastUsed = state.profile.lang === lang;
+            return (
+              <button
+                key={lang}
+                type="button"
+                lang={lang === "hi" ? "hi" : undefined}
+                disabled={!state.hydrated}
+                onClick={() => pickLanguage(lang)}
+                className={`flex h-14 w-full items-center justify-center gap-2 rounded-[28px] text-[17px] transition-[background-color,transform] active:scale-[0.98] disabled:active:scale-100 ${
+                  lastUsed ? "bg-brand font-[590] text-ink" : "bg-white/16 font-[510] text-white enabled:hover:bg-white/24"
+                }`}
+              >
+                {lastUsed && <Icon src="/icons/check.svg" size={18} />}
+                {LANG_LABEL[lang]}
+              </button>
+            );
+          })}
+        </div>
+      </div>
+    </main>
+  );
+}

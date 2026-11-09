@@ -9,7 +9,7 @@ import { Icon } from "../ui/Icon";
 import { DurationChip, EngineerBubble, ExpertCard, UserBubble, VideoCard } from "../chat/Bubbles";
 import { Composer } from "../chat/Composer";
 
-const LANG_OPTIONS: (LangChoice | "more")[] = ["en", "hi", "hinglish", "more"];
+const LANG_OPTIONS: LangChoice[] = ["en", "hi", "hinglish"];
 const PHOTO_RE = /\bphoto\b/i;
 
 /** 01 Welcome (onboarding) and 03b/04b/05b transcript — one scrolling conversation. */
@@ -44,7 +44,8 @@ export function ChatScreen() {
   }, [scrollKey]);
 
   const menu: MenuItem[] = [
-    ...(profile.lang ? [{ label: "Change language", run: changeLanguage }] : []),
+    // Not before the name is known: the language reply goes on to greet the user by name.
+    ...(profile.lang && profile.name ? [{ label: "Change language", run: changeLanguage }] : []),
     { label: "Talk by voice", run: startVoice },
     { label: "End conversation", run: endConversation },
   ];
@@ -67,9 +68,9 @@ export function ChatScreen() {
                 {LANG_OPTIONS.map((opt) => (
                   <Chip
                     key={opt}
-                    label={opt === "more" ? "More" : LANG_LABEL[opt]}
+                    label={LANG_LABEL[opt]}
                     lang={opt === "hi" ? "hi" : undefined}
-                    selected={opt !== "more" && profile.lang === opt}
+                    selected={profile.lang === opt}
                     disabled={idx !== lastLangIdx}
                     onClick={() => chooseLang(opt)}
                   />

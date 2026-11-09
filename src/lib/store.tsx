@@ -11,7 +11,8 @@ const PROFILE_KEY = "ultratech.profile.v1";
 
 export const GREETING_ID = "greeting";
 
-type OnboardingStep = "name" | "lang" | "stage" | "done";
+/** Language isn't a step: LanguageScreen asks for it before the chat opens, on every page load. */
+type OnboardingStep = "name" | "stage" | "done";
 
 interface State {
   hydrated: boolean;
@@ -37,7 +38,6 @@ type Action =
 
 function stepOf(p: Profile): OnboardingStep {
   if (!p.name) return "name";
-  if (!p.lang) return "lang";
   if (!p.stage) return "stage";
   return "done";
 }
@@ -54,16 +54,24 @@ function openingMessages(p: Profile): ChatMessage[] {
     ];
   }
   const greeting: ChatMessage = {
-    // Stable id: this bubble is server-rendered and is the page's LCP element.
+    // Stable id: part of the initial state, so server and client agree on it.
     id: GREETING_ID,
     kind: "engineer",
     lead: "Hi! I'm the UltraTech Engineer — with you at every step of building your home.",
     prompt: "What's your name?",
   };
   if (!p.name) return [greeting];
-  // Name known but onboarding unfinished: resume at the language question.
-  return [greeting, { id: uid(), kind: "user", text: p.name }, langQuestion()];
+  // Name known but onboarding unfinished: resume at the stage question.
+  return [greeting, { id: uid(), kind: "user", text: p.name }, stageQuestion(p.name)];
 }
+
+const stageQuestion = (name: string, lead?: string): ChatMessage => ({
+  id: uid(),
+  kind: "engineer",
+  lead,
+  prompt: `Welcome, ${name}! Which stage is your home at right now?`,
+  options: "stage",
+});
 
 const langQuestion = (): ChatMessage => ({
   id: uid(),
@@ -140,7 +148,9 @@ interface AppContextValue {
   openCamera: () => void;
   closeCamera: () => void;
   submitText: (text: string) => void;
-  chooseLang: (lang: LangChoice | "more") => void;
+  /** Language picked on LanguageScreen: saves it and opens the chat. */
+  pickLanguage: (lang: LangChoice) => void;
+  chooseLang: (lang: LangChoice) => void;
   chooseStage: (stage: Stage) => void;
   startVoice: () => void;
   endVoice: (next?: Screen) => Promise<void>;
@@ -158,7 +168,8 @@ const AppContext = createContext<AppContextValue | null>(null);
 export function AppProvider({ children }: { children: ReactNode }) {
   const [state, dispatch] = useReducer(reducer, {
     hydrated: false,
-    screen: "chat",
+    // Deliberately not saved: every page load starts by asking for the language.
+    screen: "language",
     cameraReturn: "chat",
     profile: { uuid: "" },
     messages: openingMessages({ uuid: "" }),
@@ -249,7 +260,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
       if (step === "name") {
         const name = text.replace(/\s+/g, " ").slice(0, 40);
         dispatch({ type: "profile", patch: { name } });
-        dispatch({ type: "push", messages: [{ id: uid(), kind: "user", text: name }, langQuestion()] });
+        const lead = state.profile.lang ? `Great, I'll talk with you in ${LANG_LABEL[state.profile.lang]}.` : undefined;
+        dispatch({ type: "push", messages: [{ id: uid(), kind: "user", text: name }, stageQuestion(name, lead)] });
         return;
       }
 
@@ -267,26 +279,16 @@ export function AppProvider({ children }: { children: ReactNode }) {
       });
       ask.mutate({ text: question, replyId });
     },
-    [ask, state.pendingPhoto, step],
+    [ask, state.pendingPhoto, state.profile.lang, step],
   );
 
+  const pickLanguage = useCallback((lang: LangChoice) => {
+    dispatch({ type: "profile", patch: { lang } });
+    dispatch({ type: "screen", screen: "chat" });
+  }, []);
+
   const chooseLang = useCallback(
-    (lang: LangChoice | "more") => {
-      if (lang === "more") {
-        dispatch({
-          type: "push",
-          messages: [
-            {
-              id: uid(),
-              kind: "engineer",
-              lead: "Tamil, Telugu, Kannada and Malayalam are coming soon.",
-              prompt: "For now, pick English, हिंदी or Hinglish.",
-              options: "lang",
-            },
-          ],
-        });
-        return;
-      }
+    (lang: LangChoice) => {
       const label = LANG_LABEL[lang];
       dispatch({ type: "profile", patch: { lang } });
       dispatch({
@@ -361,6 +363,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       openCamera: () => dispatch({ type: "openCamera" }),
       closeCamera: () => dispatch({ type: "closeCamera" }),
       submitText,
+      pickLanguage,
       chooseLang,
       chooseStage,
       startVoice,
@@ -380,7 +383,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
         if (step === "done" && state.profile.uuid) ensureSession().catch(() => {});
       },
     }),
-    [state, step, voice, online, ask.isPending, submitText, chooseLang, chooseStage, startVoice, endVoice, capturePhoto, ensureSession],
+    [state, step, voice, online, ask.isPending, submitText, pickLanguage, chooseLang, chooseStage, startVoice, endVoice, capturePhoto, ensureSession],
   );
 
   return <AppContext value={value}>{children}</AppContext>;

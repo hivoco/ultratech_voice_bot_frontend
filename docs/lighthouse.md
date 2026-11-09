@@ -35,6 +35,10 @@ Observed (unthrottled) LCP is ~0.1 s; the mobile number is Lighthouse's simulati
 | `/api/health` 502 logged as a console error when the backend is down | route always answers 200 with `{ok:false}` |
 | `role="log"` not allowed on `<main>` | log role moved to an inner `<div>` |
 
+**Since 2026-11-09 the first paint is the language screen, not the greeting bubble.** It is
+server-rendered with no entrance animation, following the rule below. The scores above were
+measured before this change and have not been re-run.
+
 ## Rules to keep the score
 
 - Don't import `livekit-client` at module top level (use `import type`).

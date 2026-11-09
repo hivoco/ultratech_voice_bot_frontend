@@ -1,6 +1,6 @@
 export type LangChoice = "en" | "hi" | "hinglish";
 export type Stage = "Plot" | "Plan" | "Foundation" | "Structure" | "Plaster" | "Finishing";
-export type Screen = "chat" | "voice" | "camera" | "wrapup";
+export type Screen = "language" | "chat" | "voice" | "camera" | "wrapup";
 
 export interface Profile {
   uuid: string;
