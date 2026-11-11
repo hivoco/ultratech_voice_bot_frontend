@@ -20,6 +20,7 @@ turn 30. Inputs are validated: `user_uuid` `^[A-Za-z0-9-]{8,64}$`, `session_id` 
 | `POST /api/voice/token` | `POST /voice/token` | `{user_uuid, lang:"en"\|"hi"}` → `{url, token, room}` |
 | `POST /api/session` | `POST /session` | `{user_uuid}` → `{session_id}` |
 | `POST /api/turn/stream` | `POST /turn/stream` | `{session_id, text}` → NDJSON stream |
+| `POST /api/session/summary` | `POST /session/summary` | `{room, lang, transcript:[{caller, bot}]}` → `{summary, lang, turns, pdf_url}` (`pdf_url` = backend `s3_link` if https, else null). Limit 5/min, 512 KB body, ≤120 turns × 4000 chars, 60 s timeout |
 | `GET /api/health` | `GET /health` | → `{ok}` (other backend fields are dropped) |
 
 ## Realtime contract (LiveKit, direct browser ⇄ LiveKit Cloud)

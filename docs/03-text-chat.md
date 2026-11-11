@@ -7,7 +7,7 @@ Figma: **03b · Voice transcript — Direct answer** (also the layout for [04b](
 ## Typed questions
 
 1. First question creates a backend session: `POST /api/session {user_uuid}` → `session_id`
-   (kept in memory; reset on error or *End conversation*).
+   (kept in memory; reset on error or *Start a new chat*).
 2. `POST /api/turn/stream {session_id, text}` returns NDJSON (newline-delimited JSON, one event per line):
    `meta` → many `text {delta}` → `audio …` → `done {text}` (or `error {detail}`).
 3. The user bubble is added immediately; an engineer bubble shows typing dots, then the
@@ -26,6 +26,28 @@ When a call ends, its timeline becomes chat messages:
 - user turns → yellow bubbles
 - agent turns → glass bubbles with meta *UltraTech Engineer · 0:42* (turn duration)
 - photos, video cards and expert cards in the order they happened
+
+A call ended with ✕ **End chat** also gets the PDF summary card after its transcript, plus a
+**+ Start a new chat** chip above the composer. The composer stays usable, so the user can keep
+typing; the chip hides once a new message is sent. Back / keyboard leave the call without the
+card.
+
+## Ending a chat
+
+Once onboarding is done, an action row sits above the composer: 🌐 *{language}* (opens the
+language question) · 🎤 *Talk by voice* · ✕ *End chat* (red outline). The header menu has the same
+items. **End chat** (an active call is ended first) adds, in place:
+
+- divider chip: 🎤 *Conversation ended · 2 min 40 sec* (time since the first question)
+- engineer bubble: *"Thanks for chatting! Your conversation summary is ready — questions, answers
+  and key points in one PDF."* (no PDF line when nothing was answered)
+- **summary card**: glass card with the yellow **Get your conversation summary (PDF)** button
+  (`SummaryCard` → `SummaryButton`, `src/lib/useConversationSummary.ts`); it prepares the
+  summary as soon as it shows, then opens the PDF ([06](06-wrap-up.md) has the PDF details)
+
+Then the composer locks (*This conversation has ended*, camera and mic disabled) and the action
+row becomes **+ Start a new chat**, which resets the chat (new conversation id, new session) but
+keeps the profile.
 
 If the last engineer answer mentions a *photo*, the composer's camera button gets the pulsing
 yellow **tap hint** ring (as in 03b).

@@ -39,6 +39,8 @@ export type ChatMessage =
   | { id: string; kind: "user"; text: string; photo?: string; photoLabel?: string }
   | { id: string; kind: "divider"; text: string }
   | { id: string; kind: "video"; url: string; title: string }
+  /** "Get your conversation summary (PDF)" card, shown when a chat or call ends. */
+  | { id: string; kind: "summary"; turns: number }
   | ({ id: string; kind: "expert" } & ExpertContact);
 
 /** Server-side backend language: Hindi and Hinglish both use the Hinglish-speaking "hi" voice. */

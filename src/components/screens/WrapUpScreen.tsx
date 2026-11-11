@@ -2,11 +2,14 @@
 
 import { motion } from "motion/react";
 import { useApp } from "@/lib/store";
+import { buildTranscript } from "@/lib/transcript";
 import { Header, HeaderMenu } from "../ui/Header";
+import { SummaryButton } from "../chat/SummaryButton";
 
 /** 06 · Wrap-up — Thank you. */
 export function WrapUpScreen() {
-  const { goTo, restart } = useApp();
+  const { goTo, restart, state } = useApp();
+  const hasTurns = buildTranscript(state.messages).length > 0;
   return (
     <>
       <Header
@@ -25,7 +28,12 @@ export function WrapUpScreen() {
           <p>Thank you.</p>
         </motion.div>
       </div>
-      <div className="mx-4 shrink-0 pb-[max(32px,env(safe-area-inset-bottom))]">
+      <div className="mx-4 shrink-0 space-y-3 pb-[max(32px,env(safe-area-inset-bottom))]">
+        {hasTurns && (
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.4, delay: 0.2 }}>
+            <SummaryButton secondary />
+          </motion.div>
+        )}
         <motion.button
           type="button"
           onClick={restart}

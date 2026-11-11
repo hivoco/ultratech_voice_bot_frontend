@@ -8,10 +8,10 @@ Start here. Each doc below covers **one** topic or use case; read only the ones 
 |---|---|---|---|
 | 1 | Onboarding: language (every load) → name → home stage | [docs/01-onboarding.md](docs/01-onboarding.md) | `src/lib/store.tsx`, `src/components/screens/LanguageScreen.tsx`, `src/components/screens/ChatScreen.tsx`, `src/components/ui/Chip.tsx` |
 | 2 | Real-time voice call (LiveKit) | [docs/02-voice-call.md](docs/02-voice-call.md) | `src/lib/useVoiceCall.ts`, `src/components/screens/VoiceScreen.tsx` |
-| 3 | Text chat + call transcript | [docs/03-text-chat.md](docs/03-text-chat.md) | `src/lib/api.ts`, `src/components/chat/*` |
+| 3 | Text chat + call transcript + End chat / PDF card | [docs/03-text-chat.md](docs/03-text-chat.md) | `src/lib/api.ts`, `src/components/chat/*`, `src/lib/useConversationSummary.ts` |
 | 4 | Photo capture | [docs/04-photo-capture.md](docs/04-photo-capture.md) | `src/components/screens/CameraScreen.tsx` |
 | 5 | Expert hand-off + video cards | [docs/05-expert-and-video-cards.md](docs/05-expert-and-video-cards.md) | `src/components/chat/Bubbles.tsx` |
-| 6 | Wrap-up / end conversation | [docs/06-wrap-up.md](docs/06-wrap-up.md) | `src/components/screens/WrapUpScreen.tsx` |
+| 6 | Wrap-up / end conversation + PDF summary | [docs/06-wrap-up.md](docs/06-wrap-up.md) | `src/components/screens/WrapUpScreen.tsx`, `src/lib/summaryPdf.ts` |
 
 ## Reference
 

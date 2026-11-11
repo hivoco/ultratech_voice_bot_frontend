@@ -196,7 +196,7 @@ export function VoiceScreen() {
         micLabel={errored ? "Try again" : undefined}
         onCamera={openCamera}
         onMic={() => (errored ? retry() : void voice.toggleMic())}
-        onClose={() => void endVoice()}
+        onClose={() => void endVoice("chat", { summary: true })}
       />
     </>
   );

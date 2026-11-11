@@ -5,6 +5,7 @@ import { motion } from "motion/react";
 import type { ReactNode } from "react";
 import { plainText } from "@/lib/id";
 import { Icon } from "../ui/Icon";
+import { SummaryButton } from "./SummaryButton";
 
 const enter = {
   initial: { opacity: 0, y: 12, scale: 0.98 },
@@ -184,6 +185,15 @@ export function ExpertCard({ name, role, callSlot, phone }: { name: string; role
           </a>
         )}
       </div>
+    </motion.div>
+  );
+}
+
+/** Card holding the PDF summary button, shown when a chat or call ends. Covers the first `turns` turns. */
+export function SummaryCard({ turns }: { turns: number }) {
+  return (
+    <motion.div {...enter} className="glass relative w-full rounded-3xl p-3">
+      <SummaryButton turns={turns} />
     </motion.div>
   );
 }

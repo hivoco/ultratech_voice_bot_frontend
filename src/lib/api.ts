@@ -72,3 +72,19 @@ export async function* streamTurn(session_id: string, text: string): AsyncGenera
     }
   }
 }
+
+export interface TranscriptTurn {
+  caller: string;
+  bot: string;
+}
+
+export interface ConversationSummary {
+  summary: string;
+  lang: "en" | "hi";
+  turns: number;
+  /** Backend-made PDF (S3 presigned link), or null when the backend has no S3 configured. */
+  pdf_url: string | null;
+}
+
+export const fetchSummary = (room: string, lang: "en" | "hi", transcript: TranscriptTurn[]) =>
+  postJson<ConversationSummary>("/api/session/summary", { room, lang, transcript });

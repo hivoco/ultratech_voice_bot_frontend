@@ -16,8 +16,9 @@ Figma: **01 · Welcome — Name & language** (`116:1814`). The full-screen langu
 3. User bubble with the name → *"Great, I'll talk with you in …"* + **Welcome, {name}! Which
    stage is your home at right now?** with chips `Plot · Plan · Foundation · Structure · Plaster ·
    Finishing`.
-4. Stage chosen → engineer invites the first question. The hint above the composer shows
-   *Language: {lang} · Same for typing and speaking*.
+4. Stage chosen → engineer invites the first question. The action row above the composer
+   appears: 🌐 *{lang}* (change language) · 🎤 *Talk by voice* · ✕ *End chat*
+   ([03](03-text-chat.md#ending-a-chat)).
 
 Selected chips turn yellow with a check icon (`/icons/check.svg`). Only the newest option bubble
 of each kind is interactive.
@@ -56,8 +57,8 @@ token metadata / session and read them in `agent/worker.py` and `core/pipeline.p
 (`session.stage` already exists in the HTTP path).
 
 **The language reaches voice calls only.** Typed chat sends no language: `/session` has no `lang`
-field and `/api/turn/stream` sends only `session_id` + `text`. The composer hint *Same for typing
-and speaking* therefore promises more than the frontend sends.
+field and `/api/turn/stream` sends only `session_id` + `text`. (The old composer hint *Same
+for typing and speaking* was removed with the action row on 2026-11-11.)
 
 Code: `src/components/screens/LanguageScreen.tsx`, `src/lib/store.tsx` (`pickLanguage`,
 `openingMessages`, `submitText`, `chooseLang`, `chooseStage`),

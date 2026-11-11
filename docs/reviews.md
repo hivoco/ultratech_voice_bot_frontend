@@ -81,6 +81,23 @@ double-render), 0 `ChatScreen` / `AppProvider` renders** — typing does not re-
 During a streamed reply each chunk re-renders the app context consumers (header, composer, chat);
 cost is small today, see the optional context split above.
 
+**Re-run 2026-11-11** (End chat + PDF work): headless Chrome with a DevTools commit hook (the
+signal React Scan uses), over onboarding → type → streamed reply → End chat → PDF ready → Start a
+new chat. Per streamed reply (~30 chunks):
+
+| Component | Before | After |
+|---|---|---|
+| `EngineerBubble` | 120 (every bubble, every chunk) | 1 per chunk (the streaming one) |
+| `Chip` (stage / language) | 180 | 0 |
+| `UserBubble` | 60 | 1 |
+| `ActionChip` (new action row) | 90 | 2 per chunk |
+
+Fixes: messages render through a memoized `MessageRow` that only gets the props its kind needs;
+`restart` / `changeLanguage` / `endChat` are stable callbacks; chip icons are module constants.
+The remaining 2 chip renders per chunk are *Talk by voice* / *End chat*, whose handlers follow the
+voice-call object. Typing: 1 `Composer` render per keystroke, 0 chat renders. End chat → summary
+ready: one render each. No console errors.
+
 ## Docs (`writing-guidelines`)
 
 Added a one-line summary to every page, linked all cross-references, unified backend setup in

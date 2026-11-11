@@ -11,7 +11,8 @@ Figma: **02 Ask by speaking**, **02b Thinking**, **02c Speaking (live)**, **02d 
 | Mic button in the composer, or menu → *Talk by voice* | screen → `voice`, `POST /api/voice/token {user_uuid, lang}` and `import("livekit-client")` in parallel, `room.connect(url, token)`, mic on |
 | Big yellow mic button | mute / unmute (muted = grey glass button with a slash, orb core dims) |
 | Camera button | opens the camera; the call stays connected (see [04 · Photo capture](04-photo-capture.md)) |
-| ✕ *End chat*, header back, or keyboard icon | disconnect → the whole call is appended to the chat as a transcript (see [03 · Text chat](03-text-chat.md)) |
+| ✕ *End chat* | disconnect → call transcript appended to the chat, then the PDF summary card + *Start a new chat* chip (see [03 · Text chat](03-text-chat.md)) |
+| header back or keyboard icon | disconnect → call transcript appended to the chat, no PDF card (switch to typing) |
 
 The agent worker joins automatically and greets first — nothing to trigger.
 

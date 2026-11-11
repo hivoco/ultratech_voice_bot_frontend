@@ -25,7 +25,7 @@ function rateLimited(key: string, limit: number, windowMs: number): boolean {
 }
 
 /** Read the body up to the cap, or null if it is larger. A chunked body has no content-length to check. */
-async function readCapped(request: Request): Promise<string | null> {
+async function readCapped(request: Request, maxBytes: number): Promise<string | null> {
   if (!request.body) return "";
   const reader = request.body.getReader();
   const decoder = new TextDecoder();
@@ -35,7 +35,7 @@ async function readCapped(request: Request): Promise<string | null> {
     const { value, done } = await reader.read();
     if (done) return text + decoder.decode();
     bytes += value.byteLength;
-    if (bytes > MAX_BODY_BYTES) {
+    if (bytes > maxBytes) {
       await reader.cancel();
       return null;
     }
@@ -47,9 +47,14 @@ const bad = (status: number, detail: string) => Response.json({ detail }, { stat
 
 /**
  * Validate a POST to a proxy route. Returns the parsed JSON object, or a Response to send back.
- * `limit` = max requests per IP per minute for this route.
+ * `limit` = max requests per IP per minute for this route; `maxBytes` = body size cap.
  */
-export async function guardPost(request: Request, route: string, limit: number): Promise<Record<string, unknown> | Response> {
+export async function guardPost(
+  request: Request,
+  route: string,
+  limit: number,
+  maxBytes = MAX_BODY_BYTES,
+): Promise<Record<string, unknown> | Response> {
   // Browsers always send Origin on a POST, so a missing one is not our page.
   let originHost = "";
   try {
@@ -64,8 +69,8 @@ export async function guardPost(request: Request, route: string, limit: number):
   const ip = request.headers.get("x-forwarded-for")?.split(",").at(-1)?.trim() || request.headers.get("x-real-ip") || "local";
   if (rateLimited(`${route}:${ip}`, limit, 60_000)) return bad(429, "Too many requests — try again in a minute");
 
-  if (Number(request.headers.get("content-length") ?? 0) > MAX_BODY_BYTES) return bad(413, "Request too large");
-  const raw = await readCapped(request);
+  if (Number(request.headers.get("content-length") ?? 0) > maxBytes) return bad(413, "Request too large");
+  const raw = await readCapped(request, maxBytes);
   if (raw === null) return bad(413, "Request too large");
   try {
     const body: unknown = JSON.parse(raw);

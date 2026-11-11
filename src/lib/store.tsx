@@ -6,6 +6,7 @@ import { createSession, fetchHealth, streamTurn } from "./api";
 import { clock, longDuration, uid } from "./id";
 import { backendLang, LANG_LABEL, type ChatMessage, type LangChoice, type Profile, type Screen, type Stage } from "./types";
 import { turnText, useVoiceCall, type CallSummary, type VoiceCall } from "./useVoiceCall";
+import { buildTranscript } from "./transcript";
 
 const PROFILE_KEY = "ultratech.profile.v1";
 
@@ -23,6 +24,12 @@ interface State {
   messages: ChatMessage[];
   /** Photo captured from the chat composer, waiting to be sent with the next message. */
   pendingPhoto: string | null;
+  /** Id for this conversation (new on every restart); keys its summary / PDF on the backend. */
+  conversationId: string;
+  /** Time of the first question, for the "Conversation ended · 2 min 40 sec" chip. */
+  startedAt: number | null;
+  /** Text chat ended with End chat: composer locked until Start a new chat. */
+  ended: boolean;
 }
 
 type Action =
@@ -34,6 +41,9 @@ type Action =
   | { type: "push"; messages: ChatMessage[] }
   | { type: "patch"; id: string; patch: Partial<ChatMessage> }
   | { type: "pendingPhoto"; photo: string | null }
+  /** A call finished: add its transcript, plus the PDF card when the call was ended with End chat. */
+  | { type: "callEnded"; messages: ChatMessage[]; summary: boolean; at: number }
+  | { type: "endChat"; at: number }
   | { type: "reset" };
 
 function stepOf(p: Profile): OnboardingStep {
@@ -83,7 +93,13 @@ const langQuestion = (): ChatMessage => ({
 function reducer(state: State, action: Action): State {
   switch (action.type) {
     case "hydrate":
-      return { ...state, hydrated: true, profile: action.profile, messages: openingMessages(action.profile) };
+      return {
+        ...state,
+        hydrated: true,
+        profile: action.profile,
+        messages: openingMessages(action.profile),
+        conversationId: newConversationId(),
+      };
     case "screen":
       return { ...state, screen: action.screen };
     case "openCamera":
@@ -93,7 +109,35 @@ function reducer(state: State, action: Action): State {
     case "profile":
       return { ...state, profile: { ...state.profile, ...action.patch } };
     case "push":
-      return { ...state, messages: [...state.messages, ...action.messages] };
+      return {
+        ...state,
+        startedAt: state.startedAt ?? (action.messages.some((m) => m.kind === "user") ? Date.now() : null),
+        messages: [...state.messages, ...action.messages],
+      };
+    case "callEnded": {
+      const messages = [...state.messages, ...action.messages];
+      const turns = buildTranscript(messages).length;
+      if (action.summary && turns > 0) messages.push({ id: uid(), kind: "summary", turns });
+      return { ...state, startedAt: state.startedAt ?? (action.messages.length ? action.at : null), messages };
+    }
+    case "endChat": {
+      if (state.ended) return state;
+      const turns = buildTranscript(state.messages).length;
+      const hasTurns = turns > 0;
+      const duration = state.startedAt ? ` · ${longDuration((action.at - state.startedAt) / 1000)}` : "";
+      const closing: ChatMessage[] = [
+        { id: uid(), kind: "divider", text: `Conversation ended${duration}` },
+        {
+          id: uid(),
+          kind: "engineer",
+          lead: hasTurns
+            ? "Thanks for chatting! Your conversation summary is ready — questions, answers and key points in one PDF."
+            : "Thanks for chatting! Start a new chat whenever you have a question about your home.",
+        },
+        ...(hasTurns ? [{ id: uid(), kind: "summary", turns } as const] : []),
+      ];
+      return { ...state, ended: true, pendingPhoto: null, messages: [...state.messages, ...closing] };
+    }
     case "patch":
       return {
         ...state,
@@ -102,7 +146,15 @@ function reducer(state: State, action: Action): State {
     case "pendingPhoto":
       return { ...state, pendingPhoto: action.photo };
     case "reset":
-      return { ...state, screen: "chat", pendingPhoto: null, messages: openingMessages(state.profile) };
+      return {
+        ...state,
+        screen: "chat",
+        pendingPhoto: null,
+        messages: openingMessages(state.profile),
+        conversationId: newConversationId(),
+        startedAt: null,
+        ended: false,
+      };
   }
 }
 
@@ -138,6 +190,10 @@ function newUuid(): string {
   return globalThis.crypto?.randomUUID?.() ?? uid("user");
 }
 
+function newConversationId(): string {
+  return `conv-${newUuid()}`;
+}
+
 interface AppContextValue {
   state: State;
   step: OnboardingStep;
@@ -153,10 +209,12 @@ interface AppContextValue {
   chooseLang: (lang: LangChoice) => void;
   chooseStage: (stage: Stage) => void;
   startVoice: () => void;
-  endVoice: (next?: Screen) => Promise<void>;
+  /** Leave the call; `summary` adds the PDF card (End chat), plain back / keyboard doesn't. */
+  endVoice: (next?: Screen, opts?: { summary?: boolean }) => Promise<void>;
+  /** End the text chat in place: ended chip, thank-you, PDF card; composer locks. */
+  endChat: () => void;
   capturePhoto: (photo: string) => void;
   clearPendingPhoto: () => void;
-  endConversation: () => void;
   restart: () => void;
   changeLanguage: () => void;
   /** Create the text-chat session early (composer focus) so the first answer starts sooner. */
@@ -174,6 +232,9 @@ export function AppProvider({ children }: { children: ReactNode }) {
     profile: { uuid: "" },
     messages: openingMessages({ uuid: "" }),
     pendingPhoto: null,
+    conversationId: "",
+    startedAt: null,
+    ended: false,
   });
   const voice = useVoiceCall(state.profile.uuid);
   // Text-chat session, created ahead of the first question (see warmSession) to save a round trip.
@@ -255,7 +316,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     (raw: string) => {
       const text = raw.trim();
       const photo = state.pendingPhoto;
-      if (!text && !photo) return;
+      if (state.ended || (!text && !photo)) return;
 
       if (step === "name") {
         const name = text.replace(/\s+/g, " ").slice(0, 40);
@@ -279,7 +340,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       });
       ask.mutate({ text: question, replyId });
     },
-    [ask, state.pendingPhoto, state.profile.lang, step],
+    [ask, state.ended, state.pendingPhoto, state.profile.lang, step],
   );
 
   const pickLanguage = useCallback((lang: LangChoice) => {
@@ -331,14 +392,25 @@ export function AppProvider({ children }: { children: ReactNode }) {
   }, [voice, state.profile.lang]);
 
   const endVoice = useCallback(
-    async (next: Screen = "chat") => {
-      const summary = await voice.end();
-      const messages = summaryToMessages(summary);
-      if (messages.length) dispatch({ type: "push", messages });
+    async (next: Screen = "chat", opts?: { summary?: boolean }) => {
+      const call = await voice.end();
+      dispatch({ type: "callEnded", messages: summaryToMessages(call), summary: !!opts?.summary, at: Date.now() });
       dispatch({ type: "screen", screen: next });
     },
     [voice],
   );
+
+  // Stable identities: the composer's action chips shouldn't re-render on every streamed chunk.
+  const restart = useCallback(() => {
+    sessionRef.current = null;
+    dispatch({ type: "reset" });
+  }, []);
+  const changeLanguage = useCallback(() => dispatch({ type: "push", messages: [langQuestion()] }), []);
+
+  const endChat = useCallback(async () => {
+    if (voice.status !== "idle") await endVoice("chat");
+    dispatch({ type: "endChat", at: Date.now() });
+  }, [voice.status, endVoice]);
 
   const capturePhoto = useCallback(
     (photo: string) => {
@@ -368,22 +440,16 @@ export function AppProvider({ children }: { children: ReactNode }) {
       chooseStage,
       startVoice,
       endVoice,
+      endChat,
       capturePhoto,
       clearPendingPhoto: () => dispatch({ type: "pendingPhoto", photo: null }),
-      endConversation: () => {
-        if (voice.status !== "idle") void voice.end();
-        dispatch({ type: "screen", screen: "wrapup" });
-      },
-      restart: () => {
-        sessionRef.current = null;
-        dispatch({ type: "reset" });
-      },
-      changeLanguage: () => dispatch({ type: "push", messages: [langQuestion()] }),
+      restart,
+      changeLanguage,
       warmSession: () => {
         if (step === "done" && state.profile.uuid) ensureSession().catch(() => {});
       },
     }),
-    [state, step, voice, online, ask.isPending, submitText, pickLanguage, chooseLang, chooseStage, startVoice, endVoice, capturePhoto, ensureSession],
+    [state, step, voice, online, ask.isPending, submitText, pickLanguage, chooseLang, chooseStage, startVoice, endVoice, endChat, capturePhoto, ensureSession, restart, changeLanguage],
   );
 
   return <AppContext value={value}>{children}</AppContext>;
