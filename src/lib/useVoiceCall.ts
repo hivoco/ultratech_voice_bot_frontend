@@ -90,7 +90,7 @@ export function applySegments(
     next[idx] = copy;
     return copy;
   };
-  const put = (turn: VoiceTurn, seg: { id: string; text: string; final: boolean }) => {
+  const put = (turn: VoiceTurn, seg: { id: string; text: string; final: boolean }, live = true) => {
     if (!(seg.id in turn.segs)) turn.order.push(seg.id);
     turn.segs[seg.id] = { text: seg.text, final: seg.final };
     if (seg.final) {
@@ -99,12 +99,13 @@ export function applySegments(
       for (const k of stale) delete turn.segs[k];
       turn.order = turn.order.filter((k) => k in turn.segs);
     }
-    turn.endedAt = now;
+    // A late update to an older turn must not stretch its duration ("UltraTech Engineer · 0:12").
+    if (live) turn.endedAt = now;
   };
   for (const seg of segments) {
     const owner = next.findLastIndex((t) => t.type === "turn" && t.who === who && seg.id in t.segs);
     if (owner >= 0) {
-      put(editable(owner), seg);
+      put(editable(owner), seg, owner === next.length - 1);
       continue;
     }
     const lastIdx = next.length - 1;

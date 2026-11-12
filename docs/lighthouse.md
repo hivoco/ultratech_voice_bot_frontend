@@ -23,6 +23,8 @@ LCP = Largest Contentful Paint, TBT = Total Blocking Time, CLS = Cumulative Layo
 | **Desktop — 2026-11-11** | **100** | **100** | **100** | **100** | 0.7 s | 0 ms | 0 |
 | **Mobile — 2026-11-12 (v5 light design)**, median of 3 (90 / 92 / 92) | **92** | **100** | **100** | **100** | 3.3 s | 10–30 ms | 0 |
 | **Desktop — 2026-11-12** | **100** | **100** | **100** | **100** | 0.7 s | 0 ms | 0 |
+| **Mobile — 2026-11-12 (language asked in chat)**, median of 3 (89 / 91 / 91) | **91** | **100** | **100** | **100** | 3.5 s | 10–20 ms | 0 |
+| **Desktop — 2026-11-12 (language asked in chat)** | **100** | **100** | **100** | **100** | 0.7 s | 0 ms | 0 |
 
 Observed (unthrottled) LCP is ~0.1 s; the mobile number is Lighthouse's simulation and moves
 ±1 point between runs.
@@ -40,7 +42,9 @@ Observed (unthrottled) LCP is ~0.1 s; the mobile number is Lighthouse's simulati
 | `role="log"` not allowed on `<main>` | log role moved to an inner `<div>` |
 
 **Since 2026-11-12 the first paint is the chat again** (greeting + language card; the language
-screen is no longer shown). Not re-measured yet. From 2026-11-09 to 2026-11-12 it was the language screen; re-measured
+screen is no longer shown). LCP element: the greeting's lead line, server-rendered. Observed LCP =
+FCP = 49 ms; the simulated 3.5 s is the same slow-4G JS-download effect as before (LCP phase
+breakdown: 87 % "render delay" in the model, 0 ms in the real trace). From 2026-11-09 to 2026-11-12 it was the language screen; re-measured
 2026-11-11 (rows above). Observed LCP is 50 ms (same as first paint); the simulated mobile LCP of
 ~3.2 s is Lighthouse's slow-4G model counting the ~225 KB of JS fetched before that paint. The last
 commit before the End chat / PDF work measured the same (85–92 mobile, 3.3–3.6 s), and the new work

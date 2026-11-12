@@ -98,6 +98,11 @@ The remaining 2 chip renders per chunk are *Talk by voice* / *End chat*, whose h
 voice-call object. Typing: 1 `Composer` render per keystroke, 0 chat renders. End chat → summary
 ready: one render each. No console errors.
 
+**Re-run 2026-11-12** (language asked in chat, voice transcript fixes), same hook on the dev server:
+typing 28 keys → `Composer` ×28 only; send + reply → `MessageRow` 3, `EngineerBubble` 2,
+`UserBubble` 1; End chat → summary ready → one render each; menu → `HeaderMenu` 2; voice open
+(token error) → `VoiceOrb` 3. Same as the 11-12 baseline; only console error is the mocked 503.
+
 **Re-run 2026-11-12** (v5 light design), same commit-hook scan on the dev server, with the
 streamed reply, summary and voice token mocked (no paid calls):
 

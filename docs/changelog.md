@@ -12,6 +12,12 @@ Newest first. Started 2026-11-09; earlier history is in `git log`.
   one clean turn.
 - **Fixed** markdown marks (`**`, `*`, `` ` ``) printed in the PDF transcript: the transcript sent to
   `/session/summary` now uses the same plain text as the chat bubbles (`src/lib/transcript.ts`).
+- **Fixed** call bubble durations: a late update to an older turn (e.g. the greeting's final
+  arriving after the caller started) no longer stretches it (*UltraTech Engineer · 0:12* for a
+  9 s greeting).
+- Re-checked after push (paid): voice call + 2-question text chat against the live backend, both
+  PDFs correct; Lighthouse mobile 91 / 100 / 100 / 100 (median of 3), desktop 100 × 4; render scan
+  unchanged.
 - Live PDF API checked (paid): English voice + text chats, a 9-turn Hindi chat with HTML-like
   text (escaped, no injection) and a 22-turn chat (paginates over 4 pages, no overflow).
 
