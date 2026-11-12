@@ -30,23 +30,23 @@ export function Header({ onBack, backLabel, trailing }: HeaderProps) {
 
   return (
     <header className="relative z-20 mx-4 mt-[max(12px,env(safe-area-inset-top))] shrink-0">
-      <div className="glass relative flex h-[68px] items-center rounded-[34px] pr-[14px] pl-3">
+      <div className="card relative flex h-[68px] items-center rounded-[34px] pr-[14px] pl-3">
         <button
           type="button"
           onClick={onBack}
           aria-label={backLabel}
-          className="-m-2 grid size-11 shrink-0 place-items-center rounded-full transition-colors hover:bg-white/10"
+          className="-m-2 grid size-11 shrink-0 place-items-center rounded-full transition-colors hover:bg-sand"
         >
           <Icon src="/icons/back.svg" size={24} />
         </button>
-        <div className="ml-1 size-[44px] shrink-0 overflow-hidden rounded-[12px] max-[300px]:hidden shadow-[0_2px_9px_rgba(0,0,0,0.45),0_4px_10px_rgba(0,0,0,0.25)]">
-          <Image src="/images/ultratech-logo.webp" alt="UltraTech" width={44} height={44} loading="eager" />
+        <div className="ml-1 size-[44px] shrink-0 max-[300px]:hidden">
+          <Image src="/images/engineer-avatar.png" alt="" width={44} height={44} loading="eager" />
         </div>
         <div className="ml-[10px] min-w-0 flex-1">
-          <p className="truncate text-[17px] leading-[20px] font-[590] text-white max-[359px]:text-[15px]">UltraTech Engineer</p>
-          <p className="mt-[3px] flex items-center gap-[6px] text-[13px] leading-[16px] text-white/82" role="status">
+          <p translate="no" className="truncate text-[17px] leading-[20px] font-[590] text-ink max-[359px]:text-[15px]">UltraTech Engineer</p>
+          <p className="mt-[3px] flex items-center gap-[6px] text-[13px] leading-[16px] text-ink-2" role="status">
             {online === false ? (
-              <span className="size-[7px] rounded-full bg-white/40" aria-hidden />
+              <span className="size-[7px] rounded-full bg-muted/50" aria-hidden />
             ) : (
               <Icon src="/icons/online-dot.svg" size={7} className={online ? "" : "opacity-50"} />
             )}
@@ -65,7 +65,7 @@ export function KeyboardButton({ onClick }: { onClick: () => void }) {
       type="button"
       onClick={onClick}
       aria-label="Type instead"
-      className={`grid size-9 shrink-0 place-items-center rounded-[18px] bg-white/20 transition-colors hover:bg-white/30 ${HIT_AREA}`}
+      className={`grid size-9 shrink-0 place-items-center rounded-full border border-line-2 bg-paper transition-colors hover:bg-sand ${HIT_AREA}`}
     >
       <Icon src="/icons/keyboard.svg" size={20} />
     </button>
@@ -85,6 +85,19 @@ export function HeaderMenu({ items }: { items: MenuItem[] }) {
 
   useEffect(() => {
     if (open) listRef.current?.querySelector<HTMLButtonElement>("[role=menuitem]")?.focus();
+  }, [open]);
+
+  // Close on any tap / click outside the menu and its button (a document listener, not a
+  // full-screen backdrop div, which a transformed or filtered header would clip to its own box).
+  useEffect(() => {
+    if (!open) return;
+    const onPointerDown = (e: PointerEvent) => {
+      const target = e.target as Node;
+      if (listRef.current?.contains(target) || triggerRef.current?.contains(target)) return;
+      setOpen(false);
+    };
+    document.addEventListener("pointerdown", onPointerDown);
+    return () => document.removeEventListener("pointerdown", onPointerDown);
   }, [open]);
 
   function close() {
@@ -116,43 +129,40 @@ export function HeaderMenu({ items }: { items: MenuItem[] }) {
         aria-label="More options"
         aria-expanded={open}
         aria-haspopup="menu"
-        className={`grid size-9 shrink-0 place-items-center rounded-[18px] bg-white/20 transition-colors hover:bg-white/30 ${HIT_AREA}`}
+        className={`grid size-9 shrink-0 place-items-center rounded-full border border-line-2 bg-paper transition-colors hover:bg-sand ${HIT_AREA}`}
       >
         <Icon src="/icons/more.svg" size={22} />
       </button>
       <AnimatePresence>
         {open && (
-          <>
-            <div aria-hidden className="fixed inset-0 z-10" onClick={() => setOpen(false)} />
-            <motion.ul
-              ref={listRef}
-              role="menu"
-              aria-label="More options"
-              onKeyDown={onKeyDown}
-              initial={{ opacity: 0, y: -6, scale: 0.97 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, y: -6, scale: 0.97 }}
-              transition={{ duration: 0.16 }}
-              // Solid, not glass: a backdrop blur nested inside the glass header doesn't blur the chat behind it.
-              className="absolute top-[76px] right-0 z-20 w-[220px] origin-top-right overflow-hidden rounded-[20px] border border-white/15 bg-surface p-1.5 shadow-[0_12px_32px_rgb(0_0_0/0.5)]"
-            >
-              {items.map((item) => (
-                <li key={item.label} role="none">
-                  <button
-                    type="button"
-                    role="menuitem"
-                    onClick={() => {
-                      setOpen(false);
-                      item.run();
-                    }}
-                    className="relative w-full rounded-[14px] px-3.5 py-2.5 text-left text-[15px] font-[510] text-white transition-colors hover:bg-white/10 focus-visible:bg-white/10"
-                  >
-                    {item.label}
-                  </button>
-                </li>
-              ))}
-            </motion.ul>
-          </>
+          <motion.ul
+            ref={listRef}
+            role="menu"
+            aria-label="More options"
+            onKeyDown={onKeyDown}
+            initial={{ opacity: 0, y: -6, scale: 0.97 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -6, scale: 0.97 }}
+            transition={{ duration: 0.16 }}
+            // Solid, not card: a backdrop blur nested inside the card header doesn't blur the chat behind it.
+            className="absolute top-[76px] right-0 z-20 w-[220px] origin-top-right overflow-hidden rounded-[20px] border border-line bg-paper p-1.5 shadow-[0_12px_32px_rgb(90_70_10/0.18)]"
+          >
+            {items.map((item) => (
+              <li key={item.label} role="none">
+                <button
+                  type="button"
+                  role="menuitem"
+                  onClick={() => {
+                    setOpen(false);
+                    item.run();
+                  }}
+                  className="relative w-full rounded-[14px] px-3.5 py-2.5 text-left text-[15px] font-[510] text-ink transition-colors hover:bg-sand focus-visible:bg-sand"
+                >
+                  {item.label}
+                </button>
+              </li>
+            ))}
+          </motion.ul>
         )}
       </AnimatePresence>
     </>

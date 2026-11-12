@@ -7,7 +7,7 @@ import { useApp } from "@/lib/store";
 import { Icon } from "../ui/Icon";
 
 type Facing = "environment" | "user";
-type CamState = "starting" | "ready" | "unavailable";
+type CamState = "starting" | "switching" | "ready" | "unavailable";
 
 const MAX_EDGE = 1280;
 
@@ -28,6 +28,9 @@ export function CameraScreen() {
   const streamRef = useRef<MediaStream | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
   const [facing, setFacing] = useState<Facing>("environment");
+  // Facing of the stream actually on screen. Mirroring follows this, not `facing`: flipping on the
+  // tap would mirror the old camera's picture for the moment before the new one opens.
+  const [shownFacing, setShownFacing] = useState<Facing | null>(null);
   const [cam, setCam] = useState<CamState>("starting");
   const [torch, setTorch] = useState(false);
   const [torchSupported, setTorchSupported] = useState(false);
@@ -37,6 +40,7 @@ export function CameraScreen() {
 
   useEffect(() => {
     let cancelled = false;
+    const video = videoRef.current;
     async function open() {
       if (!navigator.mediaDevices?.getUserMedia) {
         setCam("unavailable");
@@ -55,10 +59,18 @@ export function CameraScreen() {
         const track = stream.getVideoTracks()[0];
         const caps = track.getCapabilities?.() as MediaTrackCapabilities & { torch?: boolean };
         setTorchSupported(!!caps?.torch);
-        if (videoRef.current) {
-          videoRef.current.srcObject = stream;
-          await videoRef.current.play().catch(() => {});
+        if (video) {
+          video.srcObject = stream;
+          await video.play().catch(() => {});
+          // Reveal only once the new camera has a frame to show.
+          if (video.readyState < 2) {
+            await new Promise<void>((resolve) => video.addEventListener("loadeddata", () => resolve(), { once: true }));
+          }
         }
+        if (cancelled) return;
+        // Browsers may not honour facingMode (e.g. a laptop's single webcam): trust what the track reports.
+        const actual = track.getSettings?.().facingMode;
+        setShownFacing(actual === "user" || actual === "environment" ? actual : facing);
         setCam("ready");
       } catch {
         if (!cancelled) setCam("unavailable");
@@ -69,8 +81,17 @@ export function CameraScreen() {
       cancelled = true;
       streamRef.current?.getTracks().forEach((t) => t.stop());
       streamRef.current = null;
+      // Drop the old camera's last frame so it can't linger (or show mirrored) during a switch.
+      if (video) video.srcObject = null;
     };
   }, [facing]);
+
+  function switchCamera() {
+    if (cam !== "ready") return;
+    setCam("switching");
+    setTorch(false); // the front camera has no torch; a new stream starts with it off anyway
+    setFacing((f) => (f === "environment" ? "user" : "environment"));
+  }
 
   const toggleTorch = useCallback(async () => {
     const track = streamRef.current?.getVideoTracks()[0];
@@ -142,15 +163,17 @@ export function CameraScreen() {
           ref={videoRef}
           playsInline
           muted
-          className={`absolute inset-0 size-full object-cover ${facing === "user" ? "-scale-x-100" : ""}`}
+          className={`absolute inset-0 size-full object-cover transition-opacity duration-200 ${
+            cam === "ready" ? "opacity-100" : "opacity-0"
+          } ${shownFacing === "user" ? "-scale-x-100" : ""}`}
         />
         {(cam !== "ready" || fileError) && (
           <div
             className={`absolute inset-0 grid place-items-center p-8 text-center ${fileError ? "bg-viewfinder/90" : ""}`}
             role="status"
           >
-            {cam === "starting" && !fileError ? (
-              <p className="text-[14px] text-white/70">Opening camera…</p>
+            {(cam === "starting" || cam === "switching") && !fileError ? (
+              <p className="text-[14px] text-white/70">{cam === "switching" ? "Switching camera…" : "Opening camera…"}</p>
             ) : (
               <div className="flex flex-col items-center gap-3">
                 <p className="text-[15px] leading-[21px] text-white/85">
@@ -224,9 +247,10 @@ export function CameraScreen() {
         </motion.button>
         <button
           type="button"
-          onClick={() => setFacing((f) => (f === "environment" ? "user" : "environment"))}
+          onClick={switchCamera}
+          disabled={cam !== "ready"}
           aria-label="Switch camera"
-          className="glass-chip grid size-14 place-items-center justify-self-end rounded-[28px]"
+          className="glass-chip grid size-14 place-items-center justify-self-end rounded-[28px] transition-opacity disabled:opacity-50"
         >
           <Icon src="/camera/refresh.svg" size={24} />
         </button>

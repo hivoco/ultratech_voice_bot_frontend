@@ -22,7 +22,12 @@ export function longDuration(seconds: number): string {
   return m > 0 ? `${m} min ${rest} sec` : `${s} sec`;
 }
 
-/** Drop markdown emphasis/heading marks the model sometimes emits; lists and text stay. */
+/** Drop markdown marks the model sometimes emits (bold, *emphasis*, headings, `code`); list dashes become "•". */
 export function plainText(text: string): string {
-  return text.replace(/\*\*|__/g, "").replace(/^#{1,6}\s+/gm, "");
+  return text
+    .replace(/\*\*|__/g, "")
+    .replace(/^#{1,6}\s+/gm, "")
+    .replace(/^[ \t]*[-*][ \t]+/gm, "• ") // "- item" / "* item" lists
+    .replace(/(^|[\s(])[*_]([^*_\n]+)[*_](?=[\s.,!?;:)]|$)/gm, "$1$2") // *emphasis* / _emphasis_
+    .replace(/`([^`\n]+)`/g, "$1"); // `code`
 }

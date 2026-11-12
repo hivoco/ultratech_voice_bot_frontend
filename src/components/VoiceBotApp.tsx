@@ -6,9 +6,10 @@ import { AnimatePresence, MotionConfig, motion } from "motion/react";
 import dynamic from "next/dynamic";
 import { AppProvider, useApp } from "@/lib/store";
 import { ChatScreen } from "./screens/ChatScreen";
-import { LanguageScreen } from "./screens/LanguageScreen";
+// v5 asks for the language inside the chat; the old full-screen picker is kept but not shown.
+// import { LanguageScreen } from "./screens/LanguageScreen";
 
-// The first paint is always the language screen and chat comes right after it; the rest load on demand.
+// The first paint is always the chat; the rest load on demand.
 const VoiceScreen = dynamic(() => import("./screens/VoiceScreen").then((m) => m.VoiceScreen));
 const CameraScreen = dynamic(() => import("./screens/CameraScreen").then((m) => m.CameraScreen));
 const WrapUpScreen = dynamic(() => import("./screens/WrapUpScreen").then((m) => m.WrapUpScreen));
@@ -46,15 +47,11 @@ function Shell() {
   }, [screen]);
 
   return (
-    <div className="relative mx-auto flex h-dvh w-full max-w-[430px] flex-col overflow-hidden bg-surface sm:my-0 sm:shadow-[0_0_80px_rgba(0,0,0,0.6)]">
-      {/* "legibility" gradient from the Figma frames */}
-      <div
-        aria-hidden
-        className="pointer-events-none absolute inset-0 bg-[linear-gradient(to_bottom,rgba(20,15,8,0.1),rgba(20,15,8,0.35)_55%,rgba(15,10,5,0.62))]"
-      />
+    <div className="relative mx-auto flex h-dvh w-full max-w-[430px] flex-col overflow-hidden bg-page sm:my-0 sm:shadow-[0_0_80px_rgb(120_95_20/0.25)]">
 
-      {/* Not in AnimatePresence below: it would overlap the chat while animating out. */}
-      {screen === "language" && <LanguageScreen />}
+      {/* Old language screen (pre-v5), kept for reference. Not in AnimatePresence below: it would
+          overlap the chat while animating out.
+      {screen === "language" && <LanguageScreen />} */}
 
       {/* Chat stays mounted while other screens are open: draft text, scroll and bubbles survive. */}
       <Activity mode={screen === "chat" ? "visible" : "hidden"}>

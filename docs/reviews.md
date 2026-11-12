@@ -98,6 +98,48 @@ The remaining 2 chip renders per chunk are *Talk by voice* / *End chat*, whose h
 voice-call object. Typing: 1 `Composer` render per keystroke, 0 chat renders. End chat → summary
 ready: one render each. No console errors.
 
+**Re-run 2026-11-12** (v5 light design), same commit-hook scan on the dev server, with the
+streamed reply, summary and voice token mocked (no paid calls):
+
+| Phase | Renders |
+|---|---|
+| Typing 28 keystrokes | `Composer` 28 (one per key), chat 0 |
+| Send + streamed reply | `MessageRow` 3, `EngineerBubble` 2, `UserBubble` 1, `ActionChip` 4 |
+| End chat → summary ready | `MessageRow` 3, `SummaryCard` 1, `SummaryButton` 2 |
+| Menu open + close | `AnimatePresence` only |
+| Voice open (error) → *Type instead* | `VoiceScreen` 4, `VoiceOrb` 3, `VoiceControls` 4 |
+
+Same profile as before the redesign; only class names and the orb changed. The mocked reply arrives
+in one piece, so per-chunk counts weren't re-measured (render structure is unchanged). Console:
+only the mocked 503 from the voice token.
+
+## Web Interface Guidelines — 2026-11-12 (v5 light design)
+
+Vercel `web-design-guidelines` (rules fetched fresh) over `src/components/**`, `layout.tsx`,
+`globals.css`.
+
+Fixed:
+- Yellow buttons had no hover state (send / mic, PDF, Try again, End conversation, voice mic,
+  round voice buttons) → `hover:bg-brand-hover` (`#F5C800`) / `hover:bg-sand`.
+- Decorative loops (orb rings, mic ripple, camera tap-hint) kept pulsing opacity under
+  `prefers-reduced-motion` (`MotionConfig` only stops transforms) → stopped with `useReducedMotion`.
+- Headings without `text-wrap` → `text-balance` (language title, voice headline), `text-pretty`
+  (live transcript, wrap-up).
+- Composer input had no `name` → `name="message"`.
+- "UltraTech Engineer" title could be auto-translated → `translate="no"`.
+
+Checked, fine: contrast (muted 6.4:1, danger 5.0:1, grey voice headline 3.7:1 at 32 px bold),
+icon buttons labelled, `…` everywhere, `theme-color` matches the page, safe-area insets,
+`touch-action: manipulation`, images sized.
+
+Left as is (needs a decision):
+- **No confirm or undo on *End chat* / *End conversation*** — the guideline wants one for
+  destructive actions; the Figma flow has none.
+- **Sentence case** on buttons ("Book a site visit") — the guideline prefers Title Case; kept to
+  match the design.
+- `focus:outline-none` on the two screen wrappers (`VoiceBotApp.tsx`) — they're `tabIndex=-1`
+  focus targets moved to programmatically, not controls.
+
 ## Docs (`writing-guidelines`)
 
 Added a one-line summary to every page, linked all cross-references, unified backend setup in

@@ -4,7 +4,6 @@ export type Screen = "language" | "chat" | "voice" | "camera" | "wrapup";
 
 export interface Profile {
   uuid: string;
-  name?: string;
   lang?: LangChoice;
   stage?: Stage;
 }
@@ -24,7 +23,7 @@ export type ChatMessage =
       kind: "engineer";
       /** Regular-weight lead line (e.g. "Great, I'll talk with you in English."). */
       lead?: string;
-      /** Semibold prompt line (e.g. "What's your name?"). */
+      /** Semibold prompt line (e.g. "Which stage is your home at right now?"). */
       prompt?: string;
       /** Body text of an answer (transcript style). */
       text?: string;

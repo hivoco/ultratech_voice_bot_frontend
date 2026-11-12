@@ -1,0 +1,236 @@
+<!doctype html>
+{#-
+  UltraTech conversation summary PDF — Jinja2 template, A4 (794 × 1123 px at 96 dpi).
+  Filled by render_pdf.py; printed with headless Chromium (Playwright `page.pdf`).
+  Context (see render_pdf.py → build_context):
+    s           summary JSON from the Sarvam prompt (headline, highlight, action_groups, why)
+    meta        {session_id, date_label, lang, turns}
+    pages       [{kind: "plan"} | {kind: "transcript", turns: [...], first, last}]
+    total       number of pages
+    font_css    @font-face rules for Mukta 400/500/600/700 (embedded as data URIs)
+    avatar      data URI of the header avatar
+-#}
+<html lang="{{ meta.lang }}">
+<head>
+<meta charset="utf-8">
+<title>UltraTech Home-Building Expert — Conversation Summary</title>
+<style>
+{{ font_css | safe }}
+
+@page { size: A4; margin: 0; }
+
+/* Design tokens sampled from "Version 1 · Action plan" (Figma export). Font: Mukta (Hindi + Latin). */
+:root {
+  --ink: #1c1a14;
+  --ink-soft: #2e2c26;
+  --muted: #6f6a5f;
+  --brand: #ffd400;
+  --card: #ffffff;
+  --border: #e3ded2;
+  --green: #26a25a;
+  --why-bg: #fff6bf;
+  --why-border: #ebd76e;
+  --caller-bg: #faf2e2;
+  --caller-border: #e0dccb;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body {
+  font-family: "Mukta", sans-serif;
+  color: var(--ink);
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+}
+
+/* One sheet per page: fixed A4 box (794 × 1123 px), cream → yellow wash, footer pinned. */
+.page {
+  position: relative;
+  width: 210mm;
+  height: 297mm;
+  padding: 60px 48px 0;
+  overflow: hidden;
+  break-after: page;
+  background: linear-gradient(180deg, #fdf7eb 0%, #f9f3e1 68%, #fdf1c7 80%, #ffeda1 100%);
+}
+.page:last-child { break-after: auto; }
+
+/* Header */
+.head { display: flex; align-items: center; gap: 15px; }
+.head img { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; }
+.head .who { flex: 1; }
+.head .t { font-size: 15.5px; font-weight: 700; line-height: 20px; }
+.head .s { font-size: 11.5px; color: var(--muted); line-height: 16px; margin-top: 3px; }
+.tag {
+  background: var(--brand); border-radius: 999px; padding: 4px 13px 3px;
+  font-size: 10px; font-weight: 600; line-height: 18px; white-space: nowrap;
+}
+
+/* Page 1 — action plan */
+.pill-dark {
+  display: inline-block; margin-top: 58px; background: var(--ink); color: #fff;
+  border-radius: 999px; padding: 4px 11px 2px; font-size: 10px; font-weight: 600; line-height: 18px;
+}
+.headline { margin-top: 10px; font-size: 34px; line-height: 46px; font-weight: 700; letter-spacing: -0.2px; }
+.highlight {
+  margin-top: 18px; display: flex; align-items: center; gap: 10px;
+  background: var(--card); border: 1px solid var(--border); border-radius: 14px;
+  padding: 10px 15px 8px; font-size: 14.5px; font-weight: 500; line-height: 24px;
+}
+.check {
+  flex: none; width: 21px; height: 21px; border-radius: 50%; background: var(--green);
+  color: #fff; font-size: 12px; font-weight: 700; display: grid; place-items: center; margin-top: -2px;
+}
+.chips { margin-top: 15px; display: flex; flex-wrap: wrap; gap: 8px; }
+.chip {
+  border: 1px solid var(--border); background: var(--card); border-radius: 999px;
+  padding: 3px 12px 1px; font-size: 9px; line-height: 19px; color: var(--muted);
+}
+
+.cols { margin-top: 24px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; }
+.col {
+  background: var(--card); border: 1px solid var(--border); border-radius: 16px;
+  padding: 18px 15px 16px;
+}
+.col h3 { font-size: 15px; font-weight: 700; line-height: 22px; }
+.col .bar { width: 35px; height: 3px; background: var(--brand); border-radius: 2px; margin: 8px 0 16px; }
+.col ol { list-style: none; display: grid; gap: 13px; }
+.col li { display: flex; gap: 10px; font-size: 12.5px; line-height: 19.5px; }
+.num {
+  flex: none; width: 17px; height: 17px; border-radius: 50%; background: var(--brand);
+  font-size: 9.5px; font-weight: 700; line-height: 17px; text-align: center; margin-top: 1px;
+}
+
+.why {
+  margin-top: 22px; background: var(--why-bg); border: 1.5px solid var(--why-border); border-radius: 18px;
+  padding: 20px 21px 21px;
+}
+.why .top { display: flex; align-items: center; gap: 10px; }
+.why .label { background: var(--brand); border-radius: 999px; padding: 3px 11px 1px; font-size: 10px; font-weight: 600; line-height: 18px; }
+.why h4 { font-size: 15px; font-weight: 700; line-height: 22px; }
+.why p { margin-top: 12px; font-size: 13.5px; line-height: 21px; font-weight: 500; }
+.flow { margin-top: 13px; display: flex; flex-wrap: wrap; align-items: center; gap: 7px; }
+.w { border-radius: 999px; padding: 3px 13px 1px; font-size: 10px; line-height: 20px; font-weight: 500; }
+.w.from { background: var(--card); border: 1px solid var(--border); }
+.w.to { background: var(--ink); color: #fff; }
+.arrow { display: inline-flex; align-items: center; gap: 5px; font-size: 10px; line-height: 20px; color: var(--muted); margin: 0 3px; }
+.check svg, .arrow svg { display: block; }
+
+/* Transcript pages */
+.tt { margin-top: 62px; font-size: 23px; line-height: 30px; font-weight: 700; }
+.range { margin-top: 12px; font-size: 10px; line-height: 14px; color: var(--muted); }
+.turns { margin-top: 16px; display: grid; gap: 11px; }
+.turn {
+  display: flex; gap: 12px; background: var(--card); border: 1px solid var(--border); border-radius: 14px;
+  padding: 13px 16px 13px 14px; break-inside: avoid;
+}
+.turn .n {
+  flex: none; width: 23px; height: 23px; border-radius: 50%; background: var(--brand);
+  font-size: 10px; font-weight: 700; line-height: 23px; text-align: center;
+}
+.turn .body { flex: 1; display: grid; gap: 11px; }
+.line { display: flex; align-items: flex-start; gap: 11px; font-size: 12.5px; line-height: 20px; color: var(--ink-soft); }
+.line.q { font-weight: 500; color: var(--ink); }
+.who-pill {
+  flex: none; width: 50px; text-align: center; border-radius: 999px;
+  font-size: 9.5px; font-weight: 600; line-height: 21px; margin-top: -1px;
+}
+.who-pill.caller { background: var(--caller-bg); border: 1px solid var(--caller-border); }
+.who-pill.expert { background: var(--brand); border: 1px solid var(--brand); }
+.cut { color: var(--muted); font-style: italic; }
+
+/* Footer */
+.foot {
+  position: absolute; left: 48px; right: 48px; bottom: 70px;
+  display: flex; justify-content: space-between; font-size: 9px; color: var(--muted);
+}
+.foot b { font-size: 10px; font-weight: 600; color: var(--ink); }
+</style>
+</head>
+<body>
+{%- for page in pages %}
+<section class="page">
+  <header class="head">
+    <img src="{{ avatar }}" alt="">
+    <div class="who">
+      <div class="t">UltraTech Home-Building Expert</div>
+      <div class="s">Conversation Summary</div>
+    </div>
+    <div class="tag">UltraTech · The Engineer's Choice</div>
+  </header>
+
+  {%- if page.kind == "plan" %}
+  <span class="pill-dark">Summary · सारांश</span>
+  <h1 class="headline">{{ s.headline }}</h1>
+
+  {%- if s.highlight %}
+  {#- ✓ and → are drawn as SVG: Mukta has no glyphs for them, and a server may lack fallback fonts. #}
+  <div class="highlight"><span class="check"><svg width="11" height="11" viewBox="0 0 12 12" fill="none"
+    stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 6.3 5 8.7l4.6-5.2"/></svg></span>{{ s.highlight }}</div>
+  {%- endif %}
+
+  <div class="chips">
+    <span class="chip">Session: {{ meta.session_id }}</span>
+    <span class="chip">{{ meta.date_label }}</span>
+    <span class="chip">Language: {{ meta.lang }}</span>
+    <span class="chip">Turns: {{ meta.turns }}</span>
+  </div>
+
+  {%- if s.action_groups %}
+  <div class="cols">
+    {%- for g in s.action_groups %}
+    <div class="col">
+      <h3>{{ g.title }}</h3>
+      <div class="bar"></div>
+      <ol>
+        {%- for p in g.points %}
+        <li><span class="num">{{ loop.index }}</span><span>{{ p }}</span></li>
+        {%- endfor %}
+      </ol>
+    </div>
+    {%- endfor %}
+  </div>
+  {%- endif %}
+
+  {%- if s.why and s.why.text %}
+  <div class="why">
+    <div class="top"><span class="label">Expert ki salah</span><h4>{{ s.why.title }}</h4></div>
+    <p>{{ s.why.text }}</p>
+    {%- if s.why.diagram and s.why.diagram.from and s.why.diagram.to %}
+    <div class="flow">
+      {%- for w in s.why.diagram.from %}<span class="w from">{{ w }}</span>{% endfor %}
+      <span class="arrow">{{ arrow_svg | safe }}{{ s.why.diagram.label }}{{ arrow_svg | safe }}</span>
+      {%- for w in s.why.diagram.to %}<span class="w to">{{ w }}</span>{% endfor %}
+    </div>
+    {%- endif %}
+  </div>
+  {%- endif %}
+
+  {%- else %}
+  <h2 class="tt">Full Transcript</h2>
+  <p class="range">Turns {{ page.first }}–{{ page.last }} of {{ meta.turns }}</p>
+  <div class="turns">
+    {%- for t in page.turns %}
+    <div class="turn">
+      <span class="n">{{ t.n }}</span>
+      <div class="body">
+        {%- if t.caller %}
+        <div class="line q"><span class="who-pill caller">Caller</span><span>{{ t.caller }}</span></div>
+        {%- endif %}
+        {%- if t.bot %}
+        <div class="line"><span class="who-pill expert">Expert</span>
+          <span>{{ t.bot }}{% if t.interrupted %} <span class="cut">{{ cut_label }}</span>{% endif %}</span></div>
+        {%- endif %}
+      </div>
+    </div>
+    {%- endfor %}
+  </div>
+  {%- endif %}
+
+  <footer class="foot">
+    <span>UltraTech Home-Building Expert — Conversation Summary</span>
+    <b>{{ loop.index }} / {{ total }}</b>
+  </footer>
+</section>
+{%- endfor %}
+</body>
+</html>

@@ -18,7 +18,7 @@ export function Chip({ label, selected, disabled, onClick, lang }: ChipProps) {
       disabled={disabled}
       aria-pressed={selected}
       className={`flex h-8 shrink-0 items-center gap-1.5 rounded-full px-3 text-[13px] whitespace-nowrap transition-[background-color,transform] active:scale-95 disabled:cursor-default disabled:active:scale-100 ${
-        selected ? "bg-brand font-[590] text-ink" : "bg-white/16 font-[510] text-white enabled:hover:bg-white/24"
+        selected ? "border border-brand bg-brand font-[590] text-ink" : "border border-line-2 bg-paper font-[510] text-ink enabled:hover:bg-sand"
       }`}
     >
       {selected && <Icon src="/icons/check.svg" size={14} />}

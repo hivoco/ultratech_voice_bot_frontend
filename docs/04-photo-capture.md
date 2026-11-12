@@ -14,6 +14,12 @@ Figma: **04a · Camera — Crack photo**, **04b · Voice transcript — Photo di
 - Tips chips *Close to the crack* / *In good light* + hint line.
 - Bottom: last-photo thumbnail (yellow border; opens the gallery picker) · shutter
   (`shutter.svg`, white flash on capture) · switch camera (front/back).
+- **Switching camera:** the tap stops the old camera, hides the viewfinder and shows *Switching
+  camera…* (switch button disabled, torch reset). The new feed fades in once its first frame is
+  ready. The front camera is mirrored like a selfie view, but the mirroring follows the camera
+  actually on screen (`shownFacing`, from the track's `facingMode`), never the one just tapped
+  for. Before this, the old camera's picture flipped sideways for a moment before the new one
+  opened. Photos are saved unmirrored.
 - No camera or permission denied ⇒ *Choose a photo* gallery fallback
   (`<input type=file accept=image/* capture=environment>`).
 

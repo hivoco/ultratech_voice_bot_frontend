@@ -41,10 +41,10 @@ const PHASE_ANNOUNCE = {
 } as const;
 
 // Big status text; smaller on narrow screens (a phone at 200% zoom is ~215 px wide).
-const HEADING = "text-glow text-[32px] leading-[38px] font-bold text-white max-[300px]:text-[24px] max-[300px]:leading-[30px]";
+const HEADING = "text-balance text-[32px] leading-[38px] font-bold text-ink max-[300px]:text-[24px] max-[300px]:leading-[30px]";
 
 // The live question: same size as the answer, so long speech stays readable and doesn't jump between states.
-const LIVE_TEXT = "text-glow text-[23px] leading-[31px] font-bold text-white max-[300px]:text-[19px] max-[300px]:leading-[26px]";
+const LIVE_TEXT = "text-pretty text-[23px] leading-[31px] font-bold text-ink max-[300px]:text-[19px] max-[300px]:leading-[26px]";
 
 const ORB_LABEL: Record<OrbMode, string> = {
   listening: "Listening",
@@ -72,6 +72,8 @@ export function VoiceScreen() {
 
   let hint = "";
   if (phase === "thinking") hint = "Thinking about your question…";
+  // v5 "Orb · Listening": the caption under the orb while the mic is open.
+  else if (phase === "listening" && status === "live" && voice.micEnabled) hint = "Listening… speak naturally";
   else if (phase === "speaking") hint = "Tap the orb if you want to interrupt";
   else if (status === "live" && !voice.micEnabled) hint = "Microphone is muted";
 
@@ -97,7 +99,7 @@ export function VoiceScreen() {
           {errored ? (
             <motion.div key="error" {...fade} role="alert">
               <h2 className={HEADING}>{ERROR_COPY[voice.errorKind ?? "dropped"].title}</h2>
-              <p className="text-glow mt-2 text-[18px] leading-[25px] text-white/70 max-[300px]:text-[15px] max-[300px]:leading-[21px]">
+              <p className="mt-2 text-[18px] leading-[25px] text-muted max-[300px]:text-[15px] max-[300px]:leading-[21px]">
                 {ERROR_COPY[voice.errorKind ?? "dropped"].body}
               </p>
             </motion.div>
@@ -105,17 +107,17 @@ export function VoiceScreen() {
             <motion.div key="speaking" {...fade}>
               {question && (
                 <>
-                  <p className="text-glow text-[13px] leading-4 font-[510] text-white opacity-60">You asked</p>
-                  <p className="text-glow mt-0.5 line-clamp-2 text-[16px] short:line-clamp-1 leading-[22px] font-[510] text-white/75">{question}</p>
+                  <p className="text-[13px] leading-4 font-[510] text-muted">You asked</p>
+                  <p className="mt-0.5 line-clamp-2 text-[16px] short:line-clamp-1 leading-[22px] font-[510] text-ink-2">{question}</p>
                 </>
               )}
-              <p className="mt-4 text-[23px] leading-[31px] font-bold text-white tiny:mt-2 max-[300px]:text-[19px] max-[300px]:leading-[26px]">
+              <p className="mt-4 text-[23px] leading-[31px] font-bold text-ink tiny:mt-2 max-[300px]:text-[19px] max-[300px]:leading-[26px]">
                 {plainText([agent?.final, agent?.interim].filter(Boolean).join(" "))}
               </p>
             </motion.div>
           ) : phase === "connecting" ? (
             <motion.h2 key="connecting" {...fade} className={HEADING}>
-              Connecting you to <span className="text-white/55">the UltraTech Engineer…</span>
+              Connecting you to <span className="text-muted-2">the UltraTech Engineer…</span>
             </motion.h2>
           ) : showQuestion ? (
             <motion.h2 key="question" {...fade} className={LIVE_TEXT}>
@@ -123,13 +125,13 @@ export function VoiceScreen() {
                 question
               ) : (
                 <>
-                  {user?.final} <span className="text-white/75">{user?.interim}</span>
+                  {user?.final} <span className="text-muted-2">{user?.interim}</span>
                 </>
               )}
             </motion.h2>
           ) : (
             <motion.h2 key="idle" {...fade} className={HEADING}>
-              I&apos;m listening. <span className="text-white/55">Ask anything about building your home.</span>
+              I&apos;m listening. <span className="text-muted-2">Ask anything about building your home.</span>
             </motion.h2>
           )}
         </AnimatePresence>
@@ -139,8 +141,8 @@ export function VoiceScreen() {
         {/* The text area and this block split the free height evenly, whatever the text length (see TextArea),
             and the orb is sized by screen height only: the orb, hint and controls stay put in every state. On the smallest screens the error screen drops it (only a status picture there), and
             phones held sideways drop it in every state so the text stays readable. */}
-        <div className={`flex h-[158px] w-full items-center justify-center short:h-[132px] tiny:h-[99px] flat:hidden ${errored ? "tiny:hidden" : ""}`}>
-          <div className="scale-[0.72] short:scale-[0.6] tiny:scale-[0.45]">
+        <div className={`flex h-[240px] w-full items-center justify-center short:h-[158px] tiny:h-[99px] flat:hidden ${errored ? "tiny:hidden" : ""}`}>
+          <div className="short:scale-[0.72] tiny:scale-[0.45]">
             <VoiceOrb
               mode={orbMode}
               active={phase === "speaking" || userTalking}
@@ -156,7 +158,7 @@ export function VoiceScreen() {
                 <button
                   type="button"
                   onClick={retry}
-                  className="flex items-center gap-1.5 rounded-full bg-brand px-4 py-2.5 text-[14px] font-[590] text-ink transition-transform active:scale-95"
+                  className="flex items-center gap-1.5 rounded-full bg-brand px-4 py-2.5 text-[14px] font-[590] text-ink transition-[background-color,transform] hover:bg-brand-hover active:scale-95"
                 >
                   <Icon src="/icons/retry.svg" size={16} />
                   Try again
@@ -164,7 +166,7 @@ export function VoiceScreen() {
                 <button
                   type="button"
                   onClick={() => void endVoice()}
-                  className="flex items-center gap-1.5 rounded-full bg-white/16 px-4 py-2.5 text-[14px] font-[590] text-white transition-transform active:scale-95"
+                  className="flex items-center gap-1.5 rounded-full border border-line-2 bg-paper px-4 py-2.5 text-[14px] font-[590] text-ink transition-[background-color,transform] hover:bg-sand active:scale-95"
                 >
                   <Icon src="/icons/keyboard-small.svg" size={16} />
                   Type instead
@@ -174,7 +176,7 @@ export function VoiceScreen() {
               <motion.p
                 key={hint}
                 {...fade}
-                className={phase === "thinking" ? "text-[14px] text-white/80" : "text-[13px] text-white/70"}
+                className={phase === "speaking" ? "text-[13px] text-[#484435]" : "text-[14px] text-[#484435]"}
               >
                 {phase === "speaking" ? (
                   // Without the orb (phones held sideways) talking over the engineer interrupts it.

@@ -23,7 +23,7 @@ Figma: **06 · Wrap-up — Thank you** (`116:1638`).
 - Ending from the header menu during a live call now goes through `endVoice`, so the call
   transcript is added to the chat (and the PDF) before the wrap-up screen opens.
 - **End conversation** (full-width yellow, 50 px, radius 18) resets the conversation and the
-  backend text session but keeps the saved profile, so the user lands on *Welcome back, {name}!*.
+  backend text session but keeps the saved profile, so the user lands on *Namaste! I'm with you at the {stage} stage.* (or the stage question if none was picked).
 - Header back returns to the conversation untouched.
 
 Code: `src/components/screens/WrapUpScreen.tsx`, `src/lib/summaryPdf.ts` (print

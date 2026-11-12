@@ -6,7 +6,7 @@ Start here. Each doc below covers **one** topic or use case; read only the ones 
 
 | # | Use case | Doc | Main code |
 |---|---|---|---|
-| 1 | Onboarding: language (every load) → name → home stage | [docs/01-onboarding.md](docs/01-onboarding.md) | `src/lib/store.tsx`, `src/components/screens/LanguageScreen.tsx`, `src/components/screens/ChatScreen.tsx`, `src/components/ui/Chip.tsx` |
+| 1 | Onboarding in the chat: language (every load) → home stage (no name step) | [docs/01-onboarding.md](docs/01-onboarding.md) | `src/lib/store.tsx`, `src/components/screens/ChatScreen.tsx`, `src/components/ui/Chip.tsx` |
 | 2 | Real-time voice call (LiveKit) | [docs/02-voice-call.md](docs/02-voice-call.md) | `src/lib/useVoiceCall.ts`, `src/components/screens/VoiceScreen.tsx` |
 | 3 | Text chat + call transcript + End chat / PDF card | [docs/03-text-chat.md](docs/03-text-chat.md) | `src/lib/api.ts`, `src/components/chat/*`, `src/lib/useConversationSummary.ts` |
 | 4 | Photo capture | [docs/04-photo-capture.md](docs/04-photo-capture.md) | `src/components/screens/CameraScreen.tsx` |
@@ -36,7 +36,7 @@ Start here. Each doc below covers **one** topic or use case; read only the ones 
 
 ## Known backend gaps (UI ready, backend TODO)
 
-- Name + stage not sent to the backend — [01](docs/01-onboarding.md#backend-gap)
+- Stage not sent to the backend — [01](docs/01-onboarding.md#backend-gap)
 - Language not sent for typed chat, voice only — [01](docs/01-onboarding.md#backend-gap)
 - Tap-to-interrupt `control` topic — [02](docs/02-voice-call.md#tap-to-interrupt)
 - No photo / vision endpoint — [04](docs/04-photo-capture.md#backend-gap)
@@ -44,7 +44,8 @@ Start here. Each doc below covers **one** topic or use case; read only the ones 
 
 ## Rules for changes
 
-- UI must match the Figma file (ULTRA-TECH PLAYER, node `116:1636`). Assets live in `public/`
+- UI must match the Figma file (ULTRA-TECH PLAYER, v5 sections `193:7231` text and `193:6435` voice;
+  frames saved in `docs/design/v5/`). Assets live in `public/`
   exactly as exported — don't redraw or recolour them.
 - The browser never calls the backend directly; add a route under `src/app/api/` instead, and
   run its body through `guardPost` (`src/lib/guard.ts`).

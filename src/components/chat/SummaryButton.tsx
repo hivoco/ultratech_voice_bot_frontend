@@ -8,7 +8,7 @@ import { useConversationSummary } from "@/lib/useConversationSummary";
  * `turns` pins it to the conversation as it was when the card appeared, so later questions don't
  * trigger another paid summary from a card higher up the chat.
  */
-export function SummaryButton({ secondary = false, turns }: { secondary?: boolean; turns?: number }) {
+export function SummaryButton({ compact = false, turns }: { compact?: boolean; turns?: number }) {
   const { query, download } = useConversationSummary(turns);
   const busy = query.isFetching;
   return (
@@ -18,21 +18,21 @@ export function SummaryButton({ secondary = false, turns }: { secondary?: boolea
       disabled={busy}
       aria-busy={busy}
       whileTap={{ scale: 0.98 }}
-      className={`flex h-[50px] w-full items-center justify-center gap-2 px-4 text-[15px] font-[590] disabled:opacity-80 ${
-        secondary ? "rounded-[18px] bg-white/16 text-white" : "rounded-[16px] bg-brand text-ink"
+      className={`flex h-[50px] w-full items-center justify-center gap-2 bg-brand transition-colors enabled:hover:bg-brand-hover text-[15px] font-[590] text-ink disabled:opacity-80 ${
+        compact ? "rounded-[18px] px-3" : "rounded-[16px] px-4"
       }`}
     >
       {busy ? (
         <>
           <span aria-hidden className="size-4 animate-spin rounded-full border-2 border-current/25 border-t-current" />
-          Preparing your summary…
+          {compact ? "Preparing…" : "Preparing your summary…"}
         </>
       ) : query.isError ? (
-        "Couldn't prepare the PDF · Try again"
+        compact ? "Try again" : "Couldn't prepare the PDF · Try again"
       ) : (
         <>
-          <PdfGlyph />
-          Get your conversation summary (PDF)
+          {!compact && <PdfGlyph />}
+          {compact ? "Download PDF" : "Get your conversation summary (PDF)"}
         </>
       )}
     </motion.button>

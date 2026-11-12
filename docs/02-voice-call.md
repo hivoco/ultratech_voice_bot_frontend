@@ -24,10 +24,10 @@ The agent worker joins automatically and greets first — nothing to trigger.
 | phase | Figma | Top text | Orb |
 |---|---|---|---|
 | `connecting` | — | *Connecting you to the UltraTech Engineer…* | listening |
-| `listening` | 02 | user's words at 23/31: final = white, interim = 75 % white (or *I'm listening…*) | bars animate while the user talks |
-| `thinking` | 02b | the question, all white · hint *Thinking about your question…* | `orb-thinking.svg`, gentle pulse |
-| `speaking` | 02c | *You asked* + question, live caption, all white (LiveKit only sends words as they are spoken) · hint *Tap the orb if you want to interrupt* | bars animate |
-| error | 02d | *Couldn't hear you* (mic blocked) / *Couldn't connect* (token or room failed) / *Couldn't hear that clearly* (dropped) + **Try again** / **Type instead** | muted core, bars 35 % |
+| `listening` | 02 | user's words at 23/31: final = ink, interim = muted (or *I'm listening…*) · hint *Listening… speak naturally* (mic on) | gradient ring + faint outer rings + glow; bars animate while the user talks |
+| `thinking` | 02b | the question, ink · hint *Thinking about your question…* | pale track + spinning yellow → orange arc, glow, three dots |
+| `speaking` | 02c | *You asked* + question, live caption, ink (LiveKit only sends words as they are spoken) · hint *Tap the orb if you want to interrupt* | bars animate |
+| error | 02d | *Couldn't hear you* (mic blocked) / *Couldn't connect* (token or room failed) / *Couldn't hear that clearly* (dropped) + **Try again** / **Type instead** | dashed ring, faded photo, red dot + grey dots, no glow |
 
 ## Layout
 

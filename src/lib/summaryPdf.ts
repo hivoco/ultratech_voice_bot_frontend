@@ -8,13 +8,13 @@ import type { ConversationSummary, TranscriptTurn } from "./api";
 const esc = (s: string) =>
   s.replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]!);
 
-function summaryHtml(data: ConversationSummary, transcript: TranscriptTurn[], name?: string): string {
+function summaryHtml(data: ConversationSummary, transcript: TranscriptTurn[]): string {
   const hi = data.lang === "hi";
   const date = new Date().toLocaleString(hi ? "hi-IN" : "en-IN", { dateStyle: "long", timeStyle: "short" });
   const rows = transcript
     .map(
       (t) =>
-        `<div class="turn"><p class="who">${esc(name || "You")}</p><p>${esc(t.caller)}</p>` +
+        `<div class="turn"><p class="who">You</p><p>${esc(t.caller)}</p>` +
         `<p class="who">UltraTech Engineer</p><p>${esc(t.bot)}</p></div>`,
     )
     .join("");
@@ -35,18 +35,18 @@ function summaryHtml(data: ConversationSummary, transcript: TranscriptTurn[], na
   .who { font-weight: 700; font-size: 9.5pt; color: #6b6457; margin-bottom: 2px !important; }
 </style></head><body>
 <header><h1>UltraTech Home-Building Expert</h1>
-<p class="meta">Conversation summary${name ? ` · ${esc(name)}` : ""} · ${esc(date)} · ${data.turns} questions</p></header>
+<p class="meta">Conversation summary · ${esc(date)} · ${data.turns} questions</p></header>
 <h2>Summary</h2><p class="summary">${esc(data.summary.trim() || "No summary available.")}</p>
 <h2>Full conversation</h2>${rows}
 </body></html>`;
 }
 
 /** Open the browser print dialog for the summary (Save as PDF), from a hidden iframe. */
-export function printSummary(data: ConversationSummary, transcript: TranscriptTurn[], name?: string): void {
+export function printSummary(data: ConversationSummary, transcript: TranscriptTurn[]): void {
   const frame = document.createElement("iframe");
   frame.setAttribute("aria-hidden", "true");
   frame.style.cssText = "position:fixed;right:0;bottom:0;width:0;height:0;border:0;visibility:hidden";
-  frame.srcdoc = summaryHtml(data, transcript, name);
+  frame.srcdoc = summaryHtml(data, transcript);
   frame.onload = () => {
     const win = frame.contentWindow;
     if (!win) return frame.remove();

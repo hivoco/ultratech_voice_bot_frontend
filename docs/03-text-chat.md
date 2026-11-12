@@ -32,6 +32,14 @@ A call ended with ✕ **End chat** also gets the PDF summary card after its tran
 typing; the chip hides once a new message is sent. Back / keyboard leave the call without the
 card.
 
+## Scrolling and "jump to latest"
+
+New messages and streamed replies keep the chat pinned to the bottom **only while the reader is
+there** (within 80 px). Scrolling up to re-read stops the auto-follow and shows a round **↓**
+button (solid surface, yellow arrow, bottom-centre above the composer). Tapping it smooth-scrolls
+to the newest message and hides it. Sending a message always jumps to the bottom. Only an upward
+scroll hides the bottom state, so the app's own smooth scroll never flashes the button.
+
 ## Ending a chat
 
 Once onboarding is done, an action row sits above the composer: 🌐 *{language}* (opens the

@@ -1,7 +1,8 @@
 "use client";
 
-import { memo, useEffect, useRef } from "react";
-import { GREETING_ID, useApp } from "@/lib/store";
+import { memo, useEffect, useRef, useState } from "react";
+import { AnimatePresence, motion } from "motion/react";
+import { GREETING_ID, GREETING_LANG_ID, useApp } from "@/lib/store";
 import { LANG_LABEL, STAGES, type ChatMessage, type LangChoice, type Stage } from "@/lib/types";
 import { Header, HeaderMenu, type MenuItem } from "../ui/Header";
 import { Chip } from "../ui/Chip";
@@ -35,18 +36,44 @@ export function ChatScreen() {
 
   const lastMessage = messages.at(-1);
   const scrollKey = `${messages.length}:${lastMessage?.kind === "engineer" ? (lastMessage.text?.length ?? 0) : 0}`;
-  useEffect(() => {
+  // Follow new messages only while the reader is at the bottom (or just sent one); someone who
+  // scrolled up to re-read isn't yanked down, and gets the "jump to latest" button instead.
+  const [atBottom, setAtBottom] = useState(true);
+  const lastTopRef = useRef(0);
+  const seenCountRef = useRef(messages.length);
+
+  function scrollToLatest() {
     const el = scrollRef.current;
     if (!el) return;
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     el.scrollTo({ top: el.scrollHeight, behavior: reduce ? "auto" : "smooth" });
+    setAtBottom(true);
+  }
+
+  useEffect(() => {
+    // A send adds the question and the reply placeholder together, so check every new message.
+    const sentNow = messages.slice(seenCountRef.current).some((m) => m.kind === "user");
+    seenCountRef.current = messages.length;
+    if (!atBottom && !sentNow) return;
+    scrollToLatest();
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- follow content changes only, not scroll state
   }, [scrollKey]);
+
+  function onScroll() {
+    const el = scrollRef.current;
+    if (!el) return;
+    const fromBottom = el.scrollHeight - el.scrollTop - el.clientHeight;
+    // Only a scroll *up* counts as leaving the bottom: our own smooth scroll only moves down, so a
+    // tall new message doesn't flash the button while it scrolls into view.
+    if (fromBottom < 80) setAtBottom(true);
+    else if (el.scrollTop < lastTopRef.current - 2) setAtBottom(false);
+    lastTopRef.current = el.scrollTop;
+  }
 
   const menu: MenuItem[] = state.ended
     ? [{ label: "Start a new chat", run: restart }]
     : [
-        // Not before the name is known: the language reply goes on to greet the user by name.
-        ...(profile.lang && profile.name ? [{ label: "Change language", run: changeLanguage }] : []),
+        ...(profile.lang ? [{ label: "Change language", run: changeLanguage }] : []),
         { label: "Talk by voice", run: startVoice },
         { label: "End chat", run: endChat },
       ];
@@ -54,36 +81,60 @@ export function ChatScreen() {
   return (
     <>
       <Header onBack={() => goTo("wrapup")} backLabel="Finish conversation" trailing={<HeaderMenu items={menu} />} />
-      <main
-        ref={scrollRef}
-        className="no-scrollbar min-h-0 flex-1 overflow-y-auto overscroll-contain px-4 pt-[18px] pb-4 [mask-image:linear-gradient(to_bottom,transparent,#000_14px,#000_calc(100%-14px),transparent)]"
-      >
-        <div
-          role="log"
-          aria-label="Conversation"
-          aria-relevant="additions"
-          aria-busy={streaming}
-          lang={profile.lang === "hi" ? "hi" : undefined}
-          className="flex flex-col gap-3"
+      <div className="relative flex min-h-0 flex-1 flex-col">
+        <main
+          ref={scrollRef}
+          onScroll={onScroll}
+          className="no-scrollbar min-h-0 flex-1 overflow-y-auto overscroll-contain px-4 pt-[18px] pb-4 [mask-image:linear-gradient(to_bottom,transparent,#000_14px,#000_calc(100%-14px),transparent)]"
         >
-          {messages.map((m, idx) => (
-            <MessageRow
-              key={m.id}
-              m={m}
-              // Only what each row needs, so a streamed chunk re-renders just the streaming bubble.
-              optionsActive={
-                m.kind === "engineer" &&
-                ((m.options === "lang" && idx === lastLangIdx) || (m.options === "stage" && idx === lastStageIdx && !profile.stage))
-              }
-              selected={m.kind === "engineer" ? (m.options === "lang" ? profile.lang : m.options === "stage" ? profile.stage : undefined) : undefined}
-              sending={m.kind === "engineer" && m.error ? sending : false}
-              onLang={chooseLang}
-              onStage={chooseStage}
-              onRetry={m.kind === "engineer" && m.error ? submitText : undefined}
-            />
-          ))}
-        </div>
-      </main>
+          <div
+            role="log"
+            aria-label="Conversation"
+            aria-relevant="additions"
+            aria-busy={streaming}
+            lang={profile.lang === "hi" ? "hi" : undefined}
+            className="flex flex-col gap-3"
+          >
+            {messages.map((m, idx) => (
+              <MessageRow
+                key={m.id}
+                m={m}
+                // Only what each row needs, so a streamed chunk re-renders just the streaming bubble.
+                optionsActive={
+                  m.kind === "engineer" &&
+                  ((m.options === "lang" && idx === lastLangIdx) || (m.options === "stage" && idx === lastStageIdx && !profile.stage))
+                }
+                selected={m.kind === "engineer" ? (m.options === "lang" ? profile.lang : m.options === "stage" ? profile.stage : undefined) : undefined}
+                sending={m.kind === "engineer" && m.error ? sending : false}
+                onLang={chooseLang}
+                onStage={chooseStage}
+                // Only on the newest message: once the question was retried (or the chat moved on), the old
+                // error bubble keeps its text but loses the button, so a second tap can't send it twice.
+                onRetry={m.kind === "engineer" && m.error && idx === messages.length - 1 ? submitText : undefined}
+              />
+            ))}
+          </div>
+        </main>
+        <AnimatePresence>
+          {!atBottom && (
+            <motion.button
+              type="button"
+              onClick={scrollToLatest}
+              aria-label="Jump to the latest message"
+              initial={{ opacity: 0, y: 8, scale: 0.9 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: 8, scale: 0.9 }}
+              transition={{ duration: 0.16 }}
+              whileTap={{ scale: 0.92 }}
+              className="absolute bottom-3 left-1/2 z-10 -ml-[22px] grid size-11 place-items-center rounded-full border border-line bg-paper text-ink shadow-[0_6px_20px_rgb(140_110_20/0.2)]"
+            >
+              <svg aria-hidden width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M12 5v14m0 0-6-6m6 6 6-6" />
+              </svg>
+            </motion.button>
+          )}
+        </AnimatePresence>
+      </div>
       <Composer highlightCamera={suggestPhoto} />
     </>
   );
@@ -106,7 +157,7 @@ const MessageRow = memo(function MessageRow({ m, optionsActive, selected, sendin
     case "engineer":
       return (
         <EngineerBubble
-          animateIn={m.id !== GREETING_ID}
+          animateIn={m.id !== GREETING_ID && m.id !== GREETING_LANG_ID}
           lead={m.lead}
           prompt={m.prompt}
           text={m.text}
@@ -145,7 +196,7 @@ const MessageRow = memo(function MessageRow({ m, optionsActive, selected, sendin
               type="button"
               onClick={() => onRetry(m.retryText!)}
               disabled={sending}
-              className="flex items-center gap-1.5 rounded-full bg-brand px-3.5 py-2 text-[13px] font-[590] text-ink transition-transform active:scale-95 disabled:opacity-50"
+              className="flex items-center gap-1.5 rounded-full bg-brand px-3.5 py-2 text-[13px] font-[590] text-ink transition-[background-color,transform] enabled:hover:bg-brand-hover active:scale-95 disabled:opacity-50"
             >
               <Icon src="/icons/retry.svg" size={16} />
               Try again

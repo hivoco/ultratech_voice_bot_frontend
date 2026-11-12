@@ -7,14 +7,28 @@
 /* Phones held sideways (≤420px tall): no room for the orb, the text gets the space. */
 @custom-variant flat (@media (max-height: 420px));
 
-/* Design tokens from the Figma "ULTRA-TECH PLAYER" file (Section 2 · v4 voice English). */
+/* Design tokens from the Figma "ULTRA-TECH PLAYER" file, v5 "website design language"
+   (Section 1 · text, Section 2 · voice). Sampled values: docs/design/v5/tokens.md. */
 @theme {
   --color-brand: #ffd400;
-  --color-ink: #1c1a14;
-  --color-surface: #2a2218;
+  --color-brand-hover: #f5c800;
+  --color-ink: #1c1a14; /* titles, user bubble text, chips */
+  --color-ink-soft: #2e2c26; /* engineer answers */
+  --color-ink-2: #45433e; /* header status, placeholders */
+  --color-muted: #615f5b; /* timestamps, small labels */
+  --color-muted-2: #7e7a6f; /* second half of the voice headline */
+  --color-line: #eadfb5; /* card / header / composer border */
+  --color-line-2: #e3dcc8; /* chips and round buttons */
+  --color-paper: #fff; /* cards */
+  --color-sand: #f7f0dc; /* inset rows (call slot, menu hover) */
+  --color-tip: #fff6bf; /* key-points card */
+  --color-tip-line: #f2d24a;
+  --color-danger: #c8402f; /* End chat */
+  --color-danger-line: #f3c9c3;
+  --color-online: #34c759;
+  /* Camera stays dark (04a). */
   --color-surface-deep: #0e0d0b;
   --color-viewfinder: #332b24;
-  --color-online: #34c759;
 }
 
 @theme inline {
@@ -25,22 +39,22 @@
 }
 
 :root {
-  color-scheme: dark;
+  color-scheme: light;
 }
 
 html,
 body {
-  background: #14100b;
-  color: #fff;
+  background: #efe6cc;
+  color: var(--color-ink);
 }
 
 html {
   touch-action: manipulation;
 }
 
-/* One visible focus style for keyboard users across the glass UI. */
+/* One visible focus style for keyboard users. */
 :focus-visible {
-  outline: 2px solid var(--color-brand);
+  outline: 2px solid var(--color-ink);
   outline-offset: 2px;
 }
 
@@ -54,32 +68,16 @@ body {
   -webkit-tap-highlight-color: transparent;
 }
 
-/* Frosted-glass surface used by the header, bubbles, orb, composer and round buttons.
-   Fill: radial white 40% → 0 from the top-left corner. Stroke: 2px gradient at 40% opacity. */
-@utility glass {
-  border: 2px solid transparent;
-  background-origin: border-box;
-  background-image: radial-gradient(141% 141% at 0% 0%, rgb(255 255 255 / 0.4) 0%, rgb(255 255 255 / 0) 100%);
-  -webkit-backdrop-filter: blur(21px);
-  backdrop-filter: blur(21px);
-  box-shadow: inset -5px -5px 250px 0 rgb(255 255 255 / 0.02);
+/* App background: cream at the top warming to yellow at the bottom (sampled from the frames). */
+@utility bg-page {
+  background: linear-gradient(180deg, #f9f4e5 0%, #f5edd5 62%, #fbebaa 85%, #ffe98d 100%);
+}
 
-  &::before {
-    content: "";
-    position: absolute;
-    inset: -2px;
-    border-radius: inherit;
-    padding: 2px;
-    background: linear-gradient(169deg, rgb(255 255 255 / 0.4), rgb(238 237 237 / 0.2));
-    -webkit-mask:
-      linear-gradient(#000 0 0) content-box,
-      linear-gradient(#000 0 0);
-    -webkit-mask-composite: xor;
-    mask:
-      linear-gradient(#000 0 0) content-box exclude,
-      linear-gradient(#000 0 0);
-    pointer-events: none;
-  }
+/* White card used by the header, bubbles, composer and round buttons: 1px warm border, soft shadow. */
+@utility card {
+  background: var(--color-paper);
+  border: 1px solid var(--color-line);
+  box-shadow: 0 4px 18px rgb(140 110 20 / 0.08);
 }
 
 /* Thin translucent chip used on the camera screen. */
@@ -88,10 +86,6 @@ body {
   border: 1px solid rgb(255 255 255 / 0.22);
   -webkit-backdrop-filter: blur(8px);
   backdrop-filter: blur(8px);
-}
-
-@utility text-glow {
-  text-shadow: 0 2px 14px rgb(0 0 0 / 0.28);
 }
 
 @utility no-scrollbar {

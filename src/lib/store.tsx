@@ -10,10 +10,9 @@ import { buildTranscript } from "./transcript";
 
 const PROFILE_KEY = "ultratech.profile.v1";
 
+/** Ids of the opening bubbles (stable: part of the initial state, so server and client agree). */
 export const GREETING_ID = "greeting";
-
-/** Language isn't a step: LanguageScreen asks for it before the chat opens, on every page load. */
-type OnboardingStep = "name" | "stage" | "done";
+export const GREETING_LANG_ID = "greeting-lang";
 
 interface State {
   hydrated: boolean;
@@ -44,44 +43,30 @@ type Action =
   /** A call finished: add its transcript, plus the PDF card when the call was ended with End chat. */
   | { type: "callEnded"; messages: ChatMessage[]; summary: boolean; at: number }
   | { type: "endChat"; at: number }
+  /** Change language: ask again, unless the newest message already is that question. */
+  | { type: "askLang" }
   | { type: "reset" };
 
-function stepOf(p: Profile): OnboardingStep {
-  if (!p.name) return "name";
-  if (!p.stage) return "stage";
-  return "done";
-}
+const STAGE_PROMPT = "Which stage is your home at right now?";
 
+/**
+ * v5 "01 · Welcome": the greeting asks for the language in the chat (every load, a separate card
+ * with the chips); the language reply then asks for the stage (see chooseLang). No name step.
+ */
 function openingMessages(p: Profile): ChatMessage[] {
-  if (stepOf(p) === "done") {
-    return [
-      {
-        id: uid(),
-        kind: "engineer",
-        lead: `Welcome back, ${p.name}! I'm with you at the ${p.stage} stage.`,
-        prompt: "Which question about your home is on your mind today?",
-      },
-    ];
-  }
-  const greeting: ChatMessage = {
-    // Stable id: part of the initial state, so server and client agree on it.
-    id: GREETING_ID,
-    kind: "engineer",
-    lead: "Hi! I'm the UltraTech Engineer — with you at every step of building your home.",
-    prompt: "What's your name?",
-  };
-  if (!p.name) return [greeting];
-  // Name known but onboarding unfinished: resume at the stage question.
-  return [greeting, { id: uid(), kind: "user", text: p.name }, stageQuestion(p.name)];
+  return [
+    {
+      id: GREETING_ID,
+      kind: "engineer",
+      voiceMeta: "UltraTech Engineer",
+      lead: p.stage
+        ? `Namaste! I'm with you at the ${p.stage} stage.`
+        : "Namaste! I'm your UltraTech Home-Building Expert. Building a home is a big decision, and I'm with you at every step.",
+      prompt: "Which language is easiest for you?",
+    },
+    { id: GREETING_LANG_ID, kind: "engineer", prompt: "Tap one — you can change it anytime.", options: "lang" },
+  ];
 }
-
-const stageQuestion = (name: string, lead?: string): ChatMessage => ({
-  id: uid(),
-  kind: "engineer",
-  lead,
-  prompt: `Welcome, ${name}! Which stage is your home at right now?`,
-  options: "stage",
-});
 
 const langQuestion = (): ChatMessage => ({
   id: uid(),
@@ -145,6 +130,11 @@ function reducer(state: State, action: Action): State {
       };
     case "pendingPhoto":
       return { ...state, pendingPhoto: action.photo };
+    case "askLang": {
+      const last = state.messages.at(-1);
+      if (last?.kind === "engineer" && last.options === "lang") return state;
+      return { ...state, messages: [...state.messages, langQuestion()] };
+    }
     case "reset":
       return {
         ...state,
@@ -196,7 +186,6 @@ function newConversationId(): string {
 
 interface AppContextValue {
   state: State;
-  step: OnboardingStep;
   voice: VoiceCall;
   online: boolean | undefined;
   sending: boolean;
@@ -204,7 +193,7 @@ interface AppContextValue {
   openCamera: () => void;
   closeCamera: () => void;
   submitText: (text: string) => void;
-  /** Language picked on LanguageScreen: saves it and opens the chat. */
+  /** Language picked on LanguageScreen (not shown since v5): saves it and opens the chat. */
   pickLanguage: (lang: LangChoice) => void;
   chooseLang: (lang: LangChoice) => void;
   chooseStage: (stage: Stage) => void;
@@ -226,8 +215,9 @@ const AppContext = createContext<AppContextValue | null>(null);
 export function AppProvider({ children }: { children: ReactNode }) {
   const [state, dispatch] = useReducer(reducer, {
     hydrated: false,
-    // Deliberately not saved: every page load starts by asking for the language.
-    screen: "language",
+    // v5: the chat opens first and asks for the language itself. To bring back the old full-screen
+    // picker (LanguageScreen, commented out in VoiceBotApp), start on "language" again.
+    screen: "chat",
     cameraReturn: "chat",
     profile: { uuid: "" },
     messages: openingMessages({ uuid: "" }),
@@ -254,7 +244,11 @@ export function AppProvider({ children }: { children: ReactNode }) {
     let profile: Profile = { uuid: "" };
     try {
       const raw = localStorage.getItem(PROFILE_KEY);
-      if (raw) profile = JSON.parse(raw) as Profile;
+      if (raw) {
+        // Only the known fields: drops the `name` older versions asked for and saved.
+        const { uuid, lang, stage } = JSON.parse(raw) as Profile;
+        profile = { uuid: uuid ?? "", lang, stage };
+      }
     } catch {
       /* storage blocked: fall through to a fresh profile */
     }
@@ -273,8 +267,6 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
   const health = useQuery({ queryKey: ["health"], queryFn: fetchHealth, refetchInterval: 60_000, retry: 1 });
   const online = health.isPending ? undefined : health.isSuccess && health.data.ok;
-
-  const step = stepOf(state.profile);
 
   const ask = useMutation({
     mutationFn: async ({ text, replyId }: { text: string; replyId: string }) => {
@@ -318,14 +310,6 @@ export function AppProvider({ children }: { children: ReactNode }) {
       const photo = state.pendingPhoto;
       if (state.ended || (!text && !photo)) return;
 
-      if (step === "name") {
-        const name = text.replace(/\s+/g, " ").slice(0, 40);
-        dispatch({ type: "profile", patch: { name } });
-        const lead = state.profile.lang ? `Great, I'll talk with you in ${LANG_LABEL[state.profile.lang]}.` : undefined;
-        dispatch({ type: "push", messages: [{ id: uid(), kind: "user", text: name }, stageQuestion(name, lead)] });
-        return;
-      }
-
       const replyId = uid();
       const question = text || "I took a photo — can you take a look?";
       dispatch({ type: "pendingPhoto", photo: null });
@@ -340,7 +324,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       });
       ask.mutate({ text: question, replyId });
     },
-    [ask, state.ended, state.pendingPhoto, state.profile.lang, step],
+    [ask, state.ended, state.pendingPhoto],
   );
 
   const pickLanguage = useCallback((lang: LangChoice) => {
@@ -362,13 +346,13 @@ export function AppProvider({ children }: { children: ReactNode }) {
             lead: `Great, I'll talk with you in ${label}.`,
             prompt: state.profile.stage
               ? "Ask me anything — tap the mic or type below."
-              : `Welcome, ${state.profile.name}! Which stage is your home at right now?`,
+              : STAGE_PROMPT,
             options: state.profile.stage ? undefined : "stage",
           },
         ],
       });
     },
-    [state.profile.name, state.profile.stage],
+    [state.profile.stage],
   );
 
   const chooseStage = useCallback((stage: Stage) => {
@@ -405,7 +389,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     sessionRef.current = null;
     dispatch({ type: "reset" });
   }, []);
-  const changeLanguage = useCallback(() => dispatch({ type: "push", messages: [langQuestion()] }), []);
+  const changeLanguage = useCallback(() => dispatch({ type: "askLang" }), []);
 
   const endChat = useCallback(async () => {
     if (voice.status !== "idle") await endVoice("chat");
@@ -427,7 +411,6 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const value = useMemo<AppContextValue>(
     () => ({
       state,
-      step,
       voice,
       online,
       sending: ask.isPending,
@@ -446,10 +429,10 @@ export function AppProvider({ children }: { children: ReactNode }) {
       restart,
       changeLanguage,
       warmSession: () => {
-        if (step === "done" && state.profile.uuid) ensureSession().catch(() => {});
+        if (state.profile.uuid) ensureSession().catch(() => {});
       },
     }),
-    [state, step, voice, online, ask.isPending, submitText, pickLanguage, chooseLang, chooseStage, startVoice, endVoice, endChat, capturePhoto, ensureSession, restart, changeLanguage],
+    [state, voice, online, ask.isPending, submitText, pickLanguage, chooseLang, chooseStage, startVoice, endVoice, endChat, capturePhoto, ensureSession, restart, changeLanguage],
   );
 
   return <AppContext value={value}>{children}</AppContext>;

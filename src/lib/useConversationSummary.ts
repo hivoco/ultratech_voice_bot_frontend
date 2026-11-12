@@ -36,7 +36,7 @@ export function useConversationSummary(upTo?: number) {
     if (!data) return;
     if (data.pdf_url) window.open(data.pdf_url, "_blank", "noopener");
     // The print page is only needed on click: keep it out of the first bundle.
-    else void import("./summaryPdf").then((m) => m.printSummary(data, transcript, profile.name));
+    else void import("./summaryPdf").then((m) => m.printSummary(data, transcript));
   };
 
   return { query, download };

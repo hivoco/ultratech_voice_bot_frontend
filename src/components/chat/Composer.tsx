@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { memo, useRef, useState, type ReactNode } from "react";
-import { AnimatePresence, motion } from "motion/react";
+import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { useApp } from "@/lib/store";
 import { LANG_LABEL } from "@/lib/types";
 import { Icon } from "../ui/Icon";
@@ -15,15 +15,15 @@ const warmVoice = () => {
 const warmCamera = () => void import("../screens/CameraScreen");
 
 export function Composer({ highlightCamera }: { highlightCamera?: boolean }) {
-  const { state, step, submitText, startVoice, openCamera, clearPendingPhoto, sending, warmSession, endChat, restart, changeLanguage } =
+  const { state, submitText, startVoice, openCamera, clearPendingPhoto, sending, warmSession, endChat, restart, changeLanguage } =
     useApp();
   const [text, setText] = useState("");
+  const reduce = useReducedMotion();
   const inputRef = useRef<HTMLInputElement>(null);
   const { ended, profile } = state;
   const canSend = !ended && (text.trim().length > 0 || !!state.pendingPhoto) && !sending;
-  const placeholder = ended ? "This conversation has ended" : step === "name" ? "Type your name…" : "Ask your question…";
-  // Locked until a name is known, or after End chat.
-  const locked = ended || step === "name";
+  const placeholder = ended ? "This conversation has ended" : "Ask your question…";
+  const locked = ended;
   // Right after a PDF card (End chat, or a call ended with End chat) offer a fresh start.
   const offerNewChat = ended || state.messages.at(-1)?.kind === "summary";
 
@@ -41,26 +41,25 @@ export function Composer({ highlightCamera }: { highlightCamera?: boolean }) {
           <ActionChip onClick={restart} icon={PLUS} label="Start a new chat" />
         </div>
       ) : (
-        step === "done" && (
-          <div className="mb-3 flex flex-wrap justify-center gap-2" role="group" aria-label="Conversation actions">
-            {profile.lang && profile.name && (
-              <ActionChip
-                onClick={changeLanguage}
-                icon={GLOBE}
-                label={LANG_LABEL[profile.lang]}
-                ariaLabel={`Language: ${LANG_LABEL[profile.lang]}. Change language`}
-              />
-            )}
+        // Shown from the first screen, as in v5 "01 · Welcome".
+        <div className="mb-3 flex flex-wrap justify-center gap-2" role="group" aria-label="Conversation actions">
+          {profile.lang && (
             <ActionChip
-              onClick={startVoice}
-              onIntent={warmVoice}
-              icon={MIC}
-              label="Talk by voice"
+              onClick={changeLanguage}
+              icon={GLOBE}
+              label={LANG_LABEL[profile.lang]}
+              ariaLabel={`Language: ${LANG_LABEL[profile.lang]}. Change language`}
             />
-            {/* Not mid-reply: the answer would land after the summary and need a second one. */}
-            <ActionChip onClick={endChat} disabled={sending} icon={CROSS} label="End chat" danger />
-          </div>
-        )
+          )}
+          <ActionChip
+            onClick={startVoice}
+            onIntent={warmVoice}
+            icon={MIC}
+            label="Talk by voice"
+          />
+          {/* Not mid-reply: the answer would land after the summary and need a second one. */}
+          <ActionChip onClick={endChat} disabled={sending} icon={CROSS} label="End chat" danger />
+        </div>
       )}
 
       <AnimatePresence>
@@ -74,12 +73,12 @@ export function Composer({ highlightCamera }: { highlightCamera?: boolean }) {
             <div className="relative size-14 overflow-hidden rounded-2xl border-2 border-brand">
               <Image src={state.pendingPhoto} alt="Photo to send" fill unoptimized className="object-cover" />
             </div>
-            <p className="flex-1 text-[13px] text-white/75">Photo attached — add a note and send.</p>
+            <p className="flex-1 text-[13px] text-ink-2">Photo attached — add a note and send.</p>
             <button
               type="button"
               onClick={clearPendingPhoto}
               aria-label="Remove photo"
-              className="grid size-9 place-items-center rounded-full bg-white/16"
+              className="grid size-9 place-items-center rounded-full border border-line-2 bg-paper"
             >
               <Icon src="/icons/x.svg" size={18} />
             </button>
@@ -88,7 +87,7 @@ export function Composer({ highlightCamera }: { highlightCamera?: boolean }) {
       </AnimatePresence>
 
       <form
-        className="glass relative flex h-[58px] items-center rounded-[29px] pr-1 pl-[9px] has-[input:focus-visible]:outline-2 has-[input:focus-visible]:outline-brand/60"
+        className="card relative flex h-[58px] items-center rounded-[29px] pr-1 pl-[9px] has-[input:focus-visible]:outline-2 has-[input:focus-visible]:outline-ink/50"
         onSubmit={(e) => {
           e.preventDefault();
           send();
@@ -101,13 +100,12 @@ export function Composer({ highlightCamera }: { highlightCamera?: boolean }) {
           onFocus={warmCamera}
           disabled={locked}
           aria-label="Send a photo"
-          aria-describedby={step === "name" ? "composer-name-hint" : undefined}
           className="relative grid size-[38px] shrink-0 place-items-center rounded-full after:absolute after:-inset-1 after:content-[''] disabled:opacity-40"
         >
           {highlightCamera && (
             <motion.span
               className="absolute inset-[-2px]"
-              animate={{ scale: [1, 1.08, 1], opacity: [1, 0.6, 1] }}
+              animate={reduce ? undefined : { scale: [1, 1.08, 1], opacity: [1, 0.6, 1] }}
               transition={{ duration: 1.6, repeat: Infinity }}
             >
               <Icon src="/icons/tap-hint.svg" size={42} />
@@ -118,23 +116,19 @@ export function Composer({ highlightCamera }: { highlightCamera?: boolean }) {
         <label htmlFor="composer-input" className="sr-only">
           {placeholder}
         </label>
-        {step === "name" && (
-          <span id="composer-name-hint" className="sr-only">
-            Enter your name first to send photos or talk by voice.
-          </span>
-        )}
         <input
           id="composer-input"
+          name="message"
           ref={inputRef}
           value={text}
           onChange={(e) => setText(e.target.value)}
           onFocus={warmSession}
           disabled={ended}
           placeholder={placeholder}
-          autoComplete={step === "name" ? "given-name" : "off"}
+          autoComplete="off"
           enterKeyHint="send"
           maxLength={500}
-          className="mx-1.5 h-full min-w-0 flex-1 bg-transparent text-[16px] text-white outline-none placeholder:text-white/75 disabled:placeholder:text-white/55"
+          className="mx-1.5 h-full min-w-0 flex-1 bg-transparent text-[16px] text-ink outline-none placeholder:text-ink-2 disabled:placeholder:text-muted"
         />
         <AnimatePresence mode="wait" initial={false}>
           {canSend ? (
@@ -145,7 +139,7 @@ export function Composer({ highlightCamera }: { highlightCamera?: boolean }) {
               initial={{ scale: 0.6, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.6, opacity: 0 }}
-              className="grid size-12 shrink-0 place-items-center rounded-3xl bg-brand"
+              className="grid size-12 shrink-0 place-items-center rounded-3xl bg-brand transition-colors enabled:hover:bg-brand-hover"
             >
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden>
                 <path d="M12 19V5M5 12l7-7 7 7" stroke="#1C1A14" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
@@ -160,12 +154,11 @@ export function Composer({ highlightCamera }: { highlightCamera?: boolean }) {
               onFocus={warmVoice}
               disabled={locked}
               aria-label="Ask by speaking"
-              aria-describedby={step === "name" ? "composer-name-hint" : undefined}
-              initial={{ scale: 0.6, opacity: 0 }}
+                  initial={{ scale: 0.6, opacity: 0 }}
               animate={{ scale: 1, opacity: locked ? 0.5 : 1 }}  // motion's inline opacity would override disabled:opacity-*
               exit={{ scale: 0.6, opacity: 0 }}
               whileTap={{ scale: 0.92 }}
-              className="grid size-12 shrink-0 place-items-center rounded-3xl bg-brand"
+              className="grid size-12 shrink-0 place-items-center rounded-3xl bg-brand transition-colors enabled:hover:bg-brand-hover"
             >
               <Icon src="/icons/mic.svg" size={24} />
             </motion.button>
@@ -202,10 +195,10 @@ const ActionChip = memo(function ActionChip({
       disabled={disabled}
       aria-label={ariaLabel}
       whileTap={disabled ? undefined : { scale: 0.95 }}
-      className={`flex h-9 disabled:opacity-50 items-center gap-1.5 rounded-full px-3.5 text-[14px] font-[510] whitespace-nowrap transition-colors ${
+      className={`flex h-[34px] disabled:opacity-50 items-center gap-1.5 rounded-full px-3 text-[13px] font-[510] whitespace-nowrap transition-colors ${
         danger
-          ? "border border-[#ff7a6b]/70 bg-[#ff5a4a]/14 text-[#ff8f80] hover:bg-[#ff5a4a]/22"
-          : "bg-white/16 text-white hover:bg-white/24"
+          ? "border border-danger-line bg-paper text-danger hover:bg-[#fdf1ef]"
+          : "border border-line-2 bg-paper text-ink hover:bg-sand"
       }`}
     >
       {icon}

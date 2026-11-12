@@ -1,4 +1,5 @@
 import type { TranscriptTurn } from "./api";
+import { plainText } from "./id";
 import type { ChatMessage } from "./types";
 
 /**
@@ -12,8 +13,9 @@ export function buildTranscript(messages: ChatMessage[]): TranscriptTurn[] {
     if (m.kind === "user") {
       caller = caller ? `${caller} ${m.text}` : m.text;
     } else if (m.kind === "engineer") {
-      if (m.text && !m.error && !m.streaming) turns.push({ caller, bot: m.text });
-      // A prompt-only bubble (name / language / stage question) ends an onboarding exchange.
+      // Same plain text the bubble shows: the PDF would print "**", "*" and "`" marks as-is.
+      if (m.text && !m.error && !m.streaming) turns.push({ caller, bot: plainText(m.text) });
+      // A prompt-only bubble (language / stage question) ends an onboarding exchange.
       caller = "";
     }
   }

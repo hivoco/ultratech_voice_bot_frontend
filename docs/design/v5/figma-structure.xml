@@ -1,0 +1,1592 @@
+<canvas id="188:1180" name="Revised UI" x="0" y="0" width="0" height="0">
+  <section id="188:1181" name="Idea 1 · Site Action Plan (checklist-first)" x="0" y="-386" width="2622" height="1330">
+    <frame id="188:1182" name="Idea 1 · Page 1 — Action plan" x="60" y="140" width="794" height="1123">
+      <frame id="188:1183" name="header" x="0" y="0" width="794" height="130">
+        <ellipse id="188:1184" name="Expert avatar" x="48" y="58" width="44" height="44" />
+        <frame id="188:1185" name="Frame" x="104" y="56.5" width="225" height="47">
+          <text id="188:1186" name="UltraTech Home-Building Expert" x="0" y="0" width="225" height="27" />
+          <text id="188:1187" name="Conversation Summary" x="0" y="27" width="118" height="20" />
+        </frame>
+        <frame id="188:1188" name="Frame" x="341" y="30" width="222" height="100" />
+        <frame id="188:1189" name="chip" x="575" y="67.5" width="171" height="25">
+          <text id="188:1190" name="UltraTech · The Engineer&#39;s Choice" x="11" y="4" width="149" height="17" />
+        </frame>
+      </frame>
+      <frame id="188:1191" name="Frame" x="0" y="130" width="794" height="151">
+        <frame id="188:1192" name="chip" x="48" y="26" width="97" height="25">
+          <text id="188:1193" name="Summary · सारांश" x="11" y="4" width="75" height="17" />
+        </frame>
+        <text id="188:1194" name="सबसे पहले approved drawings, फिर हर stage पर engineer की जाँच" x="48" y="63" width="698" height="88" />
+      </frame>
+      <frame id="188:1195" name="Frame" x="0" y="281" width="794" height="64">
+        <frame id="188:1196" name="Frame" x="48" y="16" width="698" height="48">
+          <frame id="188:1197" name="Frame" x="15" y="13" width="22" height="22">
+            <text id="188:1198" name="✓" x="6" y="1" width="10" height="20" />
+          </frame>
+          <text id="188:1199" name="आपने plot ले लिया है, यह अच्छी शुरुआत है।" x="47" y="13" width="634" height="22" />
+        </frame>
+      </frame>
+      <frame id="188:1200" name="Frame" x="0" y="345" width="794" height="40">
+        <frame id="188:1201" name="Frame" x="48" y="14" width="698" height="26">
+          <frame id="188:1202" name="chip" x="0" y="0" width="246" height="26">
+            <text id="188:1203" name="Session: conv-bb2cd0a0-ab0b-4f9e-8429-2c98863ce104" x="12" y="5" width="222" height="16" />
+          </frame>
+          <frame id="188:1204" name="chip" x="254" y="0" width="131" height="26">
+            <text id="188:1205" name="2026-11-11T15:29:50+00:00" x="12" y="5" width="107" height="16" />
+          </frame>
+          <frame id="188:1206" name="chip" x="393" y="0" width="76" height="26">
+            <text id="188:1207" name="Language: hi" x="12" y="5" width="52" height="16" />
+          </frame>
+          <frame id="188:1208" name="chip" x="477" y="0" width="59" height="26">
+            <text id="188:1209" name="Turns: 11" x="12" y="5" width="35" height="16" />
+          </frame>
+        </frame>
+      </frame>
+      <frame id="188:1210" name="Frame" x="0" y="385" width="794" height="292">
+        <frame id="188:1211" name="Frame" x="48" y="20" width="698" height="272">
+          <frame id="188:1212" name="col अभी करें" x="0" y="0" width="223.3333282470703" height="272">
+            <frame id="188:1213" name="Frame" x="17" y="17" width="50" height="27">
+              <text id="188:1214" name="अभी करें" x="0" y="0" width="50" height="27" />
+            </frame>
+            <frame id="188:1215" name="Frame" x="17" y="56" width="36" height="3" />
+            <frame id="188:1216" name="Frame" x="17" y="71" width="189.3333282470703" height="40">
+              <frame id="188:1217" name="Frame" x="0" y="0" width="20" height="20">
+                <text id="188:1218" name="1" x="7.5" y="1.5" width="5" height="17" />
+              </frame>
+              <text id="188:1219" name="सबसे पहले आपको approved drawings तैयार करवानी होंगी।" x="29" y="0" width="160.3333282470703" height="40" />
+            </frame>
+            <frame id="188:1220" name="Frame" x="17" y="123" width="189.3333282470703" height="60">
+              <frame id="188:1221" name="Frame" x="0" y="0" width="20" height="20">
+                <text id="188:1222" name="2" x="7" y="1.5" width="6" height="17" />
+              </frame>
+              <text id="188:1223" name="अभी आपकी drawings तैयार नहीं हुई हैं, इसलिए आपको सबसे पहले यह काम करवाना होगा।" x="29" y="0" width="160.3333282470703" height="60" />
+            </frame>
+            <frame id="188:1224" name="Frame" x="17" y="195" width="189.3333282470703" height="60">
+              <frame id="188:1225" name="Frame" x="0" y="0" width="20" height="20">
+                <text id="188:1226" name="3" x="7" y="1.5" width="6" height="17" />
+              </frame>
+              <text id="188:1227" name="आपके पास एक ठेकेदार है, जो drawings के काम में आपकी मदद कर सकते हैं।" x="29" y="0" width="160.3333282470703" height="60" />
+            </frame>
+          </frame>
+          <frame id="188:1228" name="col Site पर रखें" x="237.3333282470703" y="0" width="223.33334350585938" height="272">
+            <frame id="188:1229" name="Frame" x="17" y="17" width="71" height="27">
+              <text id="188:1230" name="Site पर रखें" x="0" y="0" width="71" height="27" />
+            </frame>
+            <frame id="188:1231" name="Frame" x="17" y="56" width="36" height="3" />
+            <frame id="188:1232" name="Frame" x="17" y="71" width="189.33334350585938" height="40">
+              <frame id="188:1233" name="Frame" x="0" y="0" width="20" height="20">
+                <text id="188:1234" name="1" x="7.5" y="1.5" width="5" height="17" />
+              </frame>
+              <text id="188:1235" name="अपनी site पर हमेशा ये drawings उपलब्ध रखें।" x="29" y="0" width="160.33334350585938" height="40" />
+            </frame>
+            <frame id="188:1236" name="Frame" x="17" y="123" width="189.33334350585938" height="40">
+              <frame id="188:1237" name="Frame" x="0" y="0" width="20" height="20">
+                <text id="188:1238" name="2" x="7" y="1.5" width="6" height="17" />
+              </frame>
+              <text id="188:1239" name="सभी काम नवीनतम approved drawings के अनुसार ही करवाएँ।" x="29" y="0" width="160.33334350585938" height="40" />
+            </frame>
+            <frame id="188:1240" name="Frame" x="17" y="175" width="189.33334350585938" height="80">
+              <frame id="188:1241" name="Frame" x="0" y="0" width="20" height="20">
+                <text id="188:1242" name="3" x="7" y="1.5" width="6" height="17" />
+              </frame>
+              <text id="188:1243" name="अगर drawings में कोई बदलाव करना हो, तो उसे लिखित रूप में record करके engineer से मंजूरी लें।" x="29" y="0" width="160.33334350585938" height="80" />
+            </frame>
+          </frame>
+          <frame id="188:1244" name="col हर stage से पहले" x="474.66668701171875" y="0" width="223.33334350585938" height="272">
+            <frame id="188:1245" name="Frame" x="17" y="17" width="105" height="27">
+              <text id="188:1246" name="हर stage से पहले" x="0" y="0" width="105" height="27" />
+            </frame>
+            <frame id="188:1247" name="Frame" x="17" y="56" width="36" height="3" />
+            <frame id="188:1248" name="Frame" x="17" y="71" width="189.33334350585938" height="80">
+              <frame id="188:1249" name="Frame" x="0" y="0" width="20" height="20">
+                <text id="188:1250" name="1" x="7.5" y="1.5" width="5" height="17" />
+              </frame>
+              <text id="188:1251" name="construction के हर चरण (जैसे concrete, plaster या tile) के बंद होने से पहले specialist से जाँच करवाएँ।" x="29" y="0" width="160.33334350585938" height="80" />
+            </frame>
+            <frame id="188:1252" name="Frame" x="17" y="163" width="189.33334350585938" height="60">
+              <frame id="188:1253" name="Frame" x="0" y="0" width="20" height="20">
+                <text id="188:1254" name="2" x="7" y="1.5" width="6" height="17" />
+              </frame>
+              <text id="188:1255" name="engineer से check करवाकर हर stage की photo और video ज़रूर लें।" x="29" y="0" width="160.33334350585938" height="60" />
+            </frame>
+          </frame>
+        </frame>
+      </frame>
+      <frame id="188:1256" name="Frame" x="0" y="677" width="794" height="183">
+        <frame id="188:1257" name="why callout" x="48" y="20" width="698" height="163">
+          <frame id="188:1258" name="Frame" x="21.5" y="21.5" width="206" height="25">
+            <frame id="188:1259" name="chip" x="0" y="0" width="89" height="25">
+              <text id="188:1260" name="Expert ki salah" x="11" y="4" width="67" height="17" />
+            </frame>
+            <text id="188:1261" name="यह इसलिए ज़रूरी है" x="97" y="0" width="109" height="25" />
+          </frame>
+          <text id="188:1262" name="ऐसा इसलिए ज़रूरी है क्योंकि एक बार concrete, plaster या tile लग गया, तो अंदर की reinforcement, पाइप और Wire छिप जाते हैं। बाद में कमी निकालने पर उसे ठीक करना बहुत मुश्किल और महँगा हो जाता है।" x="21.5" y="58.5" width="655" height="44" />
+          <frame id="188:1263" name="Frame" x="21.5" y="114.5" width="466" height="27">
+            <frame id="188:1264" name="chip" x="0" y="0" width="63" height="27">
+              <text id="188:1265" name="concrete" x="12" y="5" width="39" height="17" />
+            </frame>
+            <frame id="188:1266" name="chip" x="69" y="0" width="56" height="27">
+              <text id="188:1267" name="plaster" x="12" y="5" width="32" height="17" />
+            </frame>
+            <frame id="188:1268" name="chip" x="131" y="0" width="39" height="27">
+              <text id="188:1269" name="tile" x="12" y="5" width="15" height="17" />
+            </frame>
+            <text id="188:1270" name="→ के नीचे छिप जाते हैं →" x="176" y="4.5" width="102" height="18" />
+            <frame id="188:1271" name="chip" x="284" y="1" width="86" height="25">
+              <text id="188:1272" name="reinforcement" x="11" y="4" width="64" height="17" />
+            </frame>
+            <frame id="188:1273" name="chip" x="376" y="1" width="41" height="25">
+              <text id="188:1274" name="पाइप" x="11" y="4" width="19" height="17" />
+            </frame>
+            <frame id="188:1275" name="chip" x="423" y="1" width="43" height="25">
+              <text id="188:1276" name="Wire" x="11" y="4" width="21" height="17" />
+            </frame>
+          </frame>
+        </frame>
+      </frame>
+      <frame id="188:1277" name="Frame" x="0" y="860" width="794" height="137" />
+      <frame id="188:1278" name="footer" x="0" y="997" width="794" height="126">
+        <text id="188:1279" name="UltraTech Home-Building Expert — Conversation Summary" x="48" y="41.5" width="246" height="17" />
+        <frame id="188:1280" name="Frame" x="294" y="0" width="433" height="100" />
+        <text id="188:1281" name="1 / 3" x="727" y="41.5" width="19" height="17" />
+      </frame>
+    </frame>
+    <frame id="188:1282" name="Idea 1 · Page 2 — Transcript" x="914" y="140" width="794" height="1123">
+      <frame id="188:1283" name="header" x="0" y="0" width="794" height="130">
+        <ellipse id="188:1284" name="Expert avatar" x="48" y="58" width="44" height="44" />
+        <frame id="188:1285" name="Frame" x="104" y="56.5" width="225" height="47">
+          <text id="188:1286" name="UltraTech Home-Building Expert" x="0" y="0" width="225" height="27" />
+          <text id="188:1287" name="Conversation Summary" x="0" y="27" width="118" height="20" />
+        </frame>
+        <frame id="188:1288" name="Frame" x="341" y="30" width="222" height="100" />
+        <frame id="188:1289" name="chip" x="575" y="67.5" width="171" height="25">
+          <text id="188:1290" name="UltraTech · The Engineer&#39;s Choice" x="11" y="4" width="149" height="17" />
+        </frame>
+      </frame>
+      <frame id="188:1291" name="Frame" x="0" y="130" width="794" height="91">
+        <text id="188:1292" name="Full Transcript" x="48" y="24" width="165" height="43" />
+        <text id="188:1293" name="Turns 1–6 of 11" x="48" y="71" width="72" height="20" />
+      </frame>
+      <frame id="188:1294" name="Frame" x="0" y="221" width="794" height="766">
+        <frame id="188:1295" name="turn 1" x="48" y="16" width="698" height="100">
+          <frame id="188:1296" name="Frame" x="13" y="13" width="26" height="26">
+            <text id="188:1297" name="1" x="10.5" y="4" width="5" height="18" />
+          </frame>
+          <frame id="188:1298" name="Frame" x="51" y="13" width="632" height="74">
+            <frame id="188:1299" name="Frame" x="0" y="0" width="632" height="27">
+              <frame id="188:1300" name="chip" x="0" y="0" width="49" height="27">
+                <text id="188:1301" name="Caller" x="12" y="5" width="25" height="17" />
+              </frame>
+              <text id="188:1302" name="मैंने plot तो ले लिया है पर अब building बनाने के लिए क्या करना होगा मुझे?" x="59" y="0" width="573" height="20" />
+            </frame>
+            <frame id="188:1303" name="Frame" x="0" y="34" width="632" height="40">
+              <frame id="188:1304" name="chip" x="0" y="0" width="51" height="25">
+                <text id="188:1305" name="Expert" x="11" y="4" width="29" height="17" />
+              </frame>
+              <text id="188:1306" name="plot ले लिया है, यह बहुत अच्छी शुरुआत है। अब सबसे पहले आपको approved drawings तैयार करवानी होंगी और site पर उन्हें उपलब्ध रखना होगा। क्या आपके पास कोई Architect है जो इन drawings को design करके engineer से approve करवा सके?" x="61" y="0" width="571" height="40" />
+            </frame>
+          </frame>
+        </frame>
+        <frame id="188:1307" name="turn 2" x="48" y="126" width="698" height="120">
+          <frame id="188:1308" name="Frame" x="13" y="13" width="26" height="26">
+            <text id="188:1309" name="2" x="10" y="4" width="6" height="18" />
+          </frame>
+          <frame id="188:1310" name="Frame" x="51" y="13" width="632" height="94">
+            <frame id="188:1311" name="Frame" x="0" y="0" width="632" height="27">
+              <frame id="188:1312" name="chip" x="0" y="0" width="49" height="27">
+                <text id="188:1313" name="Caller" x="12" y="5" width="25" height="17" />
+              </frame>
+              <text id="188:1314" name="हाँ एक कोई ठेकेदार है उनको जानते हैं" x="59" y="0" width="573" height="20" />
+            </frame>
+            <frame id="188:1315" name="Frame" x="0" y="34" width="632" height="60">
+              <frame id="188:1316" name="chip" x="0" y="0" width="51" height="25">
+                <text id="188:1317" name="Expert" x="11" y="4" width="29" height="17" />
+              </frame>
+              <text id="188:1318" name="ठीक है, ठेकेदार का होना अच्छी बात है। लेकिन हर चरण के बंद होने से पहले आपको related specialist से जाँच करवानी होगी, क्योंकि concrete, plaster या tile लगने के बाद अंदर की चीज़ें छिप जाती हैं। क्या आप हर stage पर engineer से check करवाकर photo और video लेना सुनिश्चित करेंगे?" x="61" y="0" width="571" height="60" />
+            </frame>
+          </frame>
+        </frame>
+        <frame id="188:1319" name="turn 3" x="48" y="256" width="698" height="120">
+          <frame id="188:1320" name="Frame" x="13" y="13" width="26" height="26">
+            <text id="188:1321" name="3" x="10" y="4" width="6" height="18" />
+          </frame>
+          <frame id="188:1322" name="Frame" x="51" y="13" width="632" height="94">
+            <frame id="188:1323" name="Frame" x="0" y="0" width="632" height="27">
+              <frame id="188:1324" name="chip" x="0" y="0" width="49" height="27">
+                <text id="188:1325" name="Caller" x="12" y="5" width="25" height="17" />
+              </frame>
+              <text id="188:1326" name="यह engineer तो मुझे लगा था कि सिर्फ जब वह beam लगता है तभी जरूरत होती है उसकी।" x="59" y="0" width="573" height="20" />
+            </frame>
+            <frame id="188:1327" name="Frame" x="0" y="34" width="632" height="60">
+              <frame id="188:1328" name="chip" x="0" y="0" width="51" height="25">
+                <text id="188:1329" name="Expert" x="11" y="4" width="29" height="17" />
+              </frame>
+              <text id="188:1330" name="ऐसा सोचना बहुत आम है, लेकिन कंक्रीट, plaster या tile लगने के बाद reinforcement, पाइप और वायर पूरी तरह छिप जाते हैं। इसलिए हर चरण के बंद होने से पहले जाँच कराना बहुत ज़रूरी है। क्या आप हर stage पर engineer से check करवाकर photo और video लेना सुनिश्चित करेंगे?" x="61" y="0" width="571" height="60" />
+            </frame>
+          </frame>
+        </frame>
+        <frame id="188:1331" name="turn 4" x="48" y="386" width="698" height="120">
+          <frame id="188:1332" name="Frame" x="13" y="13" width="26" height="26">
+            <text id="188:1333" name="4" x="9.5" y="4" width="7" height="18" />
+          </frame>
+          <frame id="188:1334" name="Frame" x="51" y="13" width="632" height="94">
+            <frame id="188:1335" name="Frame" x="0" y="0" width="632" height="27">
+              <frame id="188:1336" name="chip" x="0" y="0" width="49" height="27">
+                <text id="188:1337" name="Caller" x="12" y="5" width="25" height="17" />
+              </frame>
+              <text id="188:1338" name="हम वो कर लेंगे पर ज़रूरी है क्या?" x="59" y="0" width="573" height="20" />
+            </frame>
+            <frame id="188:1339" name="Frame" x="0" y="34" width="632" height="60">
+              <frame id="188:1340" name="chip" x="0" y="0" width="51" height="25">
+                <text id="188:1341" name="Expert" x="11" y="4" width="29" height="17" />
+              </frame>
+              <text id="188:1342" name="ज़रूरी है, क्योंकि एक बार concrete, plaster या tile लग गया, तो अंदर की reinforcement, पाइप और वायर पूरी तरह छिप जाते हैं। अगर बाद में कोई कमी निकलती है, तो उसे ठीक करना बहुत मुश्किल और महँगा हो जाता है। इसलिए हर चरण के बंद होने से पहले जाँच कराना और photo या video लेना समझदारी है। क्या आप हर stage पर" x="61" y="0" width="571" height="60" />
+            </frame>
+          </frame>
+        </frame>
+        <frame id="188:1343" name="turn 5" x="48" y="516" width="698" height="120">
+          <frame id="188:1344" name="Frame" x="13" y="13" width="26" height="26">
+            <text id="188:1345" name="5" x="10" y="4" width="6" height="18" />
+          </frame>
+          <frame id="188:1346" name="Frame" x="51" y="13" width="632" height="94">
+            <frame id="188:1347" name="Frame" x="0" y="0" width="632" height="27">
+              <frame id="188:1348" name="chip" x="0" y="0" width="49" height="27">
+                <text id="188:1349" name="Caller" x="12" y="5" width="25" height="17" />
+              </frame>
+              <text id="188:1350" name="ये" x="59" y="0" width="573" height="20" />
+            </frame>
+            <frame id="188:1351" name="Frame" x="0" y="34" width="632" height="60">
+              <frame id="188:1352" name="chip" x="0" y="0" width="51" height="25">
+                <text id="188:1353" name="Expert" x="11" y="4" width="29" height="17" />
+              </frame>
+              <text id="188:1354" name="ज़रूरी है, क्योंकि एक बार concrete, plaster या tile लग गया, तो अंदर की reinforcement, पाइप और वायर पूरी तरह छिप जाते हैं। अगर बाद में कोई कमी निकलती है, तो उसे ठीक करना बहुत मुश्किल और महँगा हो जाता है। इसलिए हर चरण के बंद होने से पहले जाँच कराना और photo या video लेना समझदारी है। क्या आप हर stage पर engineer" x="61" y="0" width="571" height="60" />
+            </frame>
+          </frame>
+        </frame>
+        <frame id="188:1355" name="turn 6" x="48" y="646" width="698" height="120">
+          <frame id="188:1356" name="Frame" x="13" y="13" width="26" height="26">
+            <text id="188:1357" name="6" x="9.5" y="4" width="7" height="18" />
+          </frame>
+          <frame id="188:1358" name="Frame" x="51" y="13" width="632" height="94">
+            <frame id="188:1359" name="Frame" x="0" y="0" width="632" height="27">
+              <frame id="188:1360" name="chip" x="0" y="0" width="49" height="27">
+                <text id="188:1361" name="Caller" x="12" y="5" width="25" height="17" />
+              </frame>
+              <text id="188:1362" name="ये" x="59" y="0" width="573" height="20" />
+            </frame>
+            <frame id="188:1363" name="Frame" x="0" y="34" width="632" height="60">
+              <frame id="188:1364" name="chip" x="0" y="0" width="51" height="25">
+                <text id="188:1365" name="Expert" x="11" y="4" width="29" height="17" />
+              </frame>
+              <text id="188:1366" name="ज़रूरी है, क्योंकि एक बार concrete, plaster या tile लग गया, तो अंदर की reinforcement, पाइप और वायर पूरी तरह छिप जाते हैं। अगर बाद में कोई कमी निकलती है, तो उसे ठीक करना बहुत मुश्किल और महँगा हो जाता है। इसलिए हर चरण के बंद होने से पहले जाँच कराना और photo या video लेना समझदारी है। क्या आप हर stage पर engineer देखिए, अगर आप अभी" x="61" y="0" width="571" height="60" />
+            </frame>
+          </frame>
+        </frame>
+      </frame>
+      <frame id="188:1367" name="Frame" x="0" y="987" width="794" height="10" />
+      <frame id="188:1368" name="footer" x="0" y="997" width="794" height="126">
+        <text id="188:1369" name="UltraTech Home-Building Expert — Conversation Summary" x="48" y="41.5" width="246" height="17" />
+        <frame id="188:1370" name="Frame" x="294" y="0" width="432" height="100" />
+        <text id="188:1371" name="2 / 3" x="726" y="41.5" width="20" height="17" />
+      </frame>
+    </frame>
+    <frame id="188:1372" name="Idea 1 · Page 3 — Transcript" x="1768" y="140" width="794" height="1123">
+      <frame id="188:1373" name="header" x="0" y="0" width="794" height="130">
+        <ellipse id="188:1374" name="Expert avatar" x="48" y="58" width="44" height="44" />
+        <frame id="188:1375" name="Frame" x="104" y="56.5" width="225" height="47">
+          <text id="188:1376" name="UltraTech Home-Building Expert" x="0" y="0" width="225" height="27" />
+          <text id="188:1377" name="Conversation Summary" x="0" y="27" width="118" height="20" />
+        </frame>
+        <frame id="188:1378" name="Frame" x="341" y="30" width="222" height="100" />
+        <frame id="188:1379" name="chip" x="575" y="67.5" width="171" height="25">
+          <text id="188:1380" name="UltraTech · The Engineer&#39;s Choice" x="11" y="4" width="149" height="17" />
+        </frame>
+      </frame>
+      <frame id="188:1381" name="Frame" x="0" y="130" width="794" height="91">
+        <text id="188:1382" name="Full Transcript" x="48" y="24" width="165" height="43" />
+        <text id="188:1383" name="Turns 7–11 of 11" x="48" y="71" width="76" height="20" />
+      </frame>
+      <frame id="188:1384" name="Frame" x="0" y="221" width="794" height="546">
+        <frame id="188:1385" name="turn 7" x="48" y="16" width="698" height="85">
+          <frame id="188:1386" name="Frame" x="13" y="13" width="26" height="26">
+            <text id="188:1387" name="7" x="10" y="4" width="6" height="18" />
+          </frame>
+          <frame id="188:1388" name="Frame" x="51" y="13" width="632" height="59">
+            <frame id="188:1389" name="Frame" x="0" y="0" width="632" height="27">
+              <frame id="188:1390" name="chip" x="0" y="0" width="49" height="27">
+                <text id="188:1391" name="Caller" x="12" y="5" width="25" height="17" />
+              </frame>
+              <text id="188:1392" name="चरण क्या होता" x="59" y="0" width="573" height="20" />
+            </frame>
+            <frame id="188:1393" name="Frame" x="0" y="34" width="632" height="25">
+              <frame id="188:1394" name="chip" x="0" y="0" width="51" height="25">
+                <text id="188:1395" name="Expert" x="11" y="4" width="29" height="17" />
+              </frame>
+              <text id="188:1396" name="देखिए, अगर आप अभी जाँच" x="61" y="0" width="571" height="20" />
+            </frame>
+          </frame>
+        </frame>
+        <frame id="188:1397" name="turn 8" x="48" y="111" width="698" height="85">
+          <frame id="188:1398" name="Frame" x="13" y="13" width="26" height="26">
+            <text id="188:1399" name="8" x="10" y="4" width="6" height="18" />
+          </frame>
+          <frame id="188:1400" name="Frame" x="51" y="13" width="632" height="59">
+            <frame id="188:1401" name="Frame" x="0" y="0" width="632" height="27">
+              <frame id="188:1402" name="chip" x="0" y="0" width="49" height="27">
+                <text id="188:1403" name="Caller" x="12" y="5" width="25" height="17" />
+              </frame>
+              <text id="188:1404" name="चरण क्या होता है?" x="59" y="0" width="573" height="20" />
+            </frame>
+            <frame id="188:1405" name="Frame" x="0" y="34" width="632" height="25">
+              <frame id="188:1406" name="chip" x="0" y="0" width="51" height="25">
+                <text id="188:1407" name="Expert" x="11" y="4" width="29" height="17" />
+              </frame>
+              <text id="188:1408" name="देखिए, अगर आप अभी जाँच" x="61" y="0" width="571" height="20" />
+            </frame>
+          </frame>
+        </frame>
+        <frame id="188:1409" name="turn 9" x="48" y="206" width="698" height="120">
+          <frame id="188:1410" name="Frame" x="13" y="13" width="26" height="26">
+            <text id="188:1411" name="9" x="10" y="4" width="6" height="18" />
+          </frame>
+          <frame id="188:1412" name="Frame" x="51" y="13" width="632" height="94">
+            <frame id="188:1413" name="Frame" x="0" y="0" width="632" height="27">
+              <frame id="188:1414" name="chip" x="0" y="0" width="49" height="27">
+                <text id="188:1415" name="Caller" x="12" y="5" width="25" height="17" />
+              </frame>
+              <text id="188:1416" name="चरण क्या होता है?" x="59" y="0" width="573" height="20" />
+            </frame>
+            <frame id="188:1417" name="Frame" x="0" y="34" width="632" height="60">
+              <frame id="188:1418" name="chip" x="0" y="0" width="51" height="25">
+                <text id="188:1419" name="Expert" x="11" y="4" width="29" height="17" />
+              </frame>
+              <text id="188:1420" name="चरण का मतलब है construction का एक चरण। जैसे कंक्रीट डालना, reinforcement लगाना, plaster करना या tile लगाना। हर चरण के पूरे होने के बाद जाँच कराना ज़रूरी है। क्या आप हर चरण के बंद होने से पहले engineer से check करवाकर photo और video लेना सुनिश्चित करेंगे?" x="61" y="0" width="571" height="60" />
+            </frame>
+          </frame>
+        </frame>
+        <frame id="188:1421" name="turn 10" x="48" y="336" width="698" height="100">
+          <frame id="188:1422" name="Frame" x="13" y="13" width="26" height="26">
+            <text id="188:1423" name="10" x="7.5" y="4" width="11" height="18" />
+          </frame>
+          <frame id="188:1424" name="Frame" x="51" y="13" width="632" height="74">
+            <frame id="188:1425" name="Frame" x="0" y="0" width="632" height="27">
+              <frame id="188:1426" name="chip" x="0" y="0" width="49" height="27">
+                <text id="188:1427" name="Caller" x="12" y="5" width="25" height="17" />
+              </frame>
+              <text id="188:1428" name="Okay" x="59" y="0" width="573" height="20" />
+            </frame>
+            <frame id="188:1429" name="Frame" x="0" y="34" width="632" height="40">
+              <frame id="188:1430" name="chip" x="0" y="0" width="51" height="25">
+                <text id="188:1431" name="Expert" x="11" y="4" width="29" height="17" />
+              </frame>
+              <text id="188:1432" name="ठीक है। बस एक बात का ध्यान रखिएगा कि सभी काम नवीनतम approved drawings के अनुसार ही होने चाहिए। साइट पर drawings हमेशा उपलब्ध रखें और कोई भी बदलाव लिखित रूप में रिकॉर्ड करके engineer से मंजूरी लें। क्या आपके पास drawings तैयार हैं?" x="61" y="0" width="571" height="40" />
+            </frame>
+          </frame>
+        </frame>
+        <frame id="188:1433" name="turn 11" x="48" y="446" width="698" height="100">
+          <frame id="188:1434" name="Frame" x="13" y="13" width="26" height="26">
+            <text id="188:1435" name="11" x="8" y="4" width="10" height="18" />
+          </frame>
+          <frame id="188:1436" name="Frame" x="51" y="13" width="632" height="74">
+            <frame id="188:1437" name="Frame" x="0" y="0" width="632" height="27">
+              <frame id="188:1438" name="chip" x="0" y="0" width="49" height="27">
+                <text id="188:1439" name="Caller" x="12" y="5" width="25" height="17" />
+              </frame>
+              <text id="188:1440" name="नहीं हो गया मेरा Thank you" x="59" y="0" width="573" height="20" />
+            </frame>
+            <frame id="188:1441" name="Frame" x="0" y="34" width="632" height="40">
+              <frame id="188:1442" name="chip" x="0" y="0" width="51" height="25">
+                <text id="188:1443" name="Expert" x="11" y="4" width="29" height="17" />
+              </frame>
+              <text id="188:1444" name="कोई बात नहीं। घर बनाना एक लंबा सफ़र है, लेकिन सही जानकारी और तैयारी से सब कुछ आसान हो जाता है। शुभकामनाएँ, आपका दिन शुभ हो।" x="61" y="0" width="571" height="40" />
+            </frame>
+          </frame>
+        </frame>
+      </frame>
+      <frame id="188:1445" name="Frame" x="0" y="767" width="794" height="230" />
+      <frame id="188:1446" name="footer" x="0" y="997" width="794" height="126">
+        <text id="188:1447" name="UltraTech Home-Building Expert — Conversation Summary" x="48" y="41.5" width="246" height="17" />
+        <frame id="188:1448" name="Frame" x="294" y="0" width="432" height="100" />
+        <text id="188:1449" name="3 / 3" x="726" y="41.5" width="20" height="17" />
+      </frame>
+    </frame>
+  </section>
+  <section id="193:6435" name="Section 2 · v5 voice English — website design language" x="-6257" y="-386" width="5460" height="1222">
+    <frame id="193:6436" name="06 · Wrap-up — Thank you" x="4961" y="290" width="393" height="852">
+      <rounded-rectangle id="193:6437" name="Golden-hour home exterior bokeh 1" x="-254" y="-76" width="813" height="1452" hidden="true" />
+      <rounded-rectangle id="193:6438" name="legibility" x="0" y="0" width="393" height="852" hidden="true" />
+      <instance id="193:6439" name="status bars" x="0" y="0" width="375" height="52" />
+      <frame id="193:6440" name="header" x="16" y="56" width="361" height="68">
+        <frame id="193:6441" name="icon/back" x="14" y="22" width="24" height="24" />
+        <rounded-rectangle id="193:6443" name="Expert avatar" x="44" y="12" width="44" height="44" />
+        <text id="193:6444" name="UltraTech Engineer" x="98" y="13" width="158" height="20" />
+        <frame id="193:6445" name="status" x="98" y="37" width="135" height="16">
+          <ellipse id="193:6446" name="Ellipse" x="0" y="4.5" width="7" height="7" />
+          <text id="193:6447" name="AI assistant · Online" x="13" y="0" width="122" height="16" />
+        </frame>
+        <frame id="193:6448" name="more" x="309" y="16" width="36" height="36">
+          <frame id="193:6449" name="icon/more" x="7" y="7" width="22" height="22" />
+        </frame>
+      </frame>
+      <text id="193:6453" name="I hope your home-building ques" x="24" y="325" width="345" height="174" />
+      <frame id="193:6454" name="cta" x="16" y="770" width="174" height="50">
+        <frame id="193:6455" name="chip/Plaster stage ki taiyaari" x="0" y="0" width="174" height="50">
+          <text id="193:6456" name="End conversation" x="33.5" y="16" width="107" height="18" />
+        </frame>
+      </frame>
+      <frame id="193:6457" name="cta" x="203" y="770" width="174" height="50">
+        <frame id="193:6458" name="chip/Plaster stage ki taiyaari" x="0" y="0" width="174" height="50">
+          <text id="193:6459" name="End conversation" x="23.5" y="16" width="127" height="18" />
+        </frame>
+      </frame>
+    </frame>
+    <frame id="193:6460" name="Frame 16" x="99" y="90" width="663" height="77">
+      <text id="193:6461" name="USE CASE-2: VOICE · ENGLISH" x="10" y="10" width="643" height="57" />
+    </frame>
+    <frame id="193:6462" name="Orb · Listening" x="541" y="290" width="393" height="852">
+      <rounded-rectangle id="193:6463" name="Golden-hour home exterior bokeh 1" x="-254" y="-76" width="813" height="1452" hidden="true" />
+      <rounded-rectangle id="193:6464" name="legibility" x="0" y="0" width="393" height="852" hidden="true" />
+      <instance id="193:6465" name="status bars" x="0" y="0" width="375" height="52" />
+      <frame id="193:6466" name="header" x="16" y="56" width="361" height="68">
+        <frame id="193:6467" name="icon/back" x="14" y="22" width="24" height="24" />
+        <rounded-rectangle id="193:6469" name="Expert avatar" x="44" y="12" width="44" height="44" />
+        <text id="193:6470" name="UltraTech Engineer" x="98" y="13" width="158" height="20" />
+        <frame id="193:6471" name="status" x="98" y="37" width="135" height="16">
+          <ellipse id="193:6472" name="Ellipse" x="0" y="4.5" width="7" height="7" />
+          <text id="193:6473" name="AI assistant · Online" x="13" y="0" width="122" height="16" />
+        </frame>
+        <frame id="193:6474" name="btn/type" x="309" y="16" width="36" height="36">
+          <frame id="193:6475" name="icon/keyboard" x="8" y="8" width="20" height="20" />
+        </frame>
+      </frame>
+      <text id="193:6485" name="After the slab," x="24" y="158" width="345" height="38" />
+      <text id="193:6486" name="when can the shuttering come o" x="24" y="196" width="345" height="76" />
+      <frame id="193:6487" name="voice orb" x="86.5" y="386" width="220" height="220">
+        <ellipse id="193:6488" name="halo glow" x="-45" y="-45" width="310" height="310" />
+        <ellipse id="193:6489" name="ripple 2" x="-18" y="-18" width="256" height="256" />
+        <ellipse id="193:6490" name="ripple 1" x="2" y="2" width="216" height="216" />
+        <ellipse id="193:6491" name="ring track" x="22" y="22" width="176" height="176" />
+        <ellipse id="193:6492" name="ring gradient" x="22" y="22" width="176" height="176" />
+        <ellipse id="193:6493" name="avatar backing" x="38" y="38" width="144" height="144" />
+        <ellipse id="193:6494" name="Expert avatar" x="44" y="44" width="132" height="132" />
+        <frame id="193:6495" name="state badge" x="72.5" y="176" width="75" height="42">
+          <rounded-rectangle id="193:6496" name="Rectangle" x="15" y="17" width="3" height="8" />
+          <rounded-rectangle id="193:6497" name="Rectangle" x="22" y="14" width="3" height="14" />
+          <rounded-rectangle id="193:6498" name="Rectangle" x="29" y="10" width="3" height="22" />
+          <rounded-rectangle id="193:6499" name="Rectangle" x="36" y="14" width="3" height="14" />
+          <rounded-rectangle id="193:6500" name="Rectangle" x="43" y="16" width="3" height="10" />
+          <rounded-rectangle id="193:6501" name="Rectangle" x="50" y="12" width="3" height="18" />
+          <rounded-rectangle id="193:6502" name="Rectangle" x="57" y="17" width="3" height="8" />
+        </frame>
+      </frame>
+      <frame id="193:6503" name="controls" x="0" y="700" width="393" height="96">
+        <frame id="193:6504" name="btn/camera" x="60" y="20" width="56" height="56">
+          <frame id="193:6505" name="icon/camera" x="16" y="16" width="24" height="24" />
+        </frame>
+        <frame id="193:6508" name="btn/mic" x="156" y="8" width="80" height="80">
+          <frame id="193:6509" name="icon/mic" x="28" y="28" width="24" height="24" />
+        </frame>
+        <frame id="193:6513" name="btn/close" x="277" y="20" width="56" height="56">
+          <frame id="193:6514" name="icon/x" x="16" y="16" width="24" height="24" />
+        </frame>
+      </frame>
+      <text id="193:6517" name="Send photo" x="33" y="786" width="110" height="14" />
+      <text id="193:6518" name="End chat" x="250" y="786" width="110" height="14" />
+      <text id="193:6519" name="Thinking about your question…" x="0" y="640" width="393" height="17" />
+    </frame>
+    <frame id="193:6520" name="02 · Voice — Ask by speaking" x="3193" y="290" width="393" height="852">
+      <rounded-rectangle id="193:6521" name="Golden-hour home exterior bokeh 1" x="-254" y="-76" width="813" height="1452" hidden="true" />
+      <rounded-rectangle id="193:6522" name="legibility" x="0" y="0" width="393" height="852" hidden="true" />
+      <instance id="193:6523" name="status bars" x="0" y="0" width="375" height="52" />
+      <frame id="193:6524" name="header" x="16" y="56" width="361" height="68">
+        <frame id="193:6525" name="icon/back" x="14" y="22" width="24" height="24" />
+        <rounded-rectangle id="193:6527" name="Expert avatar" x="44" y="12" width="44" height="44" />
+        <text id="193:6528" name="UltraTech Engineer" x="98" y="13" width="158" height="20" />
+        <frame id="193:6529" name="status" x="98" y="37" width="135" height="16">
+          <ellipse id="193:6530" name="Ellipse" x="0" y="4.5" width="7" height="7" />
+          <text id="193:6531" name="AI assistant · Online" x="13" y="0" width="122" height="16" />
+        </frame>
+        <frame id="193:6532" name="btn/type" x="309" y="16" width="36" height="36">
+          <frame id="193:6533" name="icon/keyboard" x="8" y="8" width="20" height="20" />
+        </frame>
+      </frame>
+      <text id="193:6543" name="After the slab," x="24" y="158" width="345" height="38" />
+      <text id="193:6544" name="when can the shuttering come o" x="24" y="196" width="345" height="76" />
+      <frame id="193:6545" name="voice orb" x="86" y="390" width="220" height="220">
+        <ellipse id="193:6546" name="halo glow" x="-45" y="-45" width="310" height="310" />
+        <ellipse id="193:6547" name="ripple 2" x="-18" y="-18" width="256" height="256" />
+        <ellipse id="193:6548" name="ripple 1" x="2" y="2" width="216" height="216" />
+        <ellipse id="193:6549" name="ring track" x="22" y="22" width="176" height="176" />
+        <ellipse id="193:6550" name="ring gradient" x="22" y="22" width="176" height="176" />
+        <ellipse id="193:6551" name="avatar backing" x="38" y="38" width="144" height="144" />
+        <ellipse id="193:6552" name="Expert avatar" x="44" y="44" width="132" height="132" />
+        <frame id="193:6553" name="state badge" x="72.5" y="176" width="75" height="42">
+          <rounded-rectangle id="193:6554" name="Rectangle" x="15" y="17" width="3" height="8" />
+          <rounded-rectangle id="193:6555" name="Rectangle" x="22" y="14" width="3" height="14" />
+          <rounded-rectangle id="193:6556" name="Rectangle" x="29" y="10" width="3" height="22" />
+          <rounded-rectangle id="193:6557" name="Rectangle" x="36" y="14" width="3" height="14" />
+          <rounded-rectangle id="193:6558" name="Rectangle" x="43" y="16" width="3" height="10" />
+          <rounded-rectangle id="193:6559" name="Rectangle" x="50" y="12" width="3" height="18" />
+          <rounded-rectangle id="193:6560" name="Rectangle" x="57" y="17" width="3" height="8" />
+        </frame>
+      </frame>
+      <frame id="193:6561" name="controls" x="0" y="700" width="393" height="96">
+        <frame id="193:6562" name="btn/camera" x="60" y="20" width="56" height="56">
+          <frame id="193:6563" name="icon/camera" x="16" y="16" width="24" height="24" />
+        </frame>
+        <frame id="193:6566" name="btn/mic" x="156" y="8" width="80" height="80">
+          <frame id="193:6567" name="icon/mic" x="28" y="28" width="24" height="24" />
+        </frame>
+        <frame id="193:6571" name="btn/close" x="277" y="20" width="56" height="56">
+          <frame id="193:6572" name="icon/x" x="16" y="16" width="24" height="24" />
+        </frame>
+      </frame>
+      <text id="193:6575" name="Send photo" x="33" y="786" width="110" height="14" />
+      <text id="193:6576" name="End chat" x="250" y="786" width="110" height="14" />
+    </frame>
+    <frame id="193:6577" name="02 · Voice — Ask by speaking" x="4077" y="290" width="393" height="852">
+      <rounded-rectangle id="193:6578" name="Golden-hour home exterior bokeh 1" x="-254" y="-76" width="813" height="1452" hidden="true" />
+      <rounded-rectangle id="193:6579" name="legibility" x="0" y="0" width="393" height="852" hidden="true" />
+      <instance id="193:6580" name="status bars" x="0" y="0" width="375" height="52" />
+      <frame id="193:6581" name="header" x="16" y="56" width="361" height="68">
+        <frame id="193:6582" name="icon/back" x="14" y="22" width="24" height="24" />
+        <rounded-rectangle id="193:6584" name="Expert avatar" x="44" y="12" width="44" height="44" />
+        <text id="193:6585" name="UltraTech Engineer" x="98" y="13" width="158" height="20" />
+        <frame id="193:6586" name="status" x="98" y="37" width="135" height="16">
+          <ellipse id="193:6587" name="Ellipse" x="0" y="4.5" width="7" height="7" />
+          <text id="193:6588" name="AI assistant · Online" x="13" y="0" width="122" height="16" />
+        </frame>
+        <frame id="193:6589" name="btn/type" x="309" y="16" width="36" height="36">
+          <frame id="193:6590" name="icon/keyboard" x="8" y="8" width="20" height="20" />
+        </frame>
+      </frame>
+      <text id="193:6600" name="After the slab," x="24" y="158" width="345" height="38" />
+      <text id="193:6601" name="when can the shuttering come o" x="24" y="196" width="345" height="76" />
+      <frame id="193:6602" name="voice orb" x="86" y="390" width="220" height="220">
+        <ellipse id="193:6603" name="halo glow" x="-45" y="-45" width="310" height="310" />
+        <ellipse id="193:6604" name="ripple 2" x="-18" y="-18" width="256" height="256" />
+        <ellipse id="193:6605" name="ripple 1" x="2" y="2" width="216" height="216" />
+        <ellipse id="193:6606" name="ring track" x="22" y="22" width="176" height="176" />
+        <ellipse id="193:6607" name="ring gradient" x="22" y="22" width="176" height="176" />
+        <ellipse id="193:6608" name="avatar backing" x="38" y="38" width="144" height="144" />
+        <ellipse id="193:6609" name="Expert avatar" x="44" y="44" width="132" height="132" />
+        <frame id="193:6610" name="state badge" x="72.5" y="176" width="75" height="42">
+          <rounded-rectangle id="193:6611" name="Rectangle" x="15" y="17" width="3" height="8" />
+          <rounded-rectangle id="193:6612" name="Rectangle" x="22" y="14" width="3" height="14" />
+          <rounded-rectangle id="193:6613" name="Rectangle" x="29" y="10" width="3" height="22" />
+          <rounded-rectangle id="193:6614" name="Rectangle" x="36" y="14" width="3" height="14" />
+          <rounded-rectangle id="193:6615" name="Rectangle" x="43" y="16" width="3" height="10" />
+          <rounded-rectangle id="193:6616" name="Rectangle" x="50" y="12" width="3" height="18" />
+          <rounded-rectangle id="193:6617" name="Rectangle" x="57" y="17" width="3" height="8" />
+        </frame>
+      </frame>
+      <frame id="193:6618" name="controls" x="0" y="700" width="393" height="96">
+        <frame id="193:6619" name="btn/camera" x="60" y="20" width="56" height="56">
+          <frame id="193:6620" name="icon/camera" x="16" y="16" width="24" height="24" />
+        </frame>
+        <frame id="193:6623" name="btn/mic" x="156" y="8" width="80" height="80">
+          <frame id="193:6624" name="icon/mic" x="28" y="28" width="24" height="24" />
+        </frame>
+        <frame id="193:6628" name="btn/close" x="277" y="20" width="56" height="56">
+          <frame id="193:6629" name="icon/x" x="16" y="16" width="24" height="24" />
+        </frame>
+      </frame>
+      <text id="193:6632" name="Send photo" x="33" y="786" width="110" height="14" />
+      <text id="193:6633" name="End chat" x="250" y="786" width="110" height="14" />
+    </frame>
+    <frame id="193:6634" name="01 · Welcome — Name &amp; language" x="99" y="290" width="393" height="852">
+      <rounded-rectangle id="193:6635" name="Golden-hour home exterior bokeh 1" x="-254" y="-76" width="813" height="1452" hidden="true" />
+      <rounded-rectangle id="193:6636" name="legibility" x="0" y="0" width="393" height="852" hidden="true" />
+      <instance id="193:6637" name="status bars" x="0" y="0" width="375" height="52" />
+      <frame id="193:6638" name="header" x="16" y="56" width="361" height="68">
+        <frame id="193:6639" name="icon/back" x="14" y="22" width="24" height="24" />
+        <rounded-rectangle id="193:6641" name="Expert avatar" x="44" y="12" width="44" height="44" />
+        <text id="193:6642" name="UltraTech Engineer" x="98" y="13" width="158" height="20" />
+        <frame id="193:6643" name="status" x="98" y="37" width="135" height="16">
+          <ellipse id="193:6644" name="Ellipse" x="0" y="4.5" width="7" height="7" />
+          <text id="193:6645" name="AI assistant · Online" x="13" y="0" width="122" height="16" />
+        </frame>
+        <frame id="193:6646" name="more" x="309" y="16" width="36" height="36">
+          <frame id="193:6647" name="icon/more" x="7" y="7" width="22" height="22" />
+        </frame>
+      </frame>
+      <frame id="193:6651" name="chat" x="16" y="142" width="361" height="484">
+        <frame id="193:6652" name="engineer bubble" x="0" y="0" width="340" height="147">
+          <frame id="193:6653" name="voice meta" x="17" y="15" width="306" height="14">
+            <frame id="193:6654" name="Frame" x="0" y="0" width="14" height="14" />
+            <text id="193:6661" name="UltraTech Engineer · 0:09" x="20" y="0" width="286" height="14" />
+          </frame>
+          <text id="193:6662" name="Hi! I&#39;m the UltraTech Engineer" x="17" y="39" width="306" height="63" />
+          <text id="193:6663" name="What&#39;s your name?" x="17" y="112" width="306" height="18" />
+        </frame>
+        <frame id="193:6664" name="engineer bubble" x="0" y="159" width="340" height="92">
+          <text id="193:6665" name="Which language would you like " x="17" y="15" width="306" height="18" />
+          <frame id="193:6666" name="language options" x="17" y="43" width="306" height="32">
+            <frame id="193:6667" name="lang/English" x="0" y="0" width="91" height="32">
+              <frame id="193:6668" name="Frame" x="12" y="9" width="14" height="14" />
+              <text id="193:6670" name="English" x="32" y="8" width="47" height="16" />
+            </frame>
+            <frame id="193:6671" name="lang/हिंदी" x="99" y="0" width="48" height="32">
+              <text id="193:6672" name="हिंदी" x="13" y="8" width="22" height="16" />
+            </frame>
+            <frame id="193:6673" name="lang/Hinglish" x="155" y="0" width="77" height="32">
+              <text id="193:6674" name="Hinglish" x="13" y="8" width="51" height="16" />
+            </frame>
+            <frame id="193:6675" name="lang/More" x="240" y="0" width="58" height="32">
+              <text id="193:6676" name="More" x="13" y="8" width="32" height="16" />
+            </frame>
+          </frame>
+        </frame>
+        <frame id="193:6677" name="user row" x="0" y="263" width="361" height="46">
+          <frame id="193:6678" name="user bubble" x="272" y="0" width="89" height="46">
+            <text id="193:6679" name="English" x="16" y="12" width="57" height="22" />
+          </frame>
+        </frame>
+        <frame id="193:6680" name="engineer bubble" x="0" y="321" width="340" height="163">
+          <text id="193:6681" name="Great, I&#39;ll talk with you in E" x="17" y="15" width="306" height="21" />
+          <text id="193:6682" name="Welcome, Rahul! Which stage is" x="17" y="46" width="306" height="18" />
+          <frame id="193:6683" name="stage options" x="17" y="74" width="306" height="72">
+            <frame id="193:6684" name="stage/Plot" x="0" y="0" width="51" height="32">
+              <text id="193:6685" name="Plot" x="13" y="8" width="25" height="16" />
+            </frame>
+            <frame id="193:6686" name="stage/Plan" x="59" y="0" width="54" height="32">
+              <text id="193:6687" name="Plan" x="13" y="8" width="28" height="16" />
+            </frame>
+            <frame id="193:6688" name="stage/Foundation" x="121" y="0" width="97" height="32">
+              <text id="193:6689" name="Foundation" x="13" y="8" width="71" height="16" />
+            </frame>
+            <frame id="193:6690" name="stage/Structure" x="0" y="40" width="105" height="32">
+              <frame id="193:6691" name="Frame" x="12" y="9" width="14" height="14" />
+              <text id="193:6693" name="Structure" x="32" y="8" width="61" height="16" />
+            </frame>
+            <frame id="193:6694" name="stage/Plaster" x="113" y="40" width="70" height="32">
+              <text id="193:6695" name="Plaster" x="13" y="8" width="44" height="16" />
+            </frame>
+            <frame id="193:6696" name="stage/Finishing" x="191" y="40" width="83" height="32">
+              <text id="193:6697" name="Finishing" x="13" y="8" width="57" height="16" />
+            </frame>
+          </frame>
+        </frame>
+      </frame>
+      <frame id="193:6698" name="composer" x="16" y="766" width="361" height="58">
+        <frame id="193:6699" name="icon/camera" x="18" y="17" width="24" height="24" />
+        <text id="193:6702" name="Ask your question…" x="54" y="19" width="148" height="19" />
+        <frame id="193:6703" name="mic" x="307" y="5" width="48" height="48">
+          <frame id="193:6704" name="icon/mic" x="12" y="12" width="24" height="24" />
+        </frame>
+      </frame>
+      <frame id="193:6708" name="quick actions" x="16" y="720" width="361" height="36">
+        <frame id="193:6709" name="action/Change language" x="12.5" y="0" width="92" height="32">
+          <frame id="193:6710" name="icon" x="13" y="9" width="14" height="14" />
+          <text id="193:6714" name="English" x="33" y="8" width="46" height="16" />
+        </frame>
+        <frame id="193:6715" name="action/Talk by voice" x="112.5" y="0" width="127" height="32">
+          <frame id="193:6716" name="icon" x="13" y="9" width="14" height="14" />
+          <text id="193:6720" name="Talk by voice" x="33" y="8" width="81" height="16" />
+        </frame>
+        <frame id="193:6721" name="action/End conversation" x="247.5" y="0" width="101" height="32">
+          <frame id="193:6722" name="icon" x="13" y="9" width="14" height="14" />
+          <text id="193:6725" name="End chat" x="33" y="8" width="55" height="16" />
+        </frame>
+      </frame>
+    </frame>
+    <frame id="193:6726" name="03b · Voice transcript — Direct answer" x="2309" y="290" width="393" height="852">
+      <rounded-rectangle id="193:6727" name="Golden-hour home exterior bokeh 1" x="-254" y="-76" width="813" height="1452" hidden="true" />
+      <rounded-rectangle id="193:6728" name="legibility" x="0" y="0" width="393" height="852" hidden="true" />
+      <instance id="193:6729" name="status bars" x="0" y="0" width="375" height="52" />
+      <frame id="193:6730" name="header" x="16" y="56" width="361" height="68">
+        <frame id="193:6731" name="icon/back" x="14" y="22" width="24" height="24" />
+        <rounded-rectangle id="193:6733" name="Expert avatar" x="44" y="12" width="44" height="44" />
+        <text id="193:6734" name="UltraTech Engineer" x="98" y="13" width="158" height="20" />
+        <frame id="193:6735" name="status" x="98" y="37" width="135" height="16">
+          <ellipse id="193:6736" name="Ellipse" x="0" y="4.5" width="7" height="7" />
+          <text id="193:6737" name="AI assistant · Online" x="13" y="0" width="122" height="16" />
+        </frame>
+        <frame id="193:6738" name="more" x="309" y="16" width="36" height="36">
+          <frame id="193:6739" name="icon/more" x="7" y="7" width="22" height="22" />
+        </frame>
+      </frame>
+      <frame id="193:6743" name="chat" x="16" y="136" width="361" height="566">
+        <frame id="193:6744" name="voice ended row" x="0" y="0" width="361" height="28">
+          <frame id="193:6745" name="chip/voice ended" x="60" y="0" width="241" height="28">
+            <frame id="193:6746" name="Frame" x="13" y="7.5" width="13" height="13" />
+            <text id="193:6750" name="Mistri se kya poochein?" x="32" y="7" width="196" height="14" />
+          </frame>
+        </frame>
+        <frame id="193:6751" name="user row" x="0" y="32" width="361" height="68">
+          <frame id="193:6752" name="user bubble" x="69" y="0" width="292" height="68">
+            <text id="193:6753" name="When can the shuttering come o" x="16" y="12" width="260" height="44" />
+          </frame>
+        </frame>
+        <frame id="193:6754" name="engineer bubble" x="0" y="104" width="340" height="116">
+          <frame id="193:6755" name="voice meta" x="17" y="13" width="306" height="14">
+            <frame id="193:6756" name="Frame" x="0" y="0" width="14" height="14" />
+            <text id="193:6763" name="UltraTech Engineer · 0:14" x="20" y="0" width="286" height="14" />
+          </frame>
+          <text id="193:6764" name="Everyone wants to remove it ea" x="17" y="35" width="306" height="66" />
+        </frame>
+        <frame id="193:6765" name="takeaway card" x="0" y="224" width="340" height="73">
+          <text id="193:6766" name="Everyone wants to remove it ea" x="17.5" y="13.5" width="305" height="44" />
+        </frame>
+        <frame id="193:6767" name="user row" x="0" y="301" width="361" height="68">
+          <frame id="193:6768" name="user bubble" x="69" y="0" width="292" height="68">
+            <text id="193:6769" name="And curing continues till then" x="16" y="12" width="260" height="44" />
+          </frame>
+        </frame>
+        <frame id="193:6770" name="engineer bubble" x="0" y="373" width="340" height="116">
+          <frame id="193:6771" name="voice meta" x="17" y="13" width="306" height="14">
+            <frame id="193:6772" name="Frame" x="0" y="0" width="14" height="14" />
+            <text id="193:6779" name="UltraTech Engineer · 0:09" x="20" y="0" width="286" height="14" />
+          </frame>
+          <text id="193:6780" name="Absolutely. Keep water pooled " x="17" y="35" width="306" height="66" />
+        </frame>
+        <frame id="193:6781" name="takeaway card" x="0" y="493" width="340" height="73">
+          <text id="193:6782" name="Absolutely. Keep water pooled " x="17.5" y="13.5" width="305" height="44" />
+        </frame>
+      </frame>
+      <frame id="193:6783" name="composer" x="16" y="766" width="361" height="58">
+        <ellipse id="193:6784" name="tap hint" x="9" y="8" width="42" height="42" />
+        <frame id="193:6785" name="icon/camera" x="18" y="17" width="24" height="24" />
+        <text id="193:6788" name="Ask your question…" x="54" y="19" width="148" height="19" />
+        <frame id="193:6789" name="mic" x="307" y="5" width="48" height="48">
+          <frame id="193:6790" name="icon/mic" x="12" y="12" width="24" height="24" />
+        </frame>
+      </frame>
+      <frame id="193:6794" name="quick actions" x="16" y="720" width="361" height="36">
+        <frame id="193:6795" name="action/Change language" x="12.5" y="0" width="92" height="32">
+          <frame id="193:6796" name="icon" x="13" y="9" width="14" height="14" />
+          <text id="193:6800" name="English" x="33" y="8" width="46" height="16" />
+        </frame>
+        <frame id="193:6801" name="action/Talk by voice" x="112.5" y="0" width="127" height="32">
+          <frame id="193:6802" name="icon" x="13" y="9" width="14" height="14" />
+          <text id="193:6806" name="Talk by voice" x="33" y="8" width="81" height="16" />
+        </frame>
+        <frame id="193:6807" name="action/End conversation" x="247.5" y="0" width="101" height="32">
+          <frame id="193:6808" name="icon" x="13" y="9" width="14" height="14" />
+          <text id="193:6811" name="End chat" x="33" y="8" width="55" height="16" />
+        </frame>
+      </frame>
+    </frame>
+    <frame id="193:6812" name="04b · Voice transcript — Photo diagnosis" x="3635" y="290" width="393" height="852">
+      <rounded-rectangle id="193:6813" name="Golden-hour home exterior bokeh 1" x="-254" y="-76" width="813" height="1452" hidden="true" />
+      <rounded-rectangle id="193:6814" name="legibility" x="0" y="0" width="393" height="852" hidden="true" />
+      <instance id="193:6815" name="status bars" x="0" y="0" width="375" height="52" />
+      <frame id="193:6816" name="header" x="16" y="56" width="361" height="68">
+        <frame id="193:6817" name="icon/back" x="14" y="22" width="24" height="24" />
+        <rounded-rectangle id="193:6819" name="Expert avatar" x="44" y="12" width="44" height="44" />
+        <text id="193:6820" name="UltraTech Engineer" x="98" y="13" width="158" height="20" />
+        <frame id="193:6821" name="status" x="98" y="37" width="135" height="16">
+          <ellipse id="193:6822" name="Ellipse" x="0" y="4.5" width="7" height="7" />
+          <text id="193:6823" name="AI assistant · Online" x="13" y="0" width="122" height="16" />
+        </frame>
+        <frame id="193:6824" name="more" x="309" y="16" width="36" height="36">
+          <frame id="193:6825" name="icon/more" x="7" y="7" width="22" height="22" />
+        </frame>
+      </frame>
+      <frame id="193:6829" name="chat" x="16" y="136" width="361" height="567">
+        <frame id="193:6830" name="voice ended row" x="0" y="0" width="361" height="28">
+          <frame id="193:6831" name="chip/voice ended" x="59.5" y="0" width="242" height="28">
+            <frame id="193:6832" name="Frame" x="13" y="7.5" width="13" height="13" />
+            <text id="193:6836" name="Mistri se kya poochein?" x="32" y="7" width="197" height="14" />
+          </frame>
+        </frame>
+        <frame id="193:6837" name="user row" x="0" y="32" width="361" height="190">
+          <frame id="193:6838" name="user bubble" x="101" y="0" width="260" height="190">
+            <frame id="193:6839" name="shared photo · wall crack" x="6" y="6" width="248" height="118">
+              <rounded-rectangle id="193:6840" name="window" x="-10" y="-10" width="110" height="64" />
+              <frame id="193:6841" name="crack" x="0" y="0" width="248" height="150" />
+              <frame id="193:6844" name="photo tag" x="10" y="86" width="160" height="21">
+                <text id="193:6845" name="1 photo · below the window" x="8" y="4" width="144" height="13" />
+              </frame>
+            </frame>
+            <text id="193:6846" name="Yes, there&#39;s this crack below " x="6" y="134" width="236" height="44" />
+          </frame>
+        </frame>
+        <frame id="193:6847" name="engineer bubble" x="0" y="226" width="340" height="116">
+          <frame id="193:6848" name="voice meta" x="17" y="13" width="306" height="14">
+            <frame id="193:6849" name="Frame" x="0" y="0" width="14" height="14" />
+            <text id="193:6856" name="UltraTech Engineer · 0:16" x="20" y="0" width="286" height="14" />
+          </frame>
+          <text id="193:6857" name="I&#39;ve looked at your photo care" x="17" y="35" width="306" height="66" />
+        </frame>
+        <frame id="193:6858" name="user row" x="0" y="346" width="361" height="46">
+          <frame id="193:6859" name="user bubble" x="69" y="0" width="292" height="46">
+            <text id="193:6860" name="So what should I do now?" x="16" y="12" width="260" height="22" />
+          </frame>
+        </frame>
+        <frame id="193:6861" name="engineer bubble" x="0" y="396" width="340" height="94">
+          <frame id="193:6862" name="voice meta" x="17" y="13" width="306" height="14">
+            <frame id="193:6863" name="Frame" x="0" y="0" width="14" height="14" />
+            <text id="193:6870" name="UltraTech Engineer · 0:12" x="20" y="0" width="286" height="14" />
+          </frame>
+          <text id="193:6871" name="For a week, mark both ends of " x="17" y="35" width="306" height="44" />
+        </frame>
+        <frame id="193:6872" name="takeaway card" x="0" y="494" width="340" height="73">
+          <text id="193:6873" name="For a week, mark both ends of " x="17.5" y="13.5" width="305" height="44" />
+        </frame>
+      </frame>
+      <frame id="193:6874" name="composer" x="16" y="766" width="361" height="58">
+        <frame id="193:6875" name="icon/camera" x="18" y="17" width="24" height="24" />
+        <text id="193:6878" name="Ask your question…" x="54" y="19" width="148" height="19" />
+        <frame id="193:6879" name="mic" x="307" y="5" width="48" height="48">
+          <frame id="193:6880" name="icon/mic" x="12" y="12" width="24" height="24" />
+        </frame>
+      </frame>
+      <frame id="193:6884" name="quick actions" x="16" y="724" width="361" height="36">
+        <frame id="193:6885" name="action/Change language" x="12.5" y="0" width="92" height="32">
+          <frame id="193:6886" name="icon" x="13" y="9" width="14" height="14" />
+          <text id="193:6890" name="English" x="33" y="8" width="46" height="16" />
+        </frame>
+        <frame id="193:6891" name="action/Talk by voice" x="112.5" y="0" width="127" height="32">
+          <frame id="193:6892" name="icon" x="13" y="9" width="14" height="14" />
+          <text id="193:6896" name="Talk by voice" x="33" y="8" width="81" height="16" />
+        </frame>
+        <frame id="193:6897" name="action/End conversation" x="247.5" y="0" width="101" height="32">
+          <frame id="193:6898" name="icon" x="13" y="9" width="14" height="14" />
+          <text id="193:6901" name="End chat" x="33" y="8" width="55" height="16" />
+        </frame>
+      </frame>
+    </frame>
+    <frame id="193:6902" name="06 · Chat after End chat — summary PDF button (copy of 05b)" x="4519" y="290" width="393" height="852">
+      <rounded-rectangle id="193:6903" name="Golden-hour home exterior bokeh 1" x="-254" y="-76" width="813" height="1452" hidden="true" />
+      <rounded-rectangle id="193:6904" name="legibility" x="0" y="0" width="393" height="852" hidden="true" />
+      <instance id="193:6905" name="status bars" x="0" y="0" width="375" height="52" />
+      <frame id="193:6906" name="header" x="16" y="56" width="361" height="68">
+        <frame id="193:6907" name="icon/back" x="14" y="22" width="24" height="24" />
+        <rounded-rectangle id="193:6909" name="Expert avatar" x="44" y="12" width="44" height="44" />
+        <text id="193:6910" name="UltraTech Engineer" x="98" y="13" width="158" height="20" />
+        <frame id="193:6911" name="status" x="98" y="37" width="135" height="16">
+          <ellipse id="193:6912" name="Ellipse" x="0" y="4.5" width="7" height="7" />
+          <text id="193:6913" name="AI assistant · Online" x="13" y="0" width="122" height="16" />
+        </frame>
+        <frame id="193:6914" name="more" x="309" y="16" width="36" height="36">
+          <frame id="193:6915" name="icon/more" x="7" y="7" width="22" height="22" />
+        </frame>
+      </frame>
+      <frame id="193:6919" name="chat" x="16" y="136" width="361" height="570">
+        <frame id="193:6920" name="voice ended row" x="0" y="0" width="361" height="28">
+          <frame id="193:6921" name="chip/voice ended" x="60.5" y="0" width="240" height="28">
+            <frame id="193:6922" name="Frame" x="13" y="7.5" width="13" height="13" />
+            <text id="193:6926" name="Mistri se kya poochein?" x="32" y="7" width="195" height="14" />
+          </frame>
+        </frame>
+        <frame id="193:6927" name="user row" x="0" y="32" width="361" height="90">
+          <frame id="193:6928" name="user bubble" x="69" y="0" width="292" height="90">
+            <text id="193:6929" name="One more thing — a column has " x="16" y="12" width="260" height="66" />
+          </frame>
+        </frame>
+        <frame id="193:6930" name="engineer bubble" x="0" y="126" width="340" height="116">
+          <frame id="193:6931" name="voice meta" x="17" y="13" width="306" height="14">
+            <frame id="193:6932" name="Frame" x="0" y="0" width="14" height="14" />
+            <text id="193:6939" name="Engineer · 0:15" x="20" y="0" width="286" height="14" />
+          </frame>
+          <text id="193:6940" name="Good that you asked first. A c" x="17" y="35" width="306" height="66" />
+        </frame>
+        <frame id="193:6941" name="takeaway card" x="0" y="246" width="340" height="73">
+          <text id="193:6942" name="Good that you asked first. A c" x="17.5" y="13.5" width="305" height="44" />
+        </frame>
+        <frame id="193:6943" name="engineer card (retained)" x="0" y="323" width="361" height="180">
+          <frame id="193:6944" name="who" x="17" y="17" width="327" height="44">
+            <frame id="193:6945" name="avatar" x="0" y="0" width="44" height="44">
+              <frame id="193:6946" name="icon/hat" x="11" y="11" width="22" height="22" />
+            </frame>
+            <frame id="193:6951" name="txt" x="56" y="5" width="237" height="34">
+              <text id="193:6952" name="UltraTech site engineer" x="0" y="0" width="128" height="18" />
+              <text id="193:6953" name="UltraTech site engineer · In y" x="0" y="20" width="207" height="14" />
+            </frame>
+            <frame id="193:6954" name="icon/shield" x="305" y="11" width="22" height="22" />
+          </frame>
+          <frame id="193:6957" name="call slot" x="17" y="73" width="327" height="36">
+            <frame id="193:6958" name="Frame" x="12" y="10" width="16" height="16" />
+            <text id="193:6960" name="Will call you by 11 AM tomorro" x="36" y="10" width="279" height="16" />
+          </frame>
+          <frame id="193:6961" name="buttons" x="17" y="121" width="327" height="42">
+            <frame id="193:6962" name="chip/Site visit book karein" x="0" y="0" width="273" height="41">
+              <frame id="193:6963" name="icon/cal" x="71" y="12.5" width="16" height="16" />
+              <text id="193:6969" name="Book a site visit" x="93" y="12" width="109" height="17" />
+            </frame>
+            <frame id="193:6970" name="chip/" x="281" y="0" width="46" height="42">
+              <frame id="193:6971" name="icon/phone" x="15" y="13" width="16" height="16" />
+            </frame>
+          </frame>
+        </frame>
+        <frame id="193:6973" name="summary pdf card" x="0" y="507" width="361" height="63">
+          <frame id="193:6974" name="buttons" x="17" y="11" width="327" height="41">
+            <frame id="193:6975" name="chip/Site visit book karein" x="0" y="0" width="327" height="41">
+              <frame id="193:6976" name="icon/file-down" x="21.5" y="12.5" width="16" height="16" />
+              <text id="193:6980" name="Book a site visit" x="43.5" y="12" width="262" height="17" />
+            </frame>
+          </frame>
+        </frame>
+      </frame>
+      <frame id="193:6981" name="composer" x="16" y="766" width="361" height="58">
+        <frame id="193:6982" name="icon/camera" x="18" y="17" width="24" height="24" />
+        <text id="193:6985" name="Ask your question…" x="54" y="19" width="148" height="19" />
+        <frame id="193:6986" name="mic" x="307" y="5" width="48" height="48">
+          <frame id="193:6987" name="icon/mic" x="12" y="12" width="24" height="24" />
+        </frame>
+      </frame>
+      <frame id="193:6991" name="quick actions" x="16" y="720" width="361" height="36">
+        <frame id="193:6992" name="action/New chat" x="106" y="0" width="149" height="32">
+          <frame id="193:6993" name="icon" x="13" y="9" width="14" height="14" />
+          <text id="193:6996" name="Start a new chat" x="33" y="8" width="103" height="16" />
+        </frame>
+      </frame>
+    </frame>
+    <frame id="193:6997" name="04a · Camera — Crack photo" x="2751" y="290" width="393" height="852">
+      <instance id="193:6998" name="status bars" x="0" y="0" width="375" height="52" />
+      <frame id="193:6999" name="btn/close" x="16" y="64" width="44" height="44">
+        <frame id="193:7000" name="icon/x" x="11" y="11" width="22" height="22" />
+      </frame>
+      <frame id="193:7003" name="btn/flash" x="333" y="64" width="44" height="44">
+        <frame id="193:7004" name="icon/zap" x="12" y="12" width="20" height="20" />
+      </frame>
+      <frame id="193:7006" name="title pill" x="87" y="64" width="220" height="44">
+        <text id="193:7007" name="Take a photo of the crack" x="17" y="13" width="186" height="18" />
+      </frame>
+      <frame id="193:7008" name="viewfinder" x="12" y="124" width="369" height="476">
+        <frame id="193:7009" name="wall crack (live view)" x="-332.1000061035156" y="-4" width="1016.7999877929688" height="483.79998779296875">
+          <rounded-rectangle id="193:7010" name="window" x="-41" y="-41" width="451" height="262.3999938964844" />
+          <frame id="193:7011" name="crack" x="0" y="0" width="1016.7999877929688" height="615">
+            <vector id="193:7012" name="Vector" x="410" y="221.39999389648438" width="213.1999969482422" height="393.6000061035156" />
+            <vector id="193:7013" name="Vector" x="508.3999938964844" y="377.20001220703125" width="65.5999984741211" height="24.600000381469727" />
+          </frame>
+        </frame>
+        <rounded-rectangle id="193:7014" name="shutter flash" x="0" y="0" width="369" height="476" />
+      </frame>
+      <frame id="193:7015" name="focus reticle" x="78" y="338" width="190" height="190" />
+      <frame id="193:7021" name="tips" x="49" y="616" width="261" height="34">
+        <frame id="193:7022" name="chip/Crack ke paas se" x="0" y="0" width="144" height="34">
+          <text id="193:7023" name="Close to the crack" x="15" y="9" width="114" height="16" />
+        </frame>
+        <frame id="193:7024" name="chip/Seedhi roshni mein" x="152" y="0" width="109" height="34">
+          <text id="193:7025" name="In good light" x="15" y="9" width="79" height="16" />
+        </frame>
+      </frame>
+      <text id="193:7026" name="Keep the whole crack in frame " x="40" y="662" width="313" height="32" />
+      <frame id="193:7027" name="last photo" x="44" y="730" width="56" height="56">
+        <frame id="193:7028" name="thumb" x="-50.119998931884766" y="-8" width="153.75999450683594" height="73.15999603271484">
+          <rounded-rectangle id="193:7029" name="window" x="-6.199999809265137" y="-6.199999809265137" width="68.19999694824219" height="39.68000030517578" />
+          <frame id="193:7030" name="crack" x="0" y="0" width="153.75999450683594" height="93" />
+        </frame>
+      </frame>
+      <frame id="193:7033" name="btn/switch camera" x="293" y="730" width="56" height="56">
+        <frame id="193:7034" name="icon/refresh" x="16" y="16" width="24" height="24" />
+      </frame>
+      <frame id="193:7039" name="shutter (pressed)" x="144.5" y="706" width="104" height="104" />
+    </frame>
+    <frame id="193:7043" name="Orb · Thinking" x="983" y="290" width="393" height="852">
+      <rounded-rectangle id="193:7044" name="Golden-hour home exterior bokeh 1" x="-254" y="-76" width="813" height="1452" hidden="true" />
+      <rounded-rectangle id="193:7045" name="legibility" x="0" y="0" width="393" height="852" hidden="true" />
+      <instance id="193:7046" name="status bars" x="0" y="0" width="375" height="52" />
+      <frame id="193:7047" name="header" x="16" y="56" width="361" height="68">
+        <frame id="193:7048" name="icon/back" x="14" y="22" width="24" height="24" />
+        <rounded-rectangle id="193:7050" name="Expert avatar" x="44" y="12" width="44" height="44" />
+        <text id="193:7051" name="UltraTech Engineer" x="98" y="13" width="158" height="20" />
+        <frame id="193:7052" name="status" x="98" y="37" width="135" height="16">
+          <ellipse id="193:7053" name="Ellipse" x="0" y="4.5" width="7" height="7" />
+          <text id="193:7054" name="AI assistant · Online" x="13" y="0" width="122" height="16" />
+        </frame>
+        <frame id="193:7055" name="btn/likhkar" x="309" y="16" width="36" height="36">
+          <frame id="193:7056" name="icon/keyboard" x="8" y="8" width="20" height="20" />
+        </frame>
+      </frame>
+      <text id="193:7066" name="After the slab," x="24" y="158" width="345" height="38" />
+      <text id="193:7067" name="when can the shuttering come o" x="24" y="196" width="345" height="76" />
+      <frame id="193:7068" name="voice orb" x="86.5" y="386" width="220" height="220">
+        <ellipse id="193:7069" name="halo glow" x="-45" y="-45" width="310" height="310" />
+        <ellipse id="193:7070" name="ring track" x="22" y="22" width="176" height="176" />
+        <ellipse id="193:7071" name="ring gradient" x="22" y="22" width="176" height="176" />
+        <ellipse id="193:7072" name="avatar backing" x="38" y="38" width="144" height="144" />
+        <ellipse id="193:7073" name="Expert avatar" x="44" y="44" width="132" height="132" />
+        <frame id="193:7074" name="state badge" x="79" y="176" width="62" height="28">
+          <ellipse id="193:7075" name="Ellipse" x="15" y="10" width="8" height="8" />
+          <ellipse id="193:7076" name="Ellipse" x="27" y="10" width="8" height="8" />
+          <ellipse id="193:7077" name="Ellipse" x="39" y="10" width="8" height="8" />
+        </frame>
+      </frame>
+      <frame id="193:7078" name="controls" x="0" y="700" width="393" height="96">
+        <frame id="193:7079" name="btn/camera" x="60" y="20" width="56" height="56">
+          <frame id="193:7080" name="icon/camera" x="16" y="16" width="24" height="24" />
+        </frame>
+        <frame id="193:7083" name="btn/mic" x="156" y="8" width="80" height="80">
+          <frame id="193:7084" name="icon/mic" x="28" y="28" width="24" height="24" />
+        </frame>
+        <frame id="193:7088" name="btn/close" x="277" y="20" width="56" height="56">
+          <frame id="193:7089" name="icon/x" x="16" y="16" width="24" height="24" />
+        </frame>
+      </frame>
+      <text id="193:7092" name="Send photo" x="33" y="786" width="110" height="14" />
+      <text id="193:7093" name="End chat" x="250" y="786" width="110" height="14" />
+      <text id="193:7094" name="Thinking about your question…" x="0" y="640" width="393" height="17" />
+    </frame>
+    <frame id="193:7095" name="Orb · Speaking (answering)" x="1425" y="290" width="393" height="852">
+      <rounded-rectangle id="193:7096" name="Golden-hour home exterior bokeh 1" x="-254" y="-76" width="813" height="1452" hidden="true" />
+      <rounded-rectangle id="193:7097" name="legibility" x="0" y="0" width="393" height="852" hidden="true" />
+      <instance id="193:7098" name="status bars" x="0" y="0" width="375" height="52" />
+      <frame id="193:7099" name="header" x="16" y="56" width="361" height="68">
+        <frame id="193:7100" name="icon/back" x="14" y="22" width="24" height="24" />
+        <rounded-rectangle id="193:7102" name="Expert avatar" x="44" y="12" width="44" height="44" />
+        <text id="193:7103" name="UltraTech Engineer" x="98" y="13" width="158" height="20" />
+        <frame id="193:7104" name="status" x="98" y="37" width="135" height="16">
+          <ellipse id="193:7105" name="Ellipse" x="0" y="4.5" width="7" height="7" />
+          <text id="193:7106" name="AI assistant · Online" x="13" y="0" width="122" height="16" />
+        </frame>
+        <frame id="193:7107" name="btn/likhkar" x="309" y="16" width="36" height="36">
+          <frame id="193:7108" name="icon/keyboard" x="8" y="8" width="20" height="20" />
+        </frame>
+      </frame>
+      <text id="193:7118" name="You asked" x="24" y="146" width="345" height="16" />
+      <text id="193:7119" name="When can the shuttering come o" x="24" y="164" width="345" height="44" />
+      <frame id="193:7120" name="voice orb" x="86.5" y="406" width="220" height="220">
+        <ellipse id="193:7121" name="halo glow" x="-17.100000381469727" y="-17.100000381469727" width="254.1999969482422" height="254.1999969482422" />
+        <ellipse id="193:7122" name="ripple 3" x="-11.359999656677246" y="-11.359999656677246" width="242.72000122070312" height="242.72000122070312" />
+        <ellipse id="193:7123" name="ripple 2" x="5.039999961853027" y="5.039999961853027" width="209.9199981689453" height="209.9199981689453" />
+        <ellipse id="193:7124" name="ripple 1" x="21.440000534057617" y="21.440000534057617" width="177.1199951171875" height="177.1199951171875" />
+        <ellipse id="193:7125" name="ring track" x="37.84000015258789" y="37.84000015258789" width="144.32000732421875" height="144.32000732421875" />
+        <ellipse id="193:7126" name="ring gradient" x="37.84000015258789" y="37.84000015258789" width="144.32000732421875" height="144.32000732421875" />
+        <ellipse id="193:7127" name="avatar backing" x="50.959999084472656" y="50.959999084472656" width="118.08000183105469" height="118.08000183105469" />
+        <ellipse id="193:7128" name="Expert avatar" x="55.880001068115234" y="55.880001068115234" width="108.23999786376953" height="108.23999786376953" />
+        <frame id="193:7129" name="state badge" x="69" y="164.1199951171875" width="82" height="52">
+          <rounded-rectangle id="193:7130" name="Rectangle" x="15" y="21" width="3" height="10" />
+          <rounded-rectangle id="193:7131" name="Rectangle" x="22" y="15" width="3" height="22" />
+          <rounded-rectangle id="193:7132" name="Rectangle" x="29" y="10" width="3" height="32" />
+          <rounded-rectangle id="193:7133" name="Rectangle" x="36" y="16" width="3" height="20" />
+          <rounded-rectangle id="193:7134" name="Rectangle" x="43" y="12" width="3" height="28" />
+          <rounded-rectangle id="193:7135" name="Rectangle" x="50" y="19" width="3" height="14" />
+          <rounded-rectangle id="193:7136" name="Rectangle" x="57" y="14" width="3" height="24" />
+          <rounded-rectangle id="193:7137" name="Rectangle" x="64" y="21" width="3" height="10" />
+        </frame>
+      </frame>
+      <frame id="193:7138" name="controls" x="0" y="700" width="393" height="96">
+        <frame id="193:7139" name="btn/camera" x="60" y="20" width="56" height="56">
+          <frame id="193:7140" name="icon/camera" x="16" y="16" width="24" height="24" />
+        </frame>
+        <frame id="193:7143" name="btn/mic" x="156" y="8" width="80" height="80">
+          <frame id="193:7144" name="icon/mic" x="28" y="28" width="24" height="24" />
+        </frame>
+        <frame id="193:7148" name="btn/close" x="277" y="20" width="56" height="56">
+          <frame id="193:7149" name="icon/x" x="16" y="16" width="24" height="24" />
+        </frame>
+      </frame>
+      <text id="193:7152" name="Send photo" x="33" y="786" width="110" height="14" />
+      <text id="193:7153" name="End chat" x="250" y="786" width="110" height="14" />
+      <text id="193:7154" name="live caption" x="24" y="224" width="345" height="186" />
+      <text id="193:7155" name="Tap the orb if you want to int" x="0" y="648" width="393" height="16" />
+    </frame>
+    <frame id="193:7156" name="Orb · Couldn&#39;t hear" x="1867" y="290" width="393" height="852">
+      <rounded-rectangle id="193:7157" name="Golden-hour home exterior bokeh 1" x="-254" y="-76" width="813" height="1452" hidden="true" />
+      <rounded-rectangle id="193:7158" name="legibility" x="0" y="0" width="393" height="852" hidden="true" />
+      <instance id="193:7159" name="status bars" x="0" y="0" width="375" height="52" />
+      <frame id="193:7160" name="header" x="16" y="56" width="361" height="68">
+        <frame id="193:7161" name="icon/back" x="14" y="22" width="24" height="24" />
+        <rounded-rectangle id="193:7163" name="Expert avatar" x="44" y="12" width="44" height="44" />
+        <text id="193:7164" name="UltraTech Engineer" x="98" y="13" width="158" height="20" />
+        <frame id="193:7165" name="status" x="98" y="37" width="135" height="16">
+          <ellipse id="193:7166" name="Ellipse" x="0" y="4.5" width="7" height="7" />
+          <text id="193:7167" name="AI assistant · Online" x="13" y="0" width="122" height="16" />
+        </frame>
+        <frame id="193:7168" name="btn/likhkar" x="309" y="16" width="36" height="36">
+          <frame id="193:7169" name="icon/keyboard" x="8" y="8" width="20" height="20" />
+        </frame>
+      </frame>
+      <text id="193:7179" name="Couldn&#39;t hear that clearly" x="24" y="158" width="345" height="76" />
+      <text id="193:7180" name="If the site is noisy, hold the" x="24" y="242" width="345" height="50" />
+      <frame id="193:7181" name="voice orb" x="86.5" y="360" width="220" height="220">
+        <ellipse id="193:7182" name="halo glow" x="-15" y="-15" width="250" height="250" />
+        <ellipse id="193:7183" name="ring track" x="22" y="22" width="176" height="176" hidden="true" />
+        <ellipse id="193:7184" name="ring gradient" x="22" y="22" width="176" height="176" />
+        <ellipse id="193:7185" name="avatar backing" x="38" y="38" width="144" height="144" />
+        <ellipse id="193:7186" name="Expert avatar" x="44" y="44" width="132" height="132" />
+        <ellipse id="193:7187" name="muted overlay" x="44" y="44" width="132" height="132" />
+        <frame id="193:7188" name="state badge" x="66.5" y="176" width="87" height="28">
+          <ellipse id="193:7189" name="Ellipse" x="15" y="10" width="8" height="8" />
+          <rounded-rectangle id="193:7190" name="Rectangle" x="27" y="12" width="3" height="4" />
+          <rounded-rectangle id="193:7191" name="Rectangle" x="34" y="12" width="3" height="4" />
+          <rounded-rectangle id="193:7192" name="Rectangle" x="41" y="12" width="3" height="4" />
+          <rounded-rectangle id="193:7193" name="Rectangle" x="48" y="12" width="3" height="4" />
+          <rounded-rectangle id="193:7194" name="Rectangle" x="55" y="12" width="3" height="4" />
+          <rounded-rectangle id="193:7195" name="Rectangle" x="62" y="12" width="3" height="4" />
+          <rounded-rectangle id="193:7196" name="Rectangle" x="69" y="12" width="3" height="4" />
+        </frame>
+      </frame>
+      <frame id="193:7197" name="controls" x="0" y="700" width="393" height="96">
+        <frame id="193:7198" name="btn/camera" x="60" y="20" width="56" height="56">
+          <frame id="193:7199" name="icon/camera" x="16" y="16" width="24" height="24" />
+        </frame>
+        <frame id="193:7202" name="btn/mic" x="156" y="8" width="80" height="80">
+          <frame id="193:7203" name="icon/mic" x="28" y="28" width="24" height="24" />
+        </frame>
+        <frame id="193:7207" name="btn/close" x="277" y="20" width="56" height="56">
+          <frame id="193:7208" name="icon/x" x="16" y="16" width="24" height="24" />
+        </frame>
+      </frame>
+      <text id="193:7211" name="Send photo" x="33" y="786" width="110" height="14" />
+      <text id="193:7212" name="End chat" x="250" y="786" width="110" height="14" />
+      <frame id="193:7213" name="retry actions" x="60" y="636" width="273" height="39">
+        <frame id="193:7214" name="chip/Try again" x="0" y="0" width="118" height="37">
+          <frame id="193:7215" name="Frame" x="16" y="10.5" width="16" height="16" />
+          <text id="193:7218" name="Try again" x="38" y="10" width="64" height="17" />
+        </frame>
+        <frame id="193:7219" name="chip/Type instead" x="128" y="0" width="145" height="39">
+          <frame id="193:7220" name="Frame" x="17" y="11.5" width="16" height="16" />
+          <text id="193:7230" name="Type instead" x="39" y="11" width="89" height="17" />
+        </frame>
+      </frame>
+    </frame>
+  </section>
+  <section id="193:7231" name="Section 1 · v5 text English — website design language" x="-6257" y="1384" width="2906" height="1119">
+    <frame id="193:7232" name="06 · My Home — Summary + share" x="2355" y="187" width="393" height="852">
+      <rounded-rectangle id="193:7233" name="Golden-hour home exterior bokeh 1" x="-254" y="-76" width="813" height="1452" hidden="true" />
+      <rounded-rectangle id="193:7234" name="legibility" x="0" y="0" width="393" height="852" hidden="true" />
+      <instance id="193:7235" name="status bars" x="0" y="0" width="375" height="52" />
+      <frame id="193:7236" name="header" x="16" y="56" width="361" height="68">
+        <frame id="193:7237" name="icon/back" x="14" y="22" width="24" height="24" />
+        <rounded-rectangle id="193:7239" name="Expert avatar" x="44" y="12" width="44" height="44" />
+        <text id="193:7240" name="UltraTech Engineer" x="98" y="13" width="158" height="20" />
+        <frame id="193:7241" name="status" x="98" y="37" width="135" height="16">
+          <ellipse id="193:7242" name="Ellipse" x="0" y="4.5" width="7" height="7" />
+          <text id="193:7243" name="AI assistant · Online" x="13" y="0" width="122" height="16" />
+        </frame>
+        <frame id="193:7244" name="more" x="309" y="16" width="36" height="36">
+          <frame id="193:7245" name="icon/more" x="7" y="7" width="22" height="22" />
+        </frame>
+      </frame>
+      <text id="193:7249" name="Your foundation plan is ready
+" x="24" y="300" width="345" height="181" />
+      <frame id="193:7250" name="cta" x="16" y="768" width="174" height="50">
+        <frame id="193:7251" name="chip/Plaster stage ki taiyaari" x="0" y="0" width="174" height="50">
+          <text id="193:7252" name="End conversation" x="33.5" y="16" width="107" height="18" />
+        </frame>
+      </frame>
+      <frame id="193:7253" name="cta" x="203" y="768" width="174" height="50">
+        <frame id="193:7254" name="chip/Plaster stage ki taiyaari" x="0" y="0" width="174" height="50">
+          <text id="193:7255" name="End conversation" x="23.5" y="16" width="127" height="18" />
+        </frame>
+      </frame>
+    </frame>
+    <frame id="193:7256" name="06 · Chat after End chat — summary PDF button (copy of 05b)" x="1913" y="187" width="393" height="852">
+      <rounded-rectangle id="193:7257" name="Golden-hour home exterior bokeh 1" x="-254" y="-76" width="813" height="1452" hidden="true" />
+      <rounded-rectangle id="193:7258" name="legibility" x="0" y="0" width="393" height="852" hidden="true" />
+      <instance id="193:7259" name="status bars" x="0" y="0" width="375" height="52" />
+      <frame id="193:7260" name="header" x="16" y="56" width="361" height="68">
+        <frame id="193:7261" name="icon/back" x="14" y="22" width="24" height="24" />
+        <rounded-rectangle id="193:7263" name="Expert avatar" x="44" y="12" width="44" height="44" />
+        <text id="193:7264" name="UltraTech Engineer" x="98" y="13" width="158" height="20" />
+        <frame id="193:7265" name="status" x="98" y="37" width="135" height="16">
+          <ellipse id="193:7266" name="Ellipse" x="0" y="4.5" width="7" height="7" />
+          <text id="193:7267" name="AI assistant · Online" x="13" y="0" width="122" height="16" />
+        </frame>
+        <frame id="193:7268" name="more" x="309" y="16" width="36" height="36">
+          <frame id="193:7269" name="icon/more" x="7" y="7" width="22" height="22" />
+        </frame>
+      </frame>
+      <frame id="193:7273" name="chat" x="16" y="136" width="361" height="551">
+        <frame id="193:7274" name="user row" x="0" y="0" width="361" height="90">
+          <frame id="193:7275" name="user bubble" x="69" y="0" width="292" height="90">
+            <text id="193:7276" name="The column starter has shifted" x="16" y="12" width="260" height="66" />
+          </frame>
+        </frame>
+        <frame id="193:7277" name="engineer bubble" x="0" y="94" width="340" height="254">
+          <text id="193:7278" name="Good that you asked before goi" x="17" y="15" width="306" height="21" />
+          <text id="193:7279" name="A column&#39;s position decides ho" x="17" y="46" width="306" height="80" />
+          <text id="193:7280" name="Until then, do this" x="17" y="136" width="306" height="17" />
+          <frame id="193:7281" name="todo" x="17" y="163" width="306" height="18">
+            <frame id="193:7282" name="icon/hat" x="0" y="0" width="18" height="18" />
+            <text id="193:7287" name="Pause all work above that colu" x="28" y="0.5" width="278" height="17" />
+          </frame>
+          <frame id="193:7288" name="todo" x="17" y="191" width="306" height="18">
+            <frame id="193:7289" name="icon/ruler" x="0" y="0" width="18" height="18" />
+            <text id="193:7295" name="Measure the shift with a tape," x="28" y="0.5" width="278" height="17" />
+          </frame>
+          <frame id="193:7296" name="todo" x="17" y="219" width="306" height="18">
+            <frame id="193:7297" name="icon/cal" x="0" y="0" width="18" height="18" />
+            <text id="193:7303" name="Keep the original drawing hand" x="28" y="0.5" width="278" height="17" />
+          </frame>
+        </frame>
+        <frame id="193:7304" name="handoff card" x="0" y="352" width="361" height="132">
+          <frame id="193:7305" name="who" x="17" y="17" width="327" height="44">
+            <frame id="193:7306" name="avatar" x="0" y="0" width="44" height="44">
+              <frame id="193:7307" name="icon/hat" x="11" y="11" width="22" height="22" />
+            </frame>
+            <frame id="193:7312" name="txt" x="56" y="5" width="237" height="34">
+              <text id="193:7313" name="UltraTech Site Engineer" x="0" y="0" width="172" height="18" />
+              <text id="193:7314" name="At your pincode · Call within " x="0" y="20" width="212" height="14" />
+            </frame>
+            <frame id="193:7315" name="icon/shield" x="305" y="11" width="22" height="22" />
+          </frame>
+          <frame id="193:7318" name="buttons" x="17" y="73" width="327" height="42">
+            <frame id="193:7319" name="chip/Site visit book karein" x="0" y="0" width="273" height="41">
+              <frame id="193:7320" name="icon/cal" x="71" y="12.5" width="16" height="16" />
+              <text id="193:7326" name="Book a site visit" x="93" y="12" width="109" height="17" />
+            </frame>
+            <frame id="193:7327" name="chip/" x="281" y="0" width="46" height="42">
+              <frame id="193:7328" name="icon/phone" x="15" y="13" width="16" height="16" />
+            </frame>
+          </frame>
+        </frame>
+        <frame id="193:7330" name="summary pdf card" x="0" y="488" width="361" height="63">
+          <frame id="193:7331" name="buttons" x="17" y="11" width="327" height="41">
+            <frame id="193:7332" name="chip/Site visit book karein" x="0" y="0" width="327" height="41">
+              <frame id="193:7333" name="icon/file-down" x="21.5" y="12.5" width="16" height="16" />
+              <text id="193:7337" name="Book a site visit" x="43.5" y="12" width="262" height="17" />
+            </frame>
+          </frame>
+        </frame>
+      </frame>
+      <frame id="193:7338" name="composer" x="16" y="766" width="361" height="58">
+        <frame id="193:7339" name="icon/camera" x="18" y="17" width="24" height="24" />
+        <text id="193:7342" name="Ask your question…" x="54" y="19" width="148" height="19" />
+        <frame id="193:7343" name="mic" x="307" y="5" width="48" height="48">
+          <frame id="193:7344" name="icon/mic" x="12" y="12" width="24" height="24" />
+        </frame>
+      </frame>
+      <frame id="193:7348" name="quick actions" x="16" y="720" width="361" height="36">
+        <frame id="193:7349" name="action/New chat" x="106" y="0" width="149" height="32">
+          <frame id="193:7350" name="icon" x="13" y="9" width="14" height="14" />
+          <text id="193:7353" name="Start a new chat" x="33" y="8" width="103" height="16" />
+        </frame>
+      </frame>
+    </frame>
+    <frame id="193:7354" name="04 · Diagnose — Understand first" x="1471" y="187" width="393" height="852">
+      <rounded-rectangle id="193:7355" name="Golden-hour home exterior bokeh 1" x="-254" y="-76" width="813" height="1452" hidden="true" />
+      <rounded-rectangle id="193:7356" name="legibility" x="0" y="0" width="393" height="852" hidden="true" />
+      <instance id="193:7357" name="status bars" x="0" y="0" width="375" height="52" />
+      <frame id="193:7358" name="header" x="16" y="56" width="361" height="68">
+        <frame id="193:7359" name="icon/back" x="14" y="22" width="24" height="24" />
+        <rounded-rectangle id="193:7361" name="Expert avatar" x="44" y="12" width="44" height="44" />
+        <text id="193:7362" name="UltraTech Engineer" x="98" y="13" width="158" height="20" />
+        <frame id="193:7363" name="status" x="98" y="37" width="135" height="16">
+          <ellipse id="193:7364" name="Ellipse" x="0" y="4.5" width="7" height="7" />
+          <text id="193:7365" name="AI assistant · Online" x="13" y="0" width="122" height="16" />
+        </frame>
+        <frame id="193:7366" name="more" x="309" y="16" width="36" height="36">
+          <frame id="193:7367" name="icon/more" x="7" y="7" width="22" height="22" />
+        </frame>
+      </frame>
+      <frame id="193:7371" name="chat" x="16" y="142" width="361" height="487.3999938964844">
+        <frame id="193:7372" name="user row" x="0" y="0" width="361" height="90">
+          <frame id="193:7373" name="user bubble" x="69" y="0" width="292" height="90">
+            <text id="193:7374" name="Cracks are showing up in the p" x="16" y="12" width="260" height="66" />
+          </frame>
+        </frame>
+        <frame id="193:7375" name="engineer bubble" x="0" y="102" width="340" height="385.3999938964844">
+          <text id="193:7376" name="Let&#39;s understand it first — ma" x="17" y="15" width="306" height="63" />
+          <frame id="193:7377" name="q head" x="17" y="88" width="306" height="18">
+            <text id="193:7378" name="What does the crack look like?" x="0" y="0" width="280" height="18" />
+            <text id="193:7379" name="1 / 3" x="280" y="1" width="26" height="16" />
+          </frame>
+          <frame id="193:7380" name="steps" x="17" y="116" width="306" height="4">
+            <rounded-rectangle id="193:7381" name="Rectangle" x="0" y="0" width="98" height="4" />
+            <rounded-rectangle id="193:7382" name="Rectangle" x="102" y="0" width="100" height="4" />
+            <rounded-rectangle id="193:7383" name="Rectangle" x="206" y="0" width="100" height="4" />
+          </frame>
+          <frame id="193:7384" name="option" x="17" y="130" width="306" height="42">
+            <ellipse id="193:7385" name="Ellipse" x="14" y="12" width="18" height="18" />
+            <text id="193:7386" name="Thin like a hair (hairline)" x="42" y="12.5" width="250" height="17" />
+          </frame>
+          <frame id="193:7387" name="option" x="17" y="182" width="306" height="44">
+            <ellipse id="193:7388" name="Ellipse" x="15" y="13" width="18" height="18" />
+            <text id="193:7389" name="Straight and wide — a coin fit" x="43" y="13.5" width="248" height="17" />
+          </frame>
+          <frame id="193:7390" name="option" x="17" y="236" width="306" height="60">
+            <ellipse id="193:7391" name="Ellipse" x="15" y="21" width="18" height="18" />
+            <text id="193:7392" name="Diagonal, from a window or doo" x="43" y="13" width="248" height="34" />
+          </frame>
+          <frame id="193:7393" name="photo cta" x="17" y="306" width="306" height="62.400001525878906">
+            <frame id="193:7394" name="icon/camera" x="15.199999809265137" y="21.200000762939453" width="20" height="20" />
+            <text id="193:7397" name="Send a photo of the crack — it" x="45.20000076293945" y="13.199999809265137" width="245.60000610351562" height="36" />
+          </frame>
+        </frame>
+      </frame>
+      <frame id="193:7398" name="composer" x="16" y="766" width="361" height="58">
+        <frame id="193:7399" name="icon/camera" x="18" y="17" width="24" height="24" />
+        <text id="193:7402" name="Or describe it in words…" x="54" y="19" width="184" height="19" />
+        <frame id="193:7403" name="mic" x="307" y="5" width="48" height="48">
+          <frame id="193:7404" name="icon/mic" x="12" y="12" width="24" height="24" />
+        </frame>
+      </frame>
+      <frame id="193:7408" name="quick actions" x="16" y="718" width="361" height="36">
+        <frame id="193:7409" name="action/Change language" x="12.5" y="0" width="92" height="32">
+          <frame id="193:7410" name="icon" x="13" y="9" width="14" height="14" />
+          <text id="193:7414" name="English" x="33" y="8" width="46" height="16" />
+        </frame>
+        <frame id="193:7415" name="action/Talk by voice" x="112.5" y="0" width="127" height="32">
+          <frame id="193:7416" name="icon" x="13" y="9" width="14" height="14" />
+          <text id="193:7420" name="Talk by voice" x="33" y="8" width="81" height="16" />
+        </frame>
+        <frame id="193:7421" name="action/End conversation" x="247.5" y="0" width="101" height="32">
+          <frame id="193:7422" name="icon" x="13" y="9" width="14" height="14" />
+          <text id="193:7425" name="End chat" x="33" y="8" width="55" height="16" />
+        </frame>
+      </frame>
+    </frame>
+    <frame id="193:7426" name="03 · Answer — Direct answer" x="1029" y="187" width="393" height="852">
+      <rounded-rectangle id="193:7427" name="Golden-hour home exterior bokeh 1" x="-254" y="-76" width="813" height="1452" hidden="true" />
+      <rounded-rectangle id="193:7428" name="legibility" x="0" y="0" width="393" height="852" hidden="true" />
+      <instance id="193:7429" name="status bars" x="0" y="0" width="375" height="52" />
+      <frame id="193:7430" name="header" x="16" y="56" width="361" height="68">
+        <frame id="193:7431" name="icon/back" x="14" y="22" width="24" height="24" />
+        <rounded-rectangle id="193:7433" name="Expert avatar" x="44" y="12" width="44" height="44" />
+        <text id="193:7434" name="UltraTech Engineer" x="98" y="13" width="158" height="20" />
+        <frame id="193:7435" name="status" x="98" y="37" width="135" height="16">
+          <ellipse id="193:7436" name="Ellipse" x="0" y="4.5" width="7" height="7" />
+          <text id="193:7437" name="AI assistant · Online" x="13" y="0" width="122" height="16" />
+        </frame>
+        <frame id="193:7438" name="more" x="309" y="16" width="36" height="36">
+          <frame id="193:7439" name="icon/more" x="7" y="7" width="22" height="22" />
+        </frame>
+      </frame>
+      <frame id="193:7443" name="chat" x="16" y="142" width="361" height="527">
+        <frame id="193:7444" name="user row" x="0" y="0" width="361" height="68">
+          <frame id="193:7445" name="user bubble" x="69" y="0" width="292" height="68">
+            <text id="193:7446" name="How many days should cement be" x="16" y="12" width="260" height="44" />
+          </frame>
+        </frame>
+        <frame id="193:7447" name="engineer bubble" x="0" y="80" width="340" height="331">
+          <text id="193:7448" name="You&#39;re asking at just the righ" x="17" y="15" width="306" height="42" />
+          <frame id="193:7449" name="key answer" x="17" y="67" width="306" height="70">
+            <frame id="193:7450" name="row" x="14" y="12" width="278" height="20">
+              <text id="193:7451" name="OPC cement" x="0" y="1.5" width="153" height="17" />
+              <text id="193:7452" name="At least 7 days" x="153" y="0" width="125" height="20" />
+            </frame>
+            <frame id="193:7453" name="row" x="14" y="38" width="278" height="20">
+              <text id="193:7454" name="PPC / blended" x="0" y="1.5" width="143" height="17" />
+              <text id="193:7455" name="At least 10 days" x="143" y="0" width="135" height="20" />
+            </frame>
+          </frame>
+          <text id="193:7456" name="How to check on site" x="17" y="147" width="306" height="17" />
+          <frame id="193:7457" name="check" x="17" y="174" width="306" height="40">
+            <frame id="193:7458" name="tick" x="0" y="0" width="20" height="20">
+              <frame id="193:7459" name="icon/check" x="4" y="4" width="12" height="12" />
+            </frame>
+            <text id="193:7461" name="Don&#39;t let the surface dry — wa" x="30" y="0" width="276" height="40" />
+          </frame>
+          <frame id="193:7462" name="check" x="17" y="224" width="306" height="40">
+            <frame id="193:7463" name="tick" x="0" y="0" width="20" height="20">
+              <frame id="193:7464" name="icon/check" x="4" y="4" width="12" height="12" />
+            </frame>
+            <text id="193:7466" name="Keep water pooled on the slab," x="30" y="0" width="276" height="40" />
+          </frame>
+          <frame id="193:7467" name="check" x="17" y="274" width="306" height="40">
+            <frame id="193:7468" name="tick" x="0" y="0" width="20" height="20">
+              <frame id="193:7469" name="icon/check" x="4" y="4" width="12" height="12" />
+            </frame>
+            <text id="193:7471" name="Shield it from strong sun and " x="30" y="0" width="276" height="40" />
+          </frame>
+        </frame>
+        <text id="193:7472" name="Next step" x="0" y="423" width="62" height="16" />
+        <frame id="193:7473" name="next steps" x="0" y="451" width="361" height="76">
+          <frame id="193:7474" name="chip/Curing reminder lagayein" x="0" y="0" width="184" height="34">
+            <frame id="193:7475" name="icon/bell" x="13" y="9" width="16" height="16" />
+            <text id="193:7478" name="Set a curing reminder" x="35" y="9" width="136" height="16" />
+          </frame>
+          <frame id="193:7479" name="chip/Mistri se kya poochein?" x="0" y="42" width="177" height="34">
+            <text id="193:7480" name="What to ask the mason?" x="13" y="9" width="151" height="16" />
+          </frame>
+          <frame id="193:7481" name="chip/Paas ka dealer dekhein" x="185" y="42" width="154" height="34">
+            <text id="193:7482" name="Find a nearby dealer" x="13" y="9" width="128" height="16" />
+          </frame>
+        </frame>
+      </frame>
+      <frame id="193:7483" name="composer" x="16" y="766" width="361" height="58">
+        <frame id="193:7484" name="icon/camera" x="18" y="17" width="24" height="24" />
+        <text id="193:7487" name="Ask your question…" x="54" y="19" width="148" height="19" />
+        <frame id="193:7488" name="mic" x="307" y="5" width="48" height="48">
+          <frame id="193:7489" name="icon/mic" x="12" y="12" width="24" height="24" />
+        </frame>
+      </frame>
+      <frame id="193:7493" name="quick actions" x="16" y="718" width="361" height="36">
+        <frame id="193:7494" name="action/Change language" x="12.5" y="0" width="92" height="32">
+          <frame id="193:7495" name="icon" x="13" y="9" width="14" height="14" />
+          <text id="193:7499" name="English" x="33" y="8" width="46" height="16" />
+        </frame>
+        <frame id="193:7500" name="action/Talk by voice" x="112.5" y="0" width="127" height="32">
+          <frame id="193:7501" name="icon" x="13" y="9" width="14" height="14" />
+          <text id="193:7505" name="Talk by voice" x="33" y="8" width="81" height="16" />
+        </frame>
+        <frame id="193:7506" name="action/End conversation" x="247.5" y="0" width="101" height="32">
+          <frame id="193:7507" name="icon" x="13" y="9" width="14" height="14" />
+          <text id="193:7510" name="End chat" x="33" y="8" width="55" height="16" />
+        </frame>
+      </frame>
+    </frame>
+    <frame id="193:7511" name="01 · Welcome — Name &amp; language" x="99" y="187" width="393" height="852">
+      <rounded-rectangle id="193:7512" name="Golden-hour home exterior bokeh 1" x="-254" y="-76" width="813" height="1452" hidden="true" />
+      <rounded-rectangle id="193:7513" name="legibility" x="0" y="0" width="393" height="852" hidden="true" />
+      <instance id="193:7514" name="status bars" x="0" y="0" width="375" height="52" />
+      <frame id="193:7515" name="header" x="16" y="56" width="361" height="68">
+        <frame id="193:7516" name="icon/back" x="14" y="22" width="24" height="24" />
+        <rounded-rectangle id="193:7518" name="Expert avatar" x="44" y="12" width="44" height="44" />
+        <text id="193:7519" name="UltraTech Engineer" x="98" y="13" width="158" height="20" />
+        <frame id="193:7520" name="status" x="98" y="37" width="135" height="16">
+          <ellipse id="193:7521" name="Ellipse" x="0" y="4.5" width="7" height="7" />
+          <text id="193:7522" name="AI assistant · Online" x="13" y="0" width="122" height="16" />
+        </frame>
+        <frame id="193:7523" name="more" x="309" y="16" width="36" height="36">
+          <frame id="193:7524" name="icon/more" x="7" y="7" width="22" height="22" />
+        </frame>
+      </frame>
+      <frame id="193:7528" name="chat" x="16" y="142" width="361" height="484">
+        <frame id="193:7529" name="engineer bubble" x="0" y="0" width="340" height="147">
+          <frame id="193:7530" name="voice meta" x="17" y="15" width="306" height="14">
+            <frame id="193:7531" name="Frame" x="0" y="0" width="14" height="14" />
+            <text id="193:7538" name="UltraTech Engineer · 0:09" x="20" y="0" width="286" height="14" />
+          </frame>
+          <text id="193:7539" name="Hi! I&#39;m the UltraTech Engineer" x="17" y="39" width="306" height="63" />
+          <text id="193:7540" name="What&#39;s your name?" x="17" y="112" width="306" height="18" />
+        </frame>
+        <frame id="193:7541" name="engineer bubble" x="0" y="159" width="340" height="92">
+          <text id="193:7542" name="Which language would you like " x="17" y="15" width="306" height="18" />
+          <frame id="193:7543" name="language options" x="17" y="43" width="306" height="32">
+            <frame id="193:7544" name="lang/English" x="0" y="0" width="91" height="32">
+              <frame id="193:7545" name="Frame" x="12" y="9" width="14" height="14" />
+              <text id="193:7547" name="English" x="32" y="8" width="47" height="16" />
+            </frame>
+            <frame id="193:7548" name="lang/हिंदी" x="99" y="0" width="48" height="32">
+              <text id="193:7549" name="हिंदी" x="13" y="8" width="22" height="16" />
+            </frame>
+            <frame id="193:7550" name="lang/Hinglish" x="155" y="0" width="77" height="32">
+              <text id="193:7551" name="Hinglish" x="13" y="8" width="51" height="16" />
+            </frame>
+            <frame id="193:7552" name="lang/More" x="240" y="0" width="58" height="32">
+              <text id="193:7553" name="More" x="13" y="8" width="32" height="16" />
+            </frame>
+          </frame>
+        </frame>
+        <frame id="193:7554" name="user row" x="0" y="263" width="361" height="46">
+          <frame id="193:7555" name="user bubble" x="272" y="0" width="89" height="46">
+            <text id="193:7556" name="English" x="16" y="12" width="57" height="22" />
+          </frame>
+        </frame>
+        <frame id="193:7557" name="engineer bubble" x="0" y="321" width="340" height="163">
+          <text id="193:7558" name="Great, I&#39;ll talk with you in E" x="17" y="15" width="306" height="21" />
+          <text id="193:7559" name="Welcome, Rahul! Which stage is" x="17" y="46" width="306" height="18" />
+          <frame id="193:7560" name="stage options" x="17" y="74" width="306" height="72">
+            <frame id="193:7561" name="stage/Plot" x="0" y="0" width="51" height="32">
+              <text id="193:7562" name="Plot" x="13" y="8" width="25" height="16" />
+            </frame>
+            <frame id="193:7563" name="stage/Plan" x="59" y="0" width="54" height="32">
+              <text id="193:7564" name="Plan" x="13" y="8" width="28" height="16" />
+            </frame>
+            <frame id="193:7565" name="stage/Foundation" x="121" y="0" width="116" height="32">
+              <frame id="193:7566" name="Frame" x="12" y="9" width="14" height="14" />
+              <text id="193:7568" name="Foundation" x="32" y="8" width="72" height="16" />
+            </frame>
+            <frame id="193:7569" name="stage/Structure" x="0" y="40" width="86" height="32">
+              <text id="193:7570" name="Structure" x="13" y="8" width="60" height="16" />
+            </frame>
+            <frame id="193:7571" name="stage/Plaster" x="94" y="40" width="70" height="32">
+              <text id="193:7572" name="Plaster" x="13" y="8" width="44" height="16" />
+            </frame>
+            <frame id="193:7573" name="stage/Finishing" x="172" y="40" width="83" height="32">
+              <text id="193:7574" name="Finishing" x="13" y="8" width="57" height="16" />
+            </frame>
+          </frame>
+        </frame>
+      </frame>
+      <frame id="193:7575" name="composer" x="16" y="766" width="361" height="58">
+        <frame id="193:7576" name="icon/camera" x="18" y="17" width="24" height="24" />
+        <text id="193:7579" name="Ask your question…" x="54" y="19" width="148" height="19" />
+        <frame id="193:7580" name="mic" x="307" y="5" width="48" height="48">
+          <frame id="193:7581" name="icon/mic" x="12" y="12" width="24" height="24" />
+        </frame>
+      </frame>
+      <frame id="193:7585" name="quick actions" x="16" y="720" width="361" height="36">
+        <frame id="193:7586" name="action/Change language" x="12.5" y="0" width="92" height="32">
+          <frame id="193:7587" name="icon" x="13" y="9" width="14" height="14" />
+          <text id="193:7591" name="English" x="33" y="8" width="46" height="16" />
+        </frame>
+        <frame id="193:7592" name="action/Talk by voice" x="112.5" y="0" width="127" height="32">
+          <frame id="193:7593" name="icon" x="13" y="9" width="14" height="14" />
+          <text id="193:7597" name="Talk by voice" x="33" y="8" width="81" height="16" />
+        </frame>
+        <frame id="193:7598" name="action/End conversation" x="247.5" y="0" width="101" height="32">
+          <frame id="193:7599" name="icon" x="13" y="9" width="14" height="14" />
+          <text id="193:7602" name="End chat" x="33" y="8" width="55" height="16" />
+        </frame>
+      </frame>
+    </frame>
+    <frame id="193:7603" name="02 · Foundation — Starting the chat" x="564" y="187" width="393" height="852">
+      <rounded-rectangle id="193:7604" name="Golden-hour home exterior bokeh 1" x="-254" y="-76" width="813" height="1452" hidden="true" />
+      <rounded-rectangle id="193:7605" name="legibility" x="0" y="0" width="393" height="852" hidden="true" />
+      <instance id="193:7606" name="status bars" x="0" y="0" width="375" height="52" />
+      <frame id="193:7607" name="header" x="16" y="56" width="361" height="68">
+        <frame id="193:7608" name="icon/back" x="14" y="22" width="24" height="24" />
+        <rounded-rectangle id="193:7610" name="Expert avatar" x="44" y="12" width="44" height="44" />
+        <text id="193:7611" name="UltraTech Engineer" x="98" y="13" width="158" height="20" />
+        <frame id="193:7612" name="status" x="98" y="37" width="135" height="16">
+          <ellipse id="193:7613" name="Ellipse" x="0" y="4.5" width="7" height="7" />
+          <text id="193:7614" name="AI assistant · Online" x="13" y="0" width="122" height="16" />
+        </frame>
+        <frame id="193:7615" name="more" x="309" y="16" width="36" height="36">
+          <frame id="193:7616" name="icon/more" x="7" y="7" width="22" height="22" />
+        </frame>
+      </frame>
+      <frame id="193:7620" name="chat" x="16" y="142" width="361" height="549">
+        <frame id="193:7621" name="engineer bubble" x="0" y="0" width="340" height="217">
+          <frame id="193:7622" name="chip/NEEV STAGE" x="17" y="15" width="145" height="23">
+            <text id="193:7623" name="FOUNDATION STAGE" x="10" y="5" width="125" height="13" />
+          </frame>
+          <text id="193:7624" name="So foundation work is underway" x="17" y="48" width="306" height="42" />
+          <text id="193:7625" name="How far along is the work?" x="17" y="100" width="306" height="18" />
+          <frame id="193:7626" name="progress options" x="17" y="128" width="306" height="72">
+            <frame id="193:7627" name="option/Khudaai" x="0" y="0" width="148.5" height="32">
+              <text id="193:7628" name="Digging" x="13" y="8" width="49" height="16" />
+            </frame>
+            <frame id="193:7629" name="option/Footing ho gayi" x="155.5" y="0" width="148.5" height="32">
+              <frame id="193:7630" name="Frame" x="12" y="9" width="14" height="14" />
+              <text id="193:7632" name="Footing done" x="32" y="8" width="84" height="16" />
+            </frame>
+            <frame id="193:7633" name="option/Plinth tak" x="0" y="40" width="148.5" height="32">
+              <text id="193:7634" name="Up to plinth" x="13" y="8" width="74" height="16" />
+            </frame>
+          </frame>
+        </frame>
+        <frame id="193:7635" name="user row" x="0" y="229" width="361" height="46">
+          <frame id="193:7636" name="user bubble" x="51" y="0" width="310" height="46">
+            <text id="193:7637" name="The footing was cast just yest" x="16" y="12" width="278" height="22" />
+          </frame>
+        </frame>
+        <frame id="193:7638" name="engineer bubble" x="0" y="287" width="340" height="262">
+          <text id="193:7639" name="Great! The next few days are a" x="17" y="15" width="306" height="63" />
+          <text id="193:7640" name="At this stage, people often as" x="17" y="88" width="306" height="16" />
+          <frame id="193:7641" name="suggestion/Curing kitne din karna chahiye?" x="17" y="114" width="306" height="61">
+            <frame id="193:7642" name="Frame" x="15.5" y="21.5" width="18" height="18" />
+            <text id="193:7644" name="How many days of curing are ne" x="43.5" y="13.5" width="219" height="34" />
+            <frame id="193:7645" name="Frame" x="272.5" y="21.5" width="18" height="18" />
+          </frame>
+          <frame id="193:7648" name="suggestion/Footing mein kya check karein?" x="17" y="185" width="306" height="60">
+            <frame id="193:7649" name="Frame" x="15" y="21" width="18" height="18" />
+            <text id="193:7651" name="What should I check in the foo" x="43" y="13" width="220" height="34" />
+            <frame id="193:7652" name="Frame" x="273" y="21" width="18" height="18" />
+          </frame>
+        </frame>
+      </frame>
+      <frame id="193:7655" name="composer" x="16" y="766" width="361" height="58">
+        <frame id="193:7656" name="icon/camera" x="18" y="17" width="24" height="24" />
+        <text id="193:7659" name="Ask your question…" x="54" y="19" width="148" height="19" />
+        <frame id="193:7660" name="mic" x="307" y="5" width="48" height="48">
+          <frame id="193:7661" name="icon/mic" x="12" y="12" width="24" height="24" />
+        </frame>
+      </frame>
+      <frame id="193:7665" name="quick actions" x="16" y="718" width="361" height="36">
+        <frame id="193:7666" name="action/Change language" x="12.5" y="0" width="92" height="32">
+          <frame id="193:7667" name="icon" x="13" y="9" width="14" height="14" />
+          <text id="193:7671" name="English" x="33" y="8" width="46" height="16" />
+        </frame>
+        <frame id="193:7672" name="action/Talk by voice" x="112.5" y="0" width="127" height="32">
+          <frame id="193:7673" name="icon" x="13" y="9" width="14" height="14" />
+          <text id="193:7677" name="Talk by voice" x="33" y="8" width="81" height="16" />
+        </frame>
+        <frame id="193:7678" name="action/End conversation" x="247.5" y="0" width="101" height="32">
+          <frame id="193:7679" name="icon" x="13" y="9" width="14" height="14" />
+          <text id="193:7682" name="End chat" x="33" y="8" width="55" height="16" />
+        </frame>
+      </frame>
+    </frame>
+    <frame id="193:7683" name="Label · Use case 1: Text" x="99" y="47" width="633" height="77">
+      <text id="193:7684" name="USE CASE-1: TEXT · ENGLISH" x="10" y="10" width="613" height="57" />
+    </frame>
+  </section>
+</canvas>

@@ -67,6 +67,58 @@ function parseCard(topic: "video" | "expert", data: Record<string, unknown>): Ti
   };
 }
 
+/**
+ * Merge LiveKit transcription segments into the call timeline.
+ * - A segment that is already in a turn is updated in place, even when other turns started since
+ *   (LiveKit can send a late final for the greeting after the caller began talking). Treating it
+ *   as new duplicated the greeting and the question in the transcript and the PDF.
+ * - A final segment replaces the interim segments before it in its turn: speech-to-text may send
+ *   the final under a new id, and the stale interim (e.g. "आफ्टर द") must not stay behind.
+ * - Other new segments go to the last turn when it is the same speaker's, else start a new turn.
+ */
+export function applySegments(
+  prev: TimelineItem[],
+  who: "user" | "agent",
+  segments: { id: string; text: string; final: boolean }[],
+  now: number,
+): TimelineItem[] {
+  const next = [...prev];
+  const editable = (idx: number): VoiceTurn => {
+    const t = next[idx] as VoiceTurn;
+    if (prev[idx] !== t) return t; // already copied in this call
+    const copy = { ...t, segs: { ...t.segs }, order: [...t.order] };
+    next[idx] = copy;
+    return copy;
+  };
+  const put = (turn: VoiceTurn, seg: { id: string; text: string; final: boolean }) => {
+    if (!(seg.id in turn.segs)) turn.order.push(seg.id);
+    turn.segs[seg.id] = { text: seg.text, final: seg.final };
+    if (seg.final) {
+      const at = turn.order.indexOf(seg.id);
+      const stale = turn.order.slice(0, at).filter((k) => !turn.segs[k].final);
+      for (const k of stale) delete turn.segs[k];
+      turn.order = turn.order.filter((k) => k in turn.segs);
+    }
+    turn.endedAt = now;
+  };
+  for (const seg of segments) {
+    const owner = next.findLastIndex((t) => t.type === "turn" && t.who === who && seg.id in t.segs);
+    if (owner >= 0) {
+      put(editable(owner), seg);
+      continue;
+    }
+    const lastIdx = next.length - 1;
+    const last = next[lastIdx];
+    if (last?.type === "turn" && last.who === who) put(editable(lastIdx), seg);
+    else {
+      const turn: VoiceTurn = { type: "turn", id: uid("t"), who, order: [], segs: {}, startedAt: now, endedAt: now };
+      next.push(turn);
+      put(turn, seg);
+    }
+  }
+  return next;
+}
+
 export function turnText(turn: VoiceTurn) {
   const finalText = turn.order.filter((k) => turn.segs[k].final).map((k) => turn.segs[k].text);
   const interim = turn.order.filter((k) => !turn.segs[k].final).map((k) => turn.segs[k].text);
@@ -106,25 +158,7 @@ export function useVoiceCall(userUuid: string) {
       agentTracksRef.current.forEach((t) => t.setVolume(1));
       setInterrupted(false);
     }
-    updateTimeline((prev) => {
-      const next = [...prev];
-      const lastIdx = next.findLastIndex((t) => t.type === "turn");
-      const last = lastIdx >= 0 ? (next[lastIdx] as VoiceTurn) : null;
-      let turn: VoiceTurn;
-      if (last && last.who === who && lastIdx === next.length - 1) {
-        turn = { ...last, segs: { ...last.segs }, order: [...last.order] };
-        next[lastIdx] = turn;
-      } else {
-        turn = { type: "turn", id: uid("t"), who, order: [], segs: {}, startedAt: now, endedAt: now };
-        next.push(turn);
-      }
-      for (const seg of segments) {
-        if (!(seg.id in turn.segs)) turn.order.push(seg.id);
-        turn.segs[seg.id] = { text: seg.text, final: seg.final };
-      }
-      turn.endedAt = now;
-      return next;
-    });
+    updateTimeline((prev) => applySegments(prev, who, segments, now));
   }, [updateTimeline]);
 
   const teardown = useCallback(() => {
