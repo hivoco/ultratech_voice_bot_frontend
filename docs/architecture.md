@@ -55,7 +55,7 @@ Full list with where each value was sampled: [design/v5/tokens.md](design/v5/tok
 | `muted` / `muted-2` | `#615F5B` / `#7E7A6F` | timestamps · grey half of voice headlines |
 | `line` / `line-2` | `#EADFB5` / `#E3DCC8` | card borders · chip and button borders |
 | `sand` | `#F7F0DC` | call-slot row, hover |
-| `tip` / `tip-line` | `#FFF6BF` / `#F2D24A` | key-points card (not wired yet) |
+| `tip` / `tip-line` | `#FFF6BF` / `#F2D24A` | hover on the highlighted suggested question |
 | `danger` / `danger-line` | `#C8402F` / `#F3C9C3` | End chat chip |
 | `surface-deep` / `viewfinder` | `#0E0D0B` / `#332B24` | camera stays dark (04a) |
 | Type | SF Pro on Apple (system), Inter fallback, Noto Sans Devanagari for हिंदी; weights 400/510/590/700 | |

@@ -14,7 +14,9 @@ Figma: **03b · Voice transcript — Direct answer** (also the layout for [04b](
    right script (Roman for Hinglish; the stream sends Devanagari deltas first) plus the key
    points, and `want_audio: false` skips TTS (the stream always synthesizes it). ~1–3 s.
 3. The user bubble is added immediately; the engineer bubble shows typing dots until the answer
-   arrives. The key points go in their own yellow card under the answer (v5 04b, "•" lines).
+   arrives. The key points show inside the answer bubble as suggested questions under *At this stage,
+   people often ask* (first one highlighted yellow). Tapping one sends it as the next question;
+   only the newest answer's list is tappable, and not while a reply is in flight.
 4. Errors (or an empty answer) show *"Sorry, I couldn't get an answer right now…"* with *Try
    again*; the raw detail goes to the console.
 

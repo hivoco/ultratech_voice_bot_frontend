@@ -7,7 +7,7 @@ import { LANG_LABEL, STAGES, type ChatMessage, type LangChoice, type Stage } fro
 import { Header, HeaderMenu, type MenuItem } from "../ui/Header";
 import { Chip } from "../ui/Chip";
 import { Icon } from "../ui/Icon";
-import { DurationChip, EngineerBubble, ExpertCard, KeyPoints, SummaryCard, UserBubble, VideoCard } from "../chat/Bubbles";
+import { DurationChip, EngineerBubble, ExpertCard, SummaryCard, Suggestions, UserBubble, VideoCard } from "../chat/Bubbles";
 import { Composer } from "../chat/Composer";
 
 const LANG_OPTIONS: LangChoice[] = ["en", "hi", "hinglish"];
@@ -111,6 +111,9 @@ export function ChatScreen() {
                 // Only on the newest message: once the question was retried (or the chat moved on), the old
                 // error bubble keeps its text but loses the button, so a second tap can't send it twice.
                 onRetry={m.kind === "engineer" && m.error && idx === messages.length - 1 ? submitText : undefined}
+                // Suggested questions are tappable on the newest answer only, while nothing is in flight.
+                suggestionsActive={m === lastEngineer && !sending && !state.ended}
+                onAsk={submitText}
               />
             ))}
           </div>
@@ -150,9 +153,12 @@ interface MessageRowProps {
   onLang: (lang: LangChoice) => void;
   onStage: (stage: Stage) => void;
   onRetry?: (text: string, photo?: string) => void;
+  /** The newest answer, nothing sending: its suggested questions can be tapped. */
+  suggestionsActive: boolean;
+  onAsk: (text: string) => void;
 }
 
-const MessageRow = memo(function MessageRow({ m, optionsActive, selected, sending, onLang, onStage, onRetry }: MessageRowProps) {
+const MessageRow = memo(function MessageRow({ m, optionsActive, selected, sending, onLang, onStage, onRetry, suggestionsActive, onAsk }: MessageRowProps) {
   switch (m.kind) {
     case "engineer":
       return (
@@ -203,9 +209,16 @@ const MessageRow = memo(function MessageRow({ m, optionsActive, selected, sendin
                 Try again
               </button>
             )}
+            {/* The answer's key_points as tappable follow-up questions; a tap sends it as the next message. */}
+            {!m.error && !m.streaming && m.keyPoints && m.keyPoints.length > 0 && (
+              <Suggestions
+                title={m.keyPointsTitle ?? "At this stage, people often ask"}
+                items={m.keyPoints}
+                active={suggestionsActive}
+                onPick={onAsk}
+              />
+            )}
           </EngineerBubble>
-          {/* v5 04b: key points sit in their own yellow card under the answer. */}
-          {!m.error && m.keyPoints && m.keyPoints.length > 0 && <KeyPoints title={m.keyPointsTitle} items={m.keyPoints} />}
         </>
       );
     case "user":

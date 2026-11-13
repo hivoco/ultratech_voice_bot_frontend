@@ -64,7 +64,8 @@ const ONBOARDING: Record<
     gotStage: (s: Stage) => string;
     askAnything: string;
     changeLang: string;
-    keyPoints: string;
+    /** Heading over the suggested questions (from `key_points`) under an answer. */
+    suggestions: string;
     /** Site-engineer card after a photo the backend flags as serious. */
     escalation: string;
   }
@@ -73,7 +74,7 @@ const ONBOARDING: Record<
     great: "Great, I'll talk with you in English.",
     stage: "Which stage is your home at right now?",
     gotStage: (s) => `${s} stage — got it.`,
-    keyPoints: "Key points",
+    suggestions: "At this stage, people often ask",
     escalation: "A site engineer should check this",
     askAnything: "Ask me anything: tap the mic to talk, or type your question below.",
     changeLang: "Which language would you like to talk in?",
@@ -82,7 +83,7 @@ const ONBOARDING: Record<
     great: "बढ़िया, अब मैं आपसे हिंदी में बात करूँगा।",
     stage: "आपका घर अभी किस stage पर है?",
     gotStage: (s) => `ठीक है, ${s} stage.`,
-    keyPoints: "मुख्य बातें",
+    suggestions: "इस stage पर लोग अक्सर पूछते हैं",
     escalation: "इसे site engineer से check करवाएँ",
     askAnything: "कुछ भी पूछिए: बोलने के लिए mic दबाएँ, या नीचे लिखें।",
     changeLang: "आप किस भाषा में बात करना चाहेंगे?",
@@ -91,7 +92,7 @@ const ONBOARDING: Record<
     great: "Badhiya, ab main aapse Hinglish mein baat karunga.",
     stage: "Aapka ghar abhi kis stage par hai?",
     gotStage: (s) => `Theek hai, ${s} stage.`,
-    keyPoints: "Mukhya baatein",
+    suggestions: "Is stage par log aksar poochte hain",
     escalation: "Ise site engineer se check karwayein",
     askAnything: "Kuch bhi poochiye: bolne ke liye mic dabaiye, ya neeche type kariye.",
     changeLang: "Aap kis language mein baat karna chahenge?",
@@ -392,7 +393,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
           text: answer,
           streaming: false,
           keyPoints: Array.isArray(res.key_points) && res.key_points.length ? res.key_points : undefined,
-          keyPointsTitle: copyFor(state.profile.lang).keyPoints,
+          keyPointsTitle: copyFor(state.profile.lang).suggestions,
         },
       });
       // A photo the backend flags as serious gets the site-engineer card under the answer.

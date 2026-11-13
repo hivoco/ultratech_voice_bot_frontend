@@ -2,6 +2,14 @@
 
 Newest first. Started 2026-11-09; earlier history is in `git log`.
 
+## 2026-11-13 — Key points as tappable suggested questions
+
+- The answer's `key_points` now show inside the engineer bubble under *At this stage, people
+  often ask* (localized), as buttons with a chat icon and arrow; the first is highlighted yellow.
+  A tap sends that text as the user's next message (`submitText`). Only the newest answer's list
+  is tappable, and not while a reply is in flight or after End chat. Replaces the yellow "•" card.
+- Checked: mocked test (tap → sent as the next `/api/turn` text, older list disabled), lint, types.
+
 ## 2026-11-13 — Backend integration: stage, language, key points, photos
 
 Wired to the backend's new APIs (`FRONTEND_INTEGRATION.md`, backend commits 2bb0960…6c4da6e):

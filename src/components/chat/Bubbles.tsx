@@ -64,25 +64,50 @@ export function EngineerBubble({
 }
 
 /**
- * v5 key-points card (frame 04b): its own yellow "tip" card under the answer, one "•" line per
- * point, no visible title (the localized title is the list's accessible name).
+ * Suggested follow-up questions, built from the answer's `key_points` and shown inside the engineer
+ * bubble. Tapping one sends it as the user's next message. The first is highlighted (brand
+ * yellow); only the newest answer's list is tappable, older lists stay as read-only history.
  */
-export function KeyPoints({ title, items }: { title?: string; items: string[] }) {
+export function Suggestions({
+  title,
+  items,
+  active,
+  onPick,
+}: {
+  title: string;
+  items: string[];
+  active: boolean;
+  onPick?: (text: string) => void;
+}) {
   return (
-    <motion.div
-      {...enter}
-      lang={textLang(...items)}
-      className="w-[340px] max-w-[94%] rounded-[18px] border border-tip-line bg-tip px-4 py-3"
-    >
-      <ul aria-label={title ?? "Key points"} className="flex flex-col gap-1">
-        {items.map((k, i) => (
-          <li key={i} className="flex gap-2 text-[15px] leading-[21px] text-ink">
-            <span aria-hidden>•</span>
-            <span className="min-w-0 break-words">{plainText(k)}</span>
-          </li>
-        ))}
-      </ul>
-    </motion.div>
+    <div className="flex w-full flex-col gap-2 pt-0.5" role="group" aria-label={title} lang={textLang(title, ...items)}>
+      <p className="text-[14px] leading-[18px] font-[590] text-muted">{title}</p>
+      {items.map((k, i) => {
+        const text = plainText(k);
+        const first = i === 0;
+        return (
+          <button
+            key={i}
+            type="button"
+            disabled={!active}
+            onClick={() => onPick?.(text)}
+            className={`flex w-full items-center gap-3 rounded-[16px] border px-3.5 py-3 text-left transition-[background-color,transform] enabled:active:scale-[0.98] disabled:cursor-default ${
+              first ? "border-brand bg-[#fdf7d8] text-[#c9a100] enabled:hover:bg-tip" : "border-line-2 bg-paper text-ink enabled:hover:bg-sand"
+            }`}
+          >
+            <svg aria-hidden width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" className="shrink-0">
+              <path d="M12 3.5c-4.97 0-9 3.58-9 8 0 1.7.6 3.28 1.62 4.58L3.5 20.5l4.7-1.3c1.14.5 2.45.8 3.8.8 4.97 0 9-3.58 9-8s-4.03-8.5-9-8.5Z" />
+            </svg>
+            <span className="min-w-0 flex-1 text-[15px] leading-[19px] font-[590] break-words text-ink">{text}</span>
+            {active && (
+              <svg aria-hidden width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="shrink-0">
+                <path d="M5 12h14m0 0-6-6m6 6-6 6" />
+              </svg>
+            )}
+          </button>
+        );
+      })}
+    </div>
   );
 }
 
