@@ -2,6 +2,33 @@
 
 Newest first. Started 2026-11-09; earlier history is in `git log`.
 
+## 2026-11-13 — Crash-proofing and small fixes
+
+- **Changed:** the composer is locked until both onboarding questions are answered in the
+  conversation: text box, mic and *Talk by voice* (chip and menu) disabled, text box faded to 50 %,
+  placeholder *Pick a language first* → *Pick your home's stage first* → *Ask your question…*.
+
+- **Changed:** nothing is pre-selected any more. Each conversation (page load or *Start a new
+  chat*) starts with no language and no stage ticked; only the device id is kept. A ticked chip
+  always means the user tapped it, so it was also sent (stage) or used (language). Before, the
+  saved stage showed ticked but was never sent unless tapped again.
+
+- **Added** error pages: `src/app/error.tsx` (in the app's style) and `src/app/global-error.tsx`
+  (plain, for a root-layout failure). A render bug shows *Something went wrong* with *Try again* and
+  *Reload page* instead of a blank screen.
+- **Fixed** a crash path: a corrupted or outdated saved profile (e.g. `lang: "fr"`) reached the
+  onboarding copy lookup. Saved `uuid` / `lang` / `stage` are now validated on load.
+- **Hardened** the answer stream: a malformed line or an event without text is skipped instead of
+  failing the whole answer (or printing "undefined").
+- **Added** a voice hint for a stalled worker: after 20 s thinking about the same question, *Taking
+  longer than usual… try asking again.* (seen live: no answer after 60 s+).
+- **Fixed** screen-reader language: each bubble (and the voice screen's question / answer) is
+  tagged `lang="hi"` only when it has Hindi script, instead of the whole chat following the
+  current language.
+- Checked: 6 corrupted-profile cases, a broken stream, a forced render crash, a 20 s stalled
+  call, plus all earlier UI scripts; lint, types and build clean. Lighthouse mobile 90 / 100 / 100 /
+  100 (−1 from the error pages' 9.5 KiB), desktop 100 × 4; React Scan unchanged.
+
 ## 2026-11-13 — Stage question for every conversation
 
 - **Changed** a stage pick to reach the backend: it's sent to the AI as a chat message (*My home is at

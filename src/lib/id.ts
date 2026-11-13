@@ -22,6 +22,10 @@ export function longDuration(seconds: number): string {
   return m > 0 ? `${m} min ${rest} sec` : `${s} sec`;
 }
 
+/** `lang` for a bubble: "hi" when it has Devanagari, so screen readers use a Hindi voice for it. */
+export const textLang = (...parts: (string | undefined)[]) =>
+  parts.some((t) => t && /[\u0900-\u097F]/.test(t)) ? "hi" : undefined;
+
 /** Drop markdown marks the model sometimes emits (bold, *emphasis*, headings, `code`); list dashes become "•". */
 export function plainText(text: string): string {
   return text

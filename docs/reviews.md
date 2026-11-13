@@ -118,6 +118,9 @@ into the reducer and both callbacks are now stable:
 What's left is the new bubbles plus the option rows whose tick actually changes. Typing, streamed
 reply, End chat, menu and voice phases unchanged.
 
+Re-run later on 2026-11-13 (nothing pre-selected, composer locked until language + stage, error
+pages): every phase the same as above; only console error is the mocked 503.
+
 **Re-run 2026-11-12** (v5 light design), same commit-hook scan on the dev server, with the
 streamed reply, summary and voice token mocked (no paid calls):
 

@@ -9,6 +9,8 @@ src/
   app/
     layout.tsx            fonts (Inter + Noto Sans Devanagari), metadata, viewport
     page.tsx              renders <VoiceBotApp/>
+    error.tsx             crash fallback: "Something went wrong" + Try again / Reload page
+    global-error.tsx      same, for a root-layout failure (own <html>, inline styles)
     globals.css           Tailwind v4 theme tokens + `card` / `bg-page` utilities
     icon.png, apple-icon.png
     api/                  server-only proxy to the FastAPI backend (see docs/backend-api.md)

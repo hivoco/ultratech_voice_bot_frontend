@@ -74,7 +74,8 @@ export function ChatScreen() {
     ? [{ label: "Start a new chat", run: restart }]
     : [
         ...(profile.lang ? [{ label: "Change language", run: changeLanguage }] : []),
-        { label: "Talk by voice", run: startVoice },
+        // Same rule as the composer: voice opens once language and stage are picked.
+        ...(profile.lang && profile.stage ? [{ label: "Talk by voice", run: startVoice }] : []),
         { label: "End chat", run: endChat },
       ];
 
@@ -92,7 +93,6 @@ export function ChatScreen() {
             aria-label="Conversation"
             aria-relevant="additions"
             aria-busy={streaming}
-            lang={profile.lang === "hi" ? "hi" : undefined}
             className="flex flex-col gap-3"
           >
             {messages.map((m, idx) => (

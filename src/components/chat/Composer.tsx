@@ -22,9 +22,18 @@ export function Composer({ highlightCamera }: { highlightCamera?: boolean }) {
   const reduce = useReducedMotion();
   const inputRef = useRef<HTMLInputElement>(null);
   const { ended, profile } = state;
-  const canSend = !ended && (text.trim().length > 0 || !!state.pendingPhoto) && !sending;
-  const placeholder = ended ? "This conversation has ended" : "Ask your question…";
-  const locked = ended;
+  // Typing, the mic and Talk by voice open only once both onboarding questions are answered in this
+  // conversation (language, then home stage).
+  const onboarded = !!profile.lang && !!profile.stage;
+  const locked = ended || !onboarded;
+  const canSend = !locked && (text.trim().length > 0 || !!state.pendingPhoto) && !sending;
+  const placeholder = ended
+    ? "This conversation has ended"
+    : !profile.lang
+      ? "Pick a language first"
+      : !profile.stage
+        ? "Pick your home's stage first"
+        : "Ask your question…";
   // Right after a PDF card (End chat, or a call ended with End chat) offer a fresh start.
   const offerNewChat = ended || state.messages.at(-1)?.kind === "summary";
 
@@ -57,6 +66,7 @@ export function Composer({ highlightCamera }: { highlightCamera?: boolean }) {
             onIntent={warmVoice}
             icon={MIC}
             label="Talk by voice"
+            disabled={!onboarded}
           />
           {/* Not mid-reply: the answer would land after the summary and need a second one. */}
           <ActionChip onClick={endChat} disabled={sending} icon={CROSS} label="End chat" danger />
@@ -88,7 +98,11 @@ export function Composer({ highlightCamera }: { highlightCamera?: boolean }) {
       </AnimatePresence>
 
       <form
-        className="card relative flex h-[58px] items-center rounded-[29px] pr-1 pl-[9px] has-[input:focus-visible]:outline-2 has-[input:focus-visible]:outline-ink/50"
+        // Faded as a whole while onboarding isn't done (language + stage); the parts inside stay
+        // disabled. After End chat it stays solid with the "has ended" placeholder.
+        className={`card relative flex h-[58px] items-center rounded-[29px] pr-1 pl-[9px] transition-opacity has-[input:focus-visible]:outline-2 has-[input:focus-visible]:outline-ink/50 ${
+          !ended && !onboarded ? "opacity-50" : ""
+        }`}
         onSubmit={(e) => {
           e.preventDefault();
           send();
@@ -126,7 +140,7 @@ export function Composer({ highlightCamera }: { highlightCamera?: boolean }) {
           value={text}
           onChange={(e) => setText(e.target.value)}
           onFocus={warmSession}
-          disabled={ended}
+          disabled={locked}
           placeholder={placeholder}
           autoComplete="off"
           enterKeyHint="send"
@@ -158,7 +172,8 @@ export function Composer({ highlightCamera }: { highlightCamera?: boolean }) {
               disabled={locked}
               aria-label="Ask by speaking"
                   initial={{ scale: 0.6, opacity: 0 }}
-              animate={{ scale: 1, opacity: locked ? 0.5 : 1 }}  // motion's inline opacity would override disabled:opacity-*
+              // The form already fades during onboarding; only the ended state dims the mic itself.
+              animate={{ scale: 1, opacity: ended ? 0.5 : 1 }}  // motion's inline opacity would override disabled:opacity-*
               exit={{ scale: 0.6, opacity: 0 }}
               whileTap={{ scale: 0.92 }}
               className="grid size-12 shrink-0 place-items-center rounded-3xl bg-brand transition-colors enabled:hover:bg-brand-hover"

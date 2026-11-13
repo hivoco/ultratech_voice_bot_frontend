@@ -68,7 +68,15 @@ export async function* streamTurn(session_id: string, text: string): AsyncGenera
     while ((nl = buffer.indexOf("\n")) >= 0) {
       const line = buffer.slice(0, nl).trim();
       buffer = buffer.slice(nl + 1);
-      if (line) yield JSON.parse(line) as StreamEvent;
+      if (!line) continue;
+      // A malformed line is skipped, not fatal: the rest of the answer still arrives.
+      let ev: unknown;
+      try {
+        ev = JSON.parse(line);
+      } catch {
+        continue;
+      }
+      if (ev && typeof ev === "object" && typeof (ev as { type?: unknown }).type === "string") yield ev as StreamEvent;
     }
   }
 }

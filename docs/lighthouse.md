@@ -27,6 +27,12 @@ LCP = Largest Contentful Paint, TBT = Total Blocking Time, CLS = Cumulative Layo
 | **Desktop — 2026-11-12 (language asked in chat)** | **100** | **100** | **100** | **100** | 0.7 s | 0 ms | 0 |
 | **Mobile — 2026-11-13 (language-based onboarding lines)**, median of 3 (91 / 91 / 91) | **91** | **100** | **100** | **100** | 3.4 s | 0–20 ms | 0 |
 | **Desktop — 2026-11-13** | **100** | **100** | **100** | **100** | 0.7 s | 0 ms | 0 |
+| **Mobile — 2026-11-13 (error pages, composer lock)**, median of 3 (90 / 90 / 90) | **90** | **100** | **100** | **100** | 3.5 s | 10–30 ms | 0 |
+| **Desktop — 2026-11-13 (error pages, composer lock)** | **100** | **100** | **100** | **100** | 0.7 s | 0 ms | 0 |
+
+The −1 on mobile is the two error boundaries (`error.tsx`, `global-error.tsx`): +9.5 KiB JS, two
+small chunks Next.js loads up front (JS transfer 221 → 230 KiB). Kept on purpose: a render bug now
+shows a recovery screen instead of a blank page. Observed LCP is still ~50 ms.
 
 Observed (unthrottled) LCP is ~0.1 s; the mobile number is Lighthouse's simulation and moves
 ±1 point between runs.

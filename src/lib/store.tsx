@@ -83,7 +83,7 @@ const ONBOARDING: Record<
     changeLang: "Aap kis language mein baat karna chahenge?",
   },
 };
-const copyFor = (lang: LangChoice | undefined) => ONBOARDING[lang ?? "en"];
+const copyFor = (lang: LangChoice | undefined) => ONBOARDING[lang ?? "en"] ?? ONBOARDING.en;
 
 /** A typed question, or a stage pick turned into its chat message. */
 interface AskVars {
@@ -211,6 +211,8 @@ function reducer(state: State, action: Action): State {
     case "reset":
       return {
         ...state,
+        // A new conversation starts with no language or stage ticked, like a page load.
+        profile: { uuid: state.profile.uuid },
         screen: "chat",
         pendingPhoto: null,
         messages: openingMessages(),
@@ -318,9 +320,12 @@ export function AppProvider({ children }: { children: ReactNode }) {
     try {
       const raw = localStorage.getItem(PROFILE_KEY);
       if (raw) {
-        // Only the known fields: drops the `name` older versions asked for and saved.
-        const { uuid, lang, stage } = JSON.parse(raw) as Profile;
-        profile = { uuid: uuid ?? "", lang, stage };
+        // Only the device id is restored. Language and stage are never pre-selected: each conversation
+        // starts with nothing ticked, and a choice counts (and is sent) only once the user taps it.
+        // A corrupted saved value is ignored.
+        const saved = JSON.parse(raw) as Partial<Record<keyof Profile, unknown>> | null;
+        const uuid = typeof saved?.uuid === "string" && /^[A-Za-z0-9-]{8,64}$/.test(saved.uuid) ? saved.uuid : "";
+        profile = { uuid };
       }
     } catch {
       /* storage blocked: fall through to a fresh profile */
@@ -349,11 +354,11 @@ export function AppProvider({ children }: { children: ReactNode }) {
       let reply = "";
       for await (const ev of streamTurn(sessionId, askText({ text, stage }, state.profile.lang))) {
         if (ev.type === "text") {
-          reply += ev.delta;
+          reply += typeof ev.delta === "string" ? ev.delta : "";
           dispatch({ type: "patch", id: replyId, patch: { text: reply } });
         } else if (ev.type === "audio" || ev.type === "done") {
           // Text is complete once audio synthesis starts; no need to wait for it.
-          const final = ev.type === "done" ? ev.text || reply : reply;
+          const final = ev.type === "done" && typeof ev.text === "string" && ev.text ? ev.text : reply;
           // An empty answer gets the error bubble (with Try again), never a blank one.
           if (!final.trim()) throw new Error("Empty answer");
           dispatch({ type: "patch", id: replyId, patch: { text: final, streaming: false } });

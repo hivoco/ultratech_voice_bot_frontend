@@ -3,7 +3,7 @@
 import Image from "next/image";
 import { motion } from "motion/react";
 import type { ReactNode } from "react";
-import { plainText } from "@/lib/id";
+import { plainText, textLang } from "@/lib/id";
 import { Icon } from "../ui/Icon";
 import { SummaryButton } from "./SummaryButton";
 
@@ -36,6 +36,7 @@ export function EngineerBubble({
     <motion.div
       {...enter}
       initial={animateIn ? enter.initial : false}
+      lang={textLang(lead, prompt, text)}
       className={`card relative flex w-[340px] max-w-[94%] flex-col items-start rounded-[22px] rounded-bl-[6px] px-4 ${
         transcript ? "gap-2 pt-3 pb-[14px]" : "gap-2.5 pt-[14px] pb-4"
       }`}
@@ -81,7 +82,7 @@ function TypingDots() {
 
 export function UserBubble({ text, photo, photoLabel }: { text: string; photo?: string; photoLabel?: string }) {
   return (
-    <motion.div {...enter} className="flex w-full justify-end">
+    <motion.div {...enter} lang={textLang(text)} className="flex w-full justify-end">
       {photo ? (
         <div className="flex w-[260px] max-w-[85%] flex-col gap-2.5 rounded-[22px] rounded-br-[6px] bg-brand px-1.5 pt-1.5 pb-3">
           <div className="relative h-[118px] w-full overflow-hidden rounded-2xl bg-viewfinder">

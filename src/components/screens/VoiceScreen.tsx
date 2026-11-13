@@ -2,7 +2,7 @@
 
 import { AnimatePresence, motion } from "motion/react";
 import { useCallback, useEffect, useLayoutEffect, useRef, useState, type ReactNode } from "react";
-import { plainText } from "@/lib/id";
+import { plainText, textLang } from "@/lib/id";
 import { useApp } from "@/lib/store";
 import { backendLang } from "@/lib/types";
 import { turnText } from "@/lib/useVoiceCall";
@@ -32,6 +32,8 @@ const ERROR_COPY = {
     body: "If the site is noisy, hold the phone a little closer and try again.",
   },
 } as const;
+
+const SLOW_THINKING_MS = 20_000;
 
 const PHASE_ANNOUNCE = {
   connecting: "Connecting to the UltraTech Engineer",
@@ -70,8 +72,19 @@ export function VoiceScreen() {
 
   const retry = () => void voice.start(backendLang(state.profile.lang));
 
+  // The voice worker can stall in "thinking" (seen live on 2026-11-13: no answer after 60 s+). After
+  // 20 s on the same question, say so and invite the caller to ask again (the mic stays open).
+  const thinkingKey = phase === "thinking" ? (lastTurn?.id ?? "thinking") : null;
+  const [slowKey, setSlowKey] = useState<string | null>(null);
+  useEffect(() => {
+    if (!thinkingKey) return;
+    const t = setTimeout(() => setSlowKey(thinkingKey), SLOW_THINKING_MS);
+    return () => clearTimeout(t);
+  }, [thinkingKey]);
+  const slow = thinkingKey !== null && slowKey === thinkingKey;
+
   let hint = "";
-  if (phase === "thinking") hint = "Thinking about your question…";
+  if (phase === "thinking") hint = slow ? "Taking longer than usual… try asking again." : "Thinking about your question…";
   // v5 "Orb · Listening": the caption under the orb while the mic is open.
   else if (phase === "listening" && status === "live" && voice.micEnabled) hint = "Listening… speak naturally";
   else if (phase === "speaking") hint = "Tap the orb if you want to interrupt";
@@ -87,7 +100,7 @@ export function VoiceScreen() {
 
       {/* Screen-reader announcements: phase changes only, never the live transcript. */}
       <p role="status" className="sr-only">
-        {errored ? "" : PHASE_ANNOUNCE[phase]}
+        {errored ? "" : slow ? "Taking longer than usual. Try asking again." : PHASE_ANNOUNCE[phase]}
       </p>
 
       <TextArea
@@ -104,7 +117,7 @@ export function VoiceScreen() {
               </p>
             </motion.div>
           ) : phase === "speaking" ? (
-            <motion.div key="speaking" {...fade}>
+            <motion.div key="speaking" {...fade} lang={textLang(question, agent?.final, agent?.interim)}>
               {question && (
                 <>
                   <p className="text-[13px] leading-4 font-[510] text-muted">You asked</p>
@@ -120,7 +133,7 @@ export function VoiceScreen() {
               Connecting you to <span className="text-muted-2">the UltraTech Engineer…</span>
             </motion.h2>
           ) : showQuestion ? (
-            <motion.h2 key="question" {...fade} className={LIVE_TEXT}>
+            <motion.h2 key="question" {...fade} lang={textLang(question)} className={LIVE_TEXT}>
               {phase === "thinking" ? (
                 question
               ) : (

@@ -16,10 +16,12 @@ Figma: **01 · Welcome — Name & language** (v5 section `193:7231`, `docs/desig
    the Foundation stage.*, in the chosen language; no user bubble). The engineer's real answer streams in
    below, and the backend keeps the stage in the session history for every later answer.
 
-This runs on every page load and on *Start a new chat*. The composer (typing, mic, camera) works
-from the first bubble; picking a language or stage is optional (no language = Hindi voice, the
-backend default). The action row above it is always shown, as in the design: 🌐 *{lang}* (once a
-language is known) · 🎤 *Talk by voice* · ✕ *End chat* ([03](03-text-chat.md#ending-a-chat)).
+This runs on every page load and on *Start a new chat*. **The composer is locked until both are
+picked:** the text box, mic and *Talk by voice* (chip and menu) are disabled and the text box is faded
+to 50 %, with the placeholder *Pick a language first*, then *Pick your home's stage first*. (Before
+2026-11-13 picking was optional.) The action row above it is always shown, as in the design: 🌐
+*{lang}* (once a language is picked) · 🎤 *Talk by voice* (disabled until onboarding is done) · ✕
+*End chat* ([03](03-text-chat.md#ending-a-chat)).
 
 Selected chips turn yellow with a check icon (`/icons/check.svg`). Only the newest option bubble
 of each kind is interactive.
@@ -35,14 +37,18 @@ opened every page load. The file is kept; its import and render are commented ou
 
 ## Persistence
 
-`localStorage["ultratech.profile.v1"] = { uuid, lang, stage }`. A `name` saved by older
-versions is dropped on load.
+`localStorage["ultratech.profile.v1"] = { uuid }`. Only the device id is restored; a `lang`,
+`stage` or `name` saved by older versions is ignored.
+
+**Nothing is pre-selected.** Every conversation (page load or *Start a new chat*) starts with no
+language and no stage ticked. A choice counts, and is used or sent, only once the user taps it in
+that conversation. Before any language tap, a voice call uses the backend default (`hi`) and the
+PDF summary uses `hi` too.
 
 - `uuid` is created once per device (`crypto.randomUUID`) and is the LiveKit participant
   identity and the text-chat `user_uuid`.
-- Returning users see the same flow as new ones (same greeting, language card, then the stage
-  question), as in the design. The saved language and stage show as the ticked chips; tapping a
-  different stage changes it. Stage chips stay tappable until the chat moves past them.
+- Returning users see exactly the same flow as new ones, as in the design. Stage chips stay
+  tappable until the chat moves past them.
 - The stage is asked at the start of every conversation (again after *Start a new chat*), never
   mid-chat: a language pick asks it until a stage is chosen or the chat has a real answer. So
   switching language in the first card before choosing a stage re-asks it in the new language.
