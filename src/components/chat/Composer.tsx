@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { memo, useRef, useState, type ReactNode } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
+import { PHOTOS_ENABLED } from "@/lib/features";
 import { useApp } from "@/lib/store";
 import { LANG_LABEL } from "@/lib/types";
 import { Icon } from "../ui/Icon";
@@ -96,13 +97,15 @@ export function Composer({ highlightCamera }: { highlightCamera?: boolean }) {
         <button
           type="button"
           onClick={openCamera}
-          onPointerEnter={warmCamera}
-          onFocus={warmCamera}
-          disabled={locked}
-          aria-label="Send a photo"
+          onPointerEnter={PHOTOS_ENABLED ? warmCamera : undefined}
+          onFocus={PHOTOS_ENABLED ? warmCamera : undefined}
+          // Shown but switched off while the backend can't receive photos (src/lib/features.ts).
+          disabled={locked || !PHOTOS_ENABLED}
+          aria-label={PHOTOS_ENABLED ? "Send a photo" : "Send a photo (coming soon)"}
+          title={PHOTOS_ENABLED ? undefined : "Photos coming soon"}
           className="relative grid size-[38px] shrink-0 place-items-center rounded-full after:absolute after:-inset-1 after:content-[''] disabled:opacity-40"
         >
-          {highlightCamera && (
+          {highlightCamera && PHOTOS_ENABLED && (
             <motion.span
               className="absolute inset-[-2px]"
               animate={reduce ? undefined : { scale: [1, 1.08, 1], opacity: [1, 0.6, 1] }}

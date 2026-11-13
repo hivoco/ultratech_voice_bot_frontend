@@ -2,6 +2,13 @@
 
 Users photograph a site problem; the photo joins the chat or the live call.
 
+> **Switched off since 2026-11-13.** `PHOTOS_ENABLED = false` in `src/lib/features.ts` keeps the
+> composer camera button and the call's *Send photo* button visible but faded (40 %) and disabled
+> (*Photos coming soon*), and hides the tap hint. A photo never reached the
+> backend (`/turn/stream` is text-only, the voice worker has no photo topic), so the engineer
+> answered without seeing it. All the code below is unchanged; set the switch to `true` once the
+> backend accepts images ([backend gap](#backend-gap)).
+
 Figma: **04a · Camera — Crack photo**, **04b · Voice transcript — Photo diagnosis**.
 
 ## Camera screen

@@ -39,7 +39,7 @@ Start here. Each doc below covers **one** topic or use case; read only the ones 
 - Stage not sent to the backend — [01](docs/01-onboarding.md#backend-gap)
 - Language not sent for typed chat, voice only — [01](docs/01-onboarding.md#backend-gap)
 - Tap-to-interrupt `control` topic — [02](docs/02-voice-call.md#tap-to-interrupt)
-- No photo / vision endpoint — [04](docs/04-photo-capture.md#backend-gap)
+- No photo / vision endpoint (camera shown disabled via `PHOTOS_ENABLED` until it exists) — [04](docs/04-photo-capture.md#backend-gap)
 - `expert` data topic + site-visit booking — [05](docs/05-expert-and-video-cards.md)
 
 ## Rules for changes

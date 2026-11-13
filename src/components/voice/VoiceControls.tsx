@@ -1,6 +1,7 @@
 "use client";
 
 import { motion, useReducedMotion } from "motion/react";
+import { PHOTOS_ENABLED } from "@/lib/features";
 import { Icon } from "../ui/Icon";
 
 interface VoiceControlsProps {
@@ -17,7 +18,14 @@ export function VoiceControls({ micEnabled, micLabel, onCamera, onMic, onClose }
   const reduce = useReducedMotion();
   return (
     <div className="mx-auto grid w-full max-w-[393px] shrink-0 grid-cols-[1fr_auto_1fr] items-start px-[60px] pt-2 pb-[max(36px,env(safe-area-inset-bottom))] max-[300px]:px-3 short:pb-[max(24px,env(safe-area-inset-bottom))] tiny:pb-[max(16px,env(safe-area-inset-bottom))]">
-      <RoundButton icon="/icons/camera.svg" label="Send photo" onClick={onCamera} className="justify-self-start" />
+      {/* Shown but switched off while the backend can't receive photos (src/lib/features.ts). */}
+      <RoundButton
+        icon="/icons/camera.svg"
+        label="Send photo"
+        onClick={onCamera}
+        disabled={!PHOTOS_ENABLED}
+        className="justify-self-start"
+      />
       <motion.button
         type="button"
         onClick={onMic}
@@ -48,21 +56,27 @@ function RoundButton({
   icon,
   label,
   onClick,
+  disabled,
   className = "",
 }: {
   icon: string;
   label: string;
   onClick: () => void;
+  disabled?: boolean;
   className?: string;
 }) {
   return (
-    <div className={`mt-3 flex w-14 flex-col items-center gap-2.5 max-[300px]:mt-2 max-[300px]:w-12 ${className}`}>
+    <div
+      className={`mt-3 flex w-14 flex-col items-center gap-2.5 max-[300px]:mt-2 max-[300px]:w-12 ${disabled ? "opacity-40" : ""} ${className}`}
+      title={disabled ? "Photos coming soon" : undefined}
+    >
       <motion.button
         type="button"
         onClick={onClick}
-        whileTap={{ scale: 0.92 }}
-        aria-label={label}
-        className="card relative grid size-14 place-items-center rounded-full border-line-2 transition-colors hover:bg-sand max-[300px]:size-12"
+        disabled={disabled}
+        whileTap={disabled ? undefined : { scale: 0.92 }}
+        aria-label={disabled ? `${label} (coming soon)` : label}
+        className="card relative grid size-14 place-items-center rounded-full border-line-2 transition-colors enabled:hover:bg-sand max-[300px]:size-12"
       >
         <Icon src={icon} size={24} />
       </motion.button>

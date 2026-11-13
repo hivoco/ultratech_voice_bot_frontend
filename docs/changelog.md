@@ -2,6 +2,14 @@
 
 Newest first. Started 2026-11-09; earlier history is in `git log`.
 
+## 2026-11-13 — Camera disabled until the backend takes photos
+
+- **Disabled** the composer camera button and the call's *Send photo* button (still shown, faded to
+  40 %, *Photos coming soon*) and hid the "take a photo" tap hint, behind `PHOTOS_ENABLED = false`
+  (`src/lib/features.ts`). Photos never left the
+  browser, so answers to a photo were made without seeing it. The camera screen and all photo
+  code stay; flip the switch once the backend accepts images ([04](04-photo-capture.md)).
+
 ## 2026-11-12 — Voice transcript + PDF fixes (found in live tests)
 
 - **Fixed** duplicated turns in the call transcript and the summary PDF. LiveKit can send a late
