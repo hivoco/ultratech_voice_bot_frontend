@@ -1,21 +1,38 @@
 "use client";
 
-import { memo, useEffect, useRef, useState } from "react";
+import { memo, useCallback, useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
-import { GREETING_ID, GREETING_LANG_ID, useApp } from "@/lib/store";
+import { GREETING_ID, GREETING_LANG_ID, quizLabelsFor, useApp } from "@/lib/store";
+import { PHOTOS_ENABLED } from "@/lib/features";
+import type { UiAnswers } from "@/lib/replyUi";
 import { LANG_LABEL, STAGES, type ChatMessage, type LangChoice, type Stage } from "@/lib/types";
 import { Header, HeaderMenu, type MenuItem } from "../ui/Header";
-import { Chip } from "../ui/Chip";
 import { Icon } from "../ui/Icon";
 import { DurationChip, EngineerBubble, ExpertCard, SummaryCard, Suggestions, UserBubble, VideoCard } from "../chat/Bubbles";
 import { Composer } from "../chat/Composer";
+import { FactsCard, QuestionCard, type QuizLabels } from "../chat/ReplyBlocks";
+import { RowBoundary } from "../chat/RowBoundary";
+import { OptionChips } from "../chat/OptionChips";
+import { playSfx, setSoundOn, soundOn } from "@/lib/sfx";
 
 const LANG_OPTIONS: LangChoice[] = ["en", "hi", "hinglish"];
 const PHOTO_RE = /\bphoto\b/i;
 
 /** 01 Welcome (onboarding) and 03b/04b/05b transcript — one scrolling conversation. */
 export function ChatScreen() {
-  const { state, chooseLang, chooseStage, goTo, submitText, sending, changeLanguage, startVoice, endChat, restart } = useApp();
+  const { state, chooseLang, chooseStage, goTo, submitText, answerUi, openCamera, sending, changeLanguage, startVoice, endChat, restart } = useApp();
+  const quizLabels = quizLabelsFor(state.profile.lang);
+  const [sound, setSound] = useState(true);
+  // eslint-disable-next-line react-hooks/set-state-in-effect -- read the saved preference after hydration
+  useEffect(() => setSound(soundOn()), []);
+  const pickLang = useCallback((l: LangChoice) => {
+    playSfx("select");
+    chooseLang(l);
+  }, [chooseLang]);
+  const pickStage = useCallback((s: Stage) => {
+    playSfx("select");
+    chooseStage(s);
+  }, [chooseStage]);
   const scrollRef = useRef<HTMLDivElement>(null);
   const { messages, profile } = state;
 
@@ -76,6 +93,13 @@ export function ChatScreen() {
         ...(profile.lang ? [{ label: "Change language", run: changeLanguage }] : []),
         // Same rule as the composer: voice opens once language and stage are picked.
         ...(profile.lang && profile.stage ? [{ label: "Talk by voice", run: startVoice }] : []),
+        {
+          label: sound ? "Sound: on" : "Sound: off",
+          run: () => {
+            setSoundOn(!sound);
+            setSound(!sound);
+          },
+        },
         { label: "End chat", run: endChat },
       ];
 
@@ -96,25 +120,31 @@ export function ChatScreen() {
             className="flex flex-col gap-3"
           >
             {messages.map((m, idx) => (
+              // One bad message (unexpected data) replaces only its own row, never the whole chat.
+              <RowBoundary key={m.id}>
               <MessageRow
-                key={m.id}
                 m={m}
                 // Only what each row needs, so a streamed chunk re-renders just the streaming bubble.
                 optionsActive={
+                  !state.ended &&
                   m.kind === "engineer" &&
                   ((m.options === "lang" && idx === lastLangIdx) || (m.options === "stage" && idx === lastStageIdx && idx === messages.length - 1))
                 }
                 selected={m.kind === "engineer" ? (m.options === "lang" ? profile.lang : m.options === "stage" ? profile.stage : undefined) : undefined}
                 sending={m.kind === "engineer" && m.error ? sending : false}
-                onLang={chooseLang}
-                onStage={chooseStage}
+                onLang={pickLang}
+                onStage={pickStage}
                 // Only on the newest message: once the question was retried (or the chat moved on), the old
                 // error bubble keeps its text but loses the button, so a second tap can't send it twice.
                 onRetry={m.kind === "engineer" && m.error && idx === messages.length - 1 ? submitText : undefined}
-                // Suggested questions are tappable on the newest answer only, while nothing is in flight.
+                // Suggested questions and question cards are tappable on the newest answer only, while nothing is in flight.
                 suggestionsActive={m === lastEngineer && !sending && !state.ended}
                 onAsk={submitText}
+                onAnswer={answerUi}
+                onPhoto={openCamera}
+                quizLabels={quizLabels}
               />
+              </RowBoundary>
             ))}
           </div>
         </main>
@@ -152,19 +182,27 @@ interface MessageRowProps {
   sending: boolean;
   onLang: (lang: LangChoice) => void;
   onStage: (stage: Stage) => void;
-  onRetry?: (text: string, photo?: string) => void;
+  onRetry?: (text: string, photo?: string, answers?: UiAnswers) => void;
   /** The newest answer, nothing sending: its suggested questions can be tapped. */
   suggestionsActive: boolean;
   onAsk: (text: string) => void;
+  onAnswer: (messageId: string, answers: UiAnswers) => void;
+  onPhoto: () => void;
+  quizLabels: QuizLabels;
 }
 
-const MessageRow = memo(function MessageRow({ m, optionsActive, selected, sending, onLang, onStage, onRetry, suggestionsActive, onAsk }: MessageRowProps) {
+const MessageRow = memo(function MessageRow({ m, optionsActive, selected, sending, onLang, onStage, onRetry, suggestionsActive, onAsk, onAnswer, onPhoto, quizLabels }: MessageRowProps) {
   switch (m.kind) {
     case "engineer":
       return (
         <>
           <EngineerBubble
-            animateIn={m.id !== GREETING_ID && m.id !== GREETING_LANG_ID}
+            animateIn={m.id !== GREETING_ID}
+            // Scripted onboarding lines "type" first (the greeting paints at once for LCP); AI answers
+            // already show typing dots while the request runs.
+            typeFirst={m.id === GREETING_ID || m.text !== undefined ? 0 : m.id === GREETING_LANG_ID ? 1100 : 750}
+            typeKey={m.id}
+            waiting={!!m.options && optionsActive && !selected}
             lead={m.lead}
             prompt={m.prompt}
             text={m.text}
@@ -172,36 +210,24 @@ const MessageRow = memo(function MessageRow({ m, optionsActive, selected, sendin
             streaming={m.streaming}
           >
             {m.options === "lang" && (
-              <div className="flex w-full flex-wrap gap-2" role="group" aria-label="Language">
-                {LANG_OPTIONS.map((opt) => (
-                  <Chip
-                    key={opt}
-                    label={LANG_LABEL[opt]}
-                    lang={opt === "hi" ? "hi" : undefined}
-                    selected={selected === opt}
-                    disabled={!optionsActive}
-                    onClick={() => onLang(opt)}
-                  />
-                ))}
-              </div>
+              <OptionChips
+                label="Language"
+                options={LANG_OPTIONS}
+                labelOf={(o) => LANG_LABEL[o]}
+                langOf={(o) => (o === "hi" ? "hi" : undefined)}
+                selected={selected}
+                disabled={!optionsActive}
+                waiting={optionsActive && !selected}
+                onPick={onLang}
+              />
             )}
             {m.options === "stage" && (
-              <div className="flex w-full flex-wrap gap-2" role="group" aria-label="Home stage">
-                {STAGES.map((stage) => (
-                  <Chip
-                    key={stage}
-                    label={stage}
-                    selected={selected === stage}
-                    disabled={!optionsActive}
-                    onClick={() => onStage(stage)}
-                  />
-                ))}
-              </div>
+              <OptionChips label="Home stage" options={STAGES} labelOf={(o) => o} selected={selected} disabled={!optionsActive} waiting={optionsActive && !selected} onPick={onStage} />
             )}
             {m.error && m.retryText && onRetry && (
               <button
                 type="button"
-                onClick={() => onRetry(m.retryText!, m.retryPhoto)}
+                onClick={() => onRetry(m.retryText!, m.retryPhoto, m.retryAnswers)}
                 disabled={sending}
                 className="flex items-center gap-1.5 rounded-full bg-brand px-3.5 py-2 text-[13px] font-[590] text-ink transition-[background-color,transform] enabled:hover:bg-brand-hover active:scale-95 disabled:opacity-50"
               >
@@ -209,14 +235,22 @@ const MessageRow = memo(function MessageRow({ m, optionsActive, selected, sendin
                 Try again
               </button>
             )}
-            {/* The answer's key_points as tappable follow-up questions; a tap sends it as the next message. */}
-            {!m.error && !m.streaming && m.keyPoints && m.keyPoints.length > 0 && (
-              <Suggestions
-                title={m.keyPointsTitle ?? "At this stage, people often ask"}
-                items={m.keyPoints}
+            {/* Rich layouts from the backend's `ui` (docs/backend-fixes.md item 13). */}
+            {!m.error && !m.streaming && (m.ui?.type === "choice" || m.ui?.type === "quiz") && (
+              <QuestionCard
+                ui={m.ui}
                 active={suggestionsActive}
-                onPick={onAsk}
+                answered={m.uiAnswers}
+                labels={quizLabels}
+                photoEnabled={PHOTOS_ENABLED}
+                onSubmit={(a) => onAnswer(m.id, a)}
+                onPhoto={onPhoto}
               />
+            )}
+            {!m.error && !m.streaming && m.ui?.type === "facts" && <FactsCard ui={m.ui} />}
+            {/* Tappable follow-ups (suggested_questions, else key_points); a tap sends the next message. */}
+            {!m.error && !m.streaming && m.suggestions && (
+              <Suggestions title={m.suggestions.title} items={m.suggestions.items} active={suggestionsActive} onPick={onAsk} />
             )}
           </EngineerBubble>
         </>
@@ -228,7 +262,7 @@ const MessageRow = memo(function MessageRow({ m, optionsActive, selected, sendin
     case "video":
       return <VideoCard url={m.url} title={m.title} />;
     case "expert":
-      return <ExpertCard name={m.name} role={m.role} callSlot={m.callSlot} phone={m.phone} />;
+      return <ExpertCard {...m} />;
     case "summary":
       return <SummaryCard turns={m.turns} />;
   }

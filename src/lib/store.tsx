@@ -3,10 +3,14 @@
 import { createContext, use, useCallback, useEffect, useMemo, useReducer, useRef, type ReactNode } from "react";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { askImageTurn, askTurn, createSession, fetchHealth } from "./api";
-import { clock, longDuration, uid } from "./id";
-import { backendLang, LANG_LABEL, type ChatMessage, type LangChoice, type Profile, type Screen, type Stage } from "./types";
+import { capFirst, capSentences, clock, longDuration, plainText, stringList, uid } from "./id";
+import { backendLang, LANG_LABEL, type ChatMessage, type Suggestions, type LangChoice, type Profile, type Screen, type Stage } from "./types";
 import { turnText, useVoiceCall, type CallSummary, type VoiceCall } from "./useVoiceCall";
 import { buildTranscript } from "./transcript";
+import { initSfx, playSfx } from "./sfx";
+import { answersText, parseReplyUi, type UiAnswers } from "./replyUi";
+import { parseContact, type ContactChannels } from "./contact";
+import type { QuizLabels } from "@/components/chat/ReplyBlocks";
 
 const PROFILE_KEY = "ultratech.profile.v1";
 
@@ -64,10 +68,18 @@ const ONBOARDING: Record<
     gotStage: (s: Stage) => string;
     askAnything: string;
     changeLang: string;
-    /** Heading over the suggested questions (from `key_points`) under an answer. */
+    /** Heading over suggested follow-up questions under an answer. */
     suggestions: string;
+    /** Heading when the backend's key points are statements, not questions. */
+    moreTitle: string;
+    /** What tapping a statement sends: asks for more on it, so the bot doesn't just repeat itself. */
+    tellMore: (point: string) => string;
     /** Site-engineer card after a photo the backend flags as serious. */
     escalation: string;
+    /** What to do meanwhile, on that card (shown even when the backend sends no contact). */
+    escalationNote: string;
+    /** Buttons on choice / quiz cards. */
+    quiz: QuizLabels;
   }
 > = {
   en: {
@@ -75,7 +87,11 @@ const ONBOARDING: Record<
     stage: "Which stage is your home at right now?",
     gotStage: (s) => `${s} stage — got it.`,
     suggestions: "At this stage, people often ask",
+    moreTitle: "Tap to know more",
+    tellMore: (p) => `Tell me more about this: ${p}`,
     escalation: "A site engineer should check this",
+    escalationNote: "Pause work on this part and get a qualified expert to inspect it on site before you continue.",
+    quiz: { next: "Next", send: "Send", back: "Back", pickAll: "Pick all that apply" },
     askAnything: "Ask me anything: tap the mic to talk, or type your question below.",
     changeLang: "Which language would you like to talk in?",
   },
@@ -84,7 +100,11 @@ const ONBOARDING: Record<
     stage: "आपका घर अभी किस stage पर है?",
     gotStage: (s) => `ठीक है, ${s} stage.`,
     suggestions: "इस stage पर लोग अक्सर पूछते हैं",
+    moreTitle: "और जानने के लिए tap करें",
+    tellMore: (p) => `${p} — इसके बारे में और बताइए`,
     escalation: "इसे site engineer से check करवाएँ",
+    escalationNote: "इस हिस्से का काम रोकिए और आगे बढ़ने से पहले qualified expert से site पर जाँच करवाइए।",
+    quiz: { next: "आगे", send: "भेजें", back: "पीछे", pickAll: "जो भी लागू हों, सब चुनिए" },
     askAnything: "कुछ भी पूछिए: बोलने के लिए mic दबाएँ, या नीचे लिखें।",
     changeLang: "आप किस भाषा में बात करना चाहेंगे?",
   },
@@ -93,12 +113,63 @@ const ONBOARDING: Record<
     stage: "Aapka ghar abhi kis stage par hai?",
     gotStage: (s) => `Theek hai, ${s} stage.`,
     suggestions: "Is stage par log aksar poochte hain",
+    moreTitle: "Aur jaanne ke liye tap kariye",
+    tellMore: (p) => `${p} — iske baare mein aur bataiye`,
     escalation: "Ise site engineer se check karwayein",
+    escalationNote: "Is hisse ka kaam rokiye aur aage badhne se pehle qualified expert se site par jaanch karwaiye.",
+    quiz: { next: "Aage", send: "Bhejiye", back: "Peeche", pickAll: "Jo bhi laagu hon, sab chuniye" },
     askAnything: "Kuch bhi poochiye: bolne ke liye mic dabaiye, ya neeche type kariye.",
     changeLang: "Aap kis language mein baat karna chahenge?",
   },
 };
 const copyFor = (lang: LangChoice | undefined) => ONBOARDING[lang ?? "en"] ?? ONBOARDING.en;
+
+/** Choice / quiz button labels in the chat's language. */
+export const quizLabelsFor = (lang: LangChoice | undefined): QuizLabels => copyFor(lang).quiz;
+
+/**
+ * The site-engineer card for a serious reply (chat photo, typed turn or call escalation). Shows the
+ * backend's contact channels when it sends them; otherwise just the localized "what to do now" note,
+ * never a button that can't do anything.
+ */
+function escalationCard(lang: LangChoice | undefined, condition: string, contact: ContactChannels & { name?: string; role?: string }, fromPhoto: boolean): ChatMessage {
+  const copy = copyFor(lang);
+  // Backend condition codes are snake_case ("structural_diagonal_crack"); show them as words.
+  condition = condition.replace(/[_-]+/g, " ").trim();
+  return {
+    id: uid("esc"),
+    kind: "expert",
+    name: contact.name ?? copy.escalation,
+    role: contact.role ?? (condition ? `${fromPhoto ? "Photo" : "Issue"}: ${condition}` : fromPhoto ? "From your photo" : ""),
+    note: copy.escalationNote,
+    callSlot: contact.callSlot,
+    phone: contact.phone,
+    whatsapp: contact.whatsapp,
+    email: contact.email,
+    bookingUrl: contact.bookingUrl,
+  };
+}
+
+const QUESTION_END = /[?？]\s*$/;
+
+/**
+ * The buttons under an answer. Uses the backend's follow-up questions when it sends them, else its
+ * key points. Key points are usually statements summarising the answer just given ("Cover fresh
+ * concrete with tarpaulin"): sent as-is, the bot only repeats itself, so those get a "tap to know
+ * more" heading and a tap asks for more on that point.
+ */
+function buildSuggestions(res: { key_points?: unknown; suggested_questions?: unknown }, lang: LangChoice | undefined): Suggestions | undefined {
+  // Untrusted shapes: anything that isn't a list of strings counts as none.
+  const questions = stringList(res.suggested_questions, 3);
+  const list = (questions.length ? questions : stringList(res.key_points)).map((k) => capFirst(plainText(k).trim())).filter(Boolean).slice(0, 3);
+  if (!list.length) return undefined;
+  const copy = copyFor(lang);
+  const asks = questions.length > 0 || list.every((k) => QUESTION_END.test(k));
+  return {
+    title: asks ? copy.suggestions : copy.moreTitle,
+    items: list.map((label) => ({ label, send: asks ? label : copy.tellMore(label) })),
+  };
+}
 
 /** Bubble text for a photo sent without a note (not sent to the AI as a caption). */
 const PHOTO_ONLY_TEXT = "I took a photo — can you take a look?";
@@ -109,6 +180,7 @@ interface AskVars {
   replyId: string;
   photo?: string;
   caption?: string;
+  answers?: UiAnswers;
 }
 
 /**
@@ -155,6 +227,8 @@ function reducer(state: State, action: Action): State {
     case "profile":
       return { ...state, profile: { ...state.profile, ...action.patch } };
     case "chooseLang": {
+      // After End chat the old option cards are history; only Start a new chat continues.
+      if (state.ended) return state;
       const copy = copyFor(action.lang);
       // v5 "01 · Welcome": the language reply asks the stage (saved stage ticked) until it's chosen in
       // this conversation (a "got it" reply, id prefix "stage") or the chat has real answers. So
@@ -175,6 +249,7 @@ function reducer(state: State, action: Action): State {
       };
     }
     case "chooseStage": {
+      if (state.ended) return state;
       const copy = copyFor(state.profile.lang);
       return {
         ...state,
@@ -263,14 +338,19 @@ function summaryToMessages({ timeline, durationSec }: CallSummary, lang: LangCho
     } else if (item.type === "video") {
       out.push({ id: uid(), kind: "video", url: item.url, title: item.title });
     } else if (item.type === "escalation") {
-      out.push({
-        id: uid("esc"),
-        kind: "expert",
-        name: copyFor(lang).escalation,
-        role: item.condition ? `Photo: ${item.condition}` : "From your photo",
-      });
+      out.push(escalationCard(lang, item.condition, item.contact ?? {}, true));
     } else {
-      out.push({ id: uid(), kind: "expert", name: item.name, role: item.role, callSlot: item.callSlot, phone: item.phone });
+      out.push({
+        id: uid(),
+        kind: "expert",
+        name: item.name,
+        role: item.role,
+        callSlot: item.callSlot,
+        phone: item.phone,
+        whatsapp: item.whatsapp,
+        email: item.email,
+        bookingUrl: item.bookingUrl,
+      });
     }
   }
   if (durationSec < 1 && out.length === 0) return [];
@@ -294,7 +374,9 @@ interface AppContextValue {
   openCamera: () => void;
   closeCamera: () => void;
   /** `retryPhoto`: resend a failed photo turn with its photo. */
-  submitText: (text: string, retryPhoto?: string) => void;
+  submitText: (text: string, retryPhoto?: string, answers?: UiAnswers) => void;
+  /** Send the picks on a choice / quiz card as the user's next message. */
+  answerUi: (messageId: string, answers: UiAnswers) => void;
   /** Language picked on LanguageScreen (not shown since v5): saves it and opens the chat. */
   pickLanguage: (lang: LangChoice) => void;
   chooseLang: (lang: LangChoice) => void;
@@ -344,6 +426,9 @@ export function AppProvider({ children }: { children: ReactNode }) {
   }, [state.profile.uuid, state.profile.stage]);
 
   // Load (or create) the stable per-device profile; the uuid doubles as the LiveKit identity.
+  // UI sounds unlock on the first tap (browser autoplay rules).
+  useEffect(() => initSfx(), []);
+
   useEffect(() => {
     let profile: Profile = { uuid: "" };
     try {
@@ -378,41 +463,33 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const ask = useMutation({
     // Typing dots show until the whole answer arrives (~1–3 s), in the picked language's script.
     // With a photo: `/turn/image` (caption = what the user typed, if anything).
-    mutationFn: async ({ text, replyId, photo, caption }: AskVars) => {
+    mutationFn: async ({ text, replyId, photo, caption, answers }: AskVars) => {
       const sessionId = await ensureSession();
       const res = photo
         ? await askImageTurn(sessionId, photo, caption ?? "", state.profile.lang)
-        : await askTurn(sessionId, text, state.profile.lang);
+        : await askTurn(sessionId, text, state.profile.lang, answers);
       const answer = typeof res.text === "string" ? res.text : "";
+      const ui = parseReplyUi(res.ui);
       // An empty answer gets the error bubble (with Try again), never a blank one.
       if (!answer.trim()) throw new Error("Empty answer");
       dispatch({
         type: "patch",
         id: replyId,
         patch: {
-          text: answer,
+          text: state.profile.lang === "hinglish" ? capSentences(answer) : answer,
           streaming: false,
-          keyPoints: Array.isArray(res.key_points) && res.key_points.length ? res.key_points : undefined,
-          keyPointsTitle: copyFor(state.profile.lang).suggestions,
+          // A question card replaces the follow-up buttons (two sets of taps would compete).
+          suggestions: ui?.type === "choice" || ui?.type === "quiz" ? undefined : buildSuggestions(res, state.profile.lang),
+          ui: ui ?? undefined,
         },
       });
-      // A photo the backend flags as serious gets the site-engineer card under the answer.
-      if (photo && res.serious) {
+      // A reply the backend flags as serious (photo or typed) gets the site-engineer card under it.
+      if (res.serious === true) {
         const condition = "condition" in res && typeof res.condition === "string" ? res.condition : "";
-        dispatch({
-          type: "push",
-          messages: [
-            {
-              id: uid("esc"),
-              kind: "expert",
-              name: copyFor(state.profile.lang).escalation,
-              role: condition ? `Photo: ${condition}` : "From your photo",
-            },
-          ],
-        });
+        dispatch({ type: "push", messages: [escalationCard(state.profile.lang, condition, parseContact(res.contact), !!photo)] });
       }
     },
-    onError: (err, { text, replyId, photo }) => {
+    onError: (err, { text, replyId, photo, answers }) => {
       console.warn("[ultratech] text turn failed:", err.message);
       sessionRef.current = null;
       dispatch({
@@ -424,20 +501,23 @@ export function AppProvider({ children }: { children: ReactNode }) {
           text: "Sorry, I couldn't get an answer right now. Please try again in a moment.",
           retryText: text,
           retryPhoto: photo,
+          retryAnswers: answers,
         },
       });
     },
   });
 
   const submitText = useCallback(
-    (raw: string, retryPhoto?: string) => {
+    (raw: string, retryPhoto?: string, answers?: UiAnswers) => {
       const text = raw.trim();
-      const photo = retryPhoto ?? state.pendingPhoto;
+      // Quiz answers are a reply on their own: a photo waiting in the composer stays there.
+      const photo = answers ? undefined : (retryPhoto ?? state.pendingPhoto);
       if (state.ended || (!text && !photo)) return;
 
       const replyId = uid();
       const question = text || PHOTO_ONLY_TEXT;
-      dispatch({ type: "pendingPhoto", photo: null });
+      playSfx("send");
+      if (photo) dispatch({ type: "pendingPhoto", photo: null });
       dispatch({
         type: "push",
         messages: [
@@ -449,9 +529,20 @@ export function AppProvider({ children }: { children: ReactNode }) {
       });
       // The caption is only what the user typed (a retry of a photo-only turn resends the stand-in text).
       const caption = text === PHOTO_ONLY_TEXT ? "" : text;
-      ask.mutate(photo ? { text: question, replyId, photo, caption } : { text: question, replyId });
+      ask.mutate(photo ? { text: question, replyId, photo, caption } : { text: question, replyId, answers });
     },
     [ask, state.ended, state.pendingPhoto],
+  );
+
+  const answerUi = useCallback(
+    (messageId: string, answers: UiAnswers) => {
+      const m = state.messages.find((x) => x.id === messageId);
+      // Once only: the card turns read-only with these picks.
+      if (!m || m.kind !== "engineer" || !m.ui || m.uiAnswers) return;
+      dispatch({ type: "patch", id: messageId, patch: { uiAnswers: answers } });
+      submitText(answersText(m.ui, answers), undefined, answers);
+    },
+    [state.messages, submitText],
   );
 
   const pickLanguage = useCallback((lang: LangChoice) => {
@@ -466,8 +557,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
   const startVoice = useCallback(() => {
     dispatch({ type: "screen", screen: "voice" });
-    if (voice.status !== "live" && voice.status !== "connecting") void voice.start(backendLang(state.profile.lang));
-  }, [voice, state.profile.lang]);
+    if (voice.status !== "live" && voice.status !== "connecting") void voice.start(backendLang(state.profile.lang), { stage: state.profile.stage, uiLang: state.profile.lang });
+  }, [voice, state.profile.lang, state.profile.stage]);
 
   const endVoice = useCallback(
     async (next: Screen = "chat", opts?: { summary?: boolean }) => {
@@ -515,6 +606,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       openCamera: () => dispatch({ type: "openCamera" }),
       closeCamera: () => dispatch({ type: "closeCamera" }),
       submitText,
+      answerUi,
       pickLanguage,
       chooseLang,
       chooseStage,
@@ -529,7 +621,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
         if (state.profile.uuid) ensureSession().catch(() => {});
       },
     }),
-    [state, voice, online, ask.isPending, submitText, pickLanguage, chooseLang, chooseStage, startVoice, endVoice, endChat, capturePhoto, ensureSession, restart, changeLanguage],
+    [state, voice, online, ask.isPending, submitText, answerUi, pickLanguage, chooseLang, chooseStage, startVoice, endVoice, endChat, capturePhoto, ensureSession, restart, changeLanguage],
   );
 
   return <AppContext value={value}>{children}</AppContext>;

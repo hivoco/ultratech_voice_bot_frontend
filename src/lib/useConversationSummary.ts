@@ -24,7 +24,7 @@ export function useConversationSummary(upTo?: number) {
 
   const query = useQuery({
     queryKey: ["summary", conversationId, transcript.length],
-    queryFn: () => fetchSummary(conversationId, lang, transcript),
+    queryFn: () => fetchSummary(conversationId, lang, transcript, profile.lang),
     enabled: transcript.length > 0 && !!conversationId,
     staleTime: Infinity,
     gcTime: Infinity,

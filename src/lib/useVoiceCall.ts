@@ -1,5 +1,6 @@
 "use client";
 
+import { parseContact, type ContactChannels } from "./contact";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useMutation } from "@tanstack/react-query";
 // Types only: the livekit-client runtime (~200 KB) is loaded on demand when a call starts.
@@ -32,7 +33,7 @@ export type TimelineItem =
   | { type: "video"; id: string; url: string; title: string }
   | { type: "photo"; id: string; photo: string; caption: string }
   /** The worker flagged a call photo as serious: show the site-engineer card. */
-  | { type: "escalation"; id: string; condition: string }
+  | { type: "escalation"; id: string; condition: string; contact?: ContactChannels & { name?: string; role?: string } }
   | ({ type: "expert"; id: string } & ExpertContact);
 
 export interface CallSummary {
@@ -56,17 +57,9 @@ function parseCard(topic: "video" | "expert", data: Record<string, unknown>): Ti
     }
     return { type: "video", id: uid("v"), url, title: str(data.title) ?? "" };
   }
-  const name = str(data.name, 80);
+  const { name, role, ...channels } = parseContact(data);
   if (!name) return null;
-  const phone = str(data.phone, 20);
-  return {
-    type: "expert",
-    id: uid("x"),
-    name,
-    role: str(data.role) ?? "",
-    callSlot: str(data.callSlot),
-    phone: phone && /^\+?[0-9 -]{6,20}$/.test(phone) ? phone : undefined,
-  };
+  return { type: "expert", id: uid("x"), name, role: role ?? "", ...channels };
 }
 
 /**
@@ -152,7 +145,8 @@ export function useVoiceCall(userUuid: string) {
   }, []);
 
   const tokenMutation = useMutation({
-    mutationFn: (lang: "en" | "hi") => fetchVoiceToken(userUuid, lang),
+    mutationFn: ({ lang, stage, uiLang }: { lang: "en" | "hi"; stage?: string; uiLang?: string }) =>
+      fetchVoiceToken(userUuid, lang, { stage, uiLang }),
   });
 
   const upsertSegments = useCallback((who: "user" | "agent", segments: TranscriptionSegment[]) => {
@@ -176,7 +170,7 @@ export function useVoiceCall(userUuid: string) {
   }, []);
 
   const start = useCallback(
-    async (lang: "en" | "hi") => {
+    async (lang: "en" | "hi", opts?: { stage?: string; uiLang?: string }) => {
       if (roomRef.current) return;
       setStatus("connecting");
       setErrorKind(null);
@@ -187,7 +181,7 @@ export function useVoiceCall(userUuid: string) {
       let token;
       let lk: typeof import("livekit-client");
       try {
-        [token, lk] = await Promise.all([tokenMutation.mutateAsync(lang), import("livekit-client")]);
+        [token, lk] = await Promise.all([tokenMutation.mutateAsync({ lang, ...opts }), import("livekit-client")]);
       } catch (e) {
         setStatus("error");
         setErrorKind("connect");
@@ -231,7 +225,9 @@ export function useVoiceCall(userUuid: string) {
             const data = JSON.parse(new TextDecoder().decode(payload)) as Record<string, unknown>;
             if (topic === "escalation") {
               const condition = typeof data.condition === "string" ? data.condition.slice(0, 60) : "";
-              updateTimeline((prev) => [...prev, { type: "escalation", id: uid("x"), condition }]);
+              // Optional `contact` (docs/backend-fixes.md item 9): phone / WhatsApp / email / booking link.
+              const contact = parseContact(data.contact);
+              updateTimeline((prev) => [...prev, { type: "escalation", id: uid("x"), condition, contact }]);
               return;
             }
             const item = parseCard(topic, data);

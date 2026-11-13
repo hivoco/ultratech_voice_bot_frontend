@@ -43,7 +43,14 @@ export async function POST(request: Request) {
     const upstream = await backendFetch("/session/summary", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ room, lang: lang === "en" ? "en" : "hi", transcript }),
+      // `ui_lang` lets the backend write a Hinglish chat's PDF in Roman (docs/backend-fixes.md item 8);
+      // `lang` stays en/hi for today's backend, which ignores unknown fields.
+      body: JSON.stringify({
+        room,
+        lang: lang === "en" ? "en" : "hi",
+        ...(body.ui_lang === "en" || body.ui_lang === "hi" || body.ui_lang === "hinglish" ? { ui_lang: body.ui_lang } : {}),
+        transcript,
+      }),
       signal: AbortSignal.timeout(TIMEOUT_MS),
     });
     const text = await upstream.text();

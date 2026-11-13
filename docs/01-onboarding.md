@@ -72,6 +72,11 @@ The engineer's onboarding lines follow the picked language (`ONBOARDING` in `src
 | Stage question | Which stage is your home at right now? | आपका घर अभी किस stage पर है? | Aapka ghar abhi kis stage par hai? |
 | Stage reply | Foundation stage — got it. | ठीक है, Foundation stage. | Theek hai, Foundation stage. |
 | Suggested-questions heading | At this stage, people often ask | इस stage पर लोग अक्सर पूछते हैं | Is stage par log aksar poochte hain |
+| Key-points heading (statements) | Tap to know more | और जानने के लिए tap करें | Aur jaanne ke liye tap kariye |
+| What a key-point tap sends | Tell me more about this: … | … — इसके बारे में और बताइए | … — iske baare mein aur bataiye |
+
+After End chat the old language and stage cards are read-only (reducer ignores `chooseLang` /
+`chooseStage` once `ended`).
 | Photo escalation card | A site engineer should check this | इसे site engineer से check करवाएँ | Ise site engineer se check karwayein |
 | Ask anything | Ask me anything: tap the mic to talk, or type your question below. | कुछ भी पूछिए: बोलने के लिए mic दबाएँ, या नीचे लिखें। | Kuch bhi poochiye: bolne ke liye mic dabaiye, ya neeche type kariye. |
 | Change language | Which language would you like to talk in? | आप किस भाषा में बात करना चाहेंगे? | Aap kis language mein baat karna chahenge? |

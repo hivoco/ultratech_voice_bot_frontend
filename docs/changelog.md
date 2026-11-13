@@ -2,6 +2,58 @@
 
 Newest first. Started 2026-11-09; earlier history is in `git log`.
 
+## 2026-11-13 — Onboarding feels alive: typing, pop-ins, waiting glow, UI sounds
+
+- Scripted expert lines (the language card, the stage question, "got it") show typing dots first
+  (1.1 s for the first card, 0.75 s after), then spring in. Only the first time: switching to voice
+  and back doesn't replay them. The greeting itself still paints at once (LCP).
+- Language / stage chips pop in one by one (`OptionChips`); while the expert waits for a pick the
+  bubble gets a pulsing brand-yellow outline and a small wave runs across the chips every 5 s.
+- UI sounds, synthesized with Web Audio (`src/lib/sfx.ts`, no audio files): pop when an expert
+  message appears or an answer lands, tick on chip / option taps, swish on send. They start after the
+  first tap (browser autoplay rules), stay silent in hidden tabs, and can be turned off from the
+  menu ("Sound: on/off", saved in localStorage). Reduced motion: no pop-in delays, no wave.
+
+## 2026-11-13 — Reply layouts, working expert card, crash-proofing (mobile)
+
+- **4 reply kinds** (designer spec), from an optional `ui` on `/turn` / `/turn/image`
+  (`src/lib/replyUi.ts`, `src/components/chat/ReplyBlocks.tsx`; backend contract in
+  `docs/backend-fixes.md` item 13): plain answer + follow-ups (existing); **single choice**;
+  **multi-step questions** (1 / 3 progress bar, one at a time, single or multi-select, Back, photo
+  prompt row); **facts** (metrics box + titled checklists). Picks are sent as the next `/turn`
+  with a readable `text` and structured `answers`; the card turns read-only. Facts go into the PDF.
+- **Expert card**: buttons only for channels the backend sends (booking link, Call, WhatsApp,
+  Email; all validated in `src/lib/contact.ts`); otherwise just a localized "pause work and get it
+  inspected" note. The dead *Book a site visit* button is gone. Shown for any `serious` reply.
+  Condition codes are shown as words.
+- **Crash fixes:**
+  - A malformed `ui` crashed the whole chat into the error page. `ui` is now validated in the
+    browser (the route only size-caps it).
+  - `key_points` as a non-list crashed suggestions. Now ignored.
+  - Every message now has its own error boundary (`RowBoundary`), so one bad message shows "This
+    message couldn't be shown" and the chat keeps working.
+  - `serious` must be exactly `true`.
+- **Mobile:** 44 px tap targets on Back / Next / photo row, `overflow-wrap:anywhere` for long
+  words/URLs in cards, metric values wrap under their label, double taps send once.
+- **Break-ui page** (dev only, 404 in production): `/dev/replies?data=demo|worst|empty|one`.
+  Checked at 280 / 320 / 393 px: no horizontal overflow, no tap target under 40 px, no errors,
+  unsafe links (`javascript:`, `http:`) dropped. Mocked chat flow passes at 320 and 393.
+
+## 2026-11-13 — Fixes from long paid chats (en / hi / hinglish)
+
+Two 10-turn paid chats per language (questions, suggestion taps, off-topic, memory, End chat → PDF).
+- **Suggestion taps no longer make the bot repeat itself.** The backend's `key_points` are
+  statements from the answer just given, so they now show under *Tap to know more* and a tap asks
+  *"Tell me more about this: …"* (localized). Real `suggested_questions` from the backend (asked for
+  in `docs/backend-fixes.md`) are used as-is under *At this stage, people often ask* once sent.
+- **Language/stage chips after End chat** could still be tapped, changing the language and adding
+  messages below *Conversation ended*. Now read-only.
+- **Hinglish replies** that come back all-lowercase get each sentence capitalised; suggestion
+  labels get a capital first letter in every language.
+- Older suggestion lists lose the yellow highlight (only the tappable list has one); max 3 buttons.
+- Checked: live taps in all 3 languages now get a real elaboration; mocked test of
+  `suggested_questions` and the ended guards; lint, types, build.
+
 ## 2026-11-13 — Key points as tappable suggested questions
 
 - The answer's `key_points` now show inside the engineer bubble under *At this stage, people

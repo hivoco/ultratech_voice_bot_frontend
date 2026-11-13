@@ -14,9 +14,13 @@ Figma: **03b · Voice transcript — Direct answer** (also the layout for [04b](
    right script (Roman for Hinglish; the stream sends Devanagari deltas first) plus the key
    points, and `want_audio: false` skips TTS (the stream always synthesizes it). ~1–3 s.
 3. The user bubble is added immediately; the engineer bubble shows typing dots until the answer
-   arrives. The key points show inside the answer bubble as suggested questions under *At this stage,
-   people often ask* (first one highlighted yellow). Tapping one sends it as the next question;
-   only the newest answer's list is tappable, and not while a reply is in flight.
+   arrives. Up to 3 tappable follow-ups show inside the answer bubble (`buildSuggestions` in
+   `store.tsx`). If the backend sends `suggested_questions`, they show under *At this stage,
+   people often ask* and a tap sends the question as-is. Until then the `key_points` are used:
+   they're statements summarising the answer, so the heading is *Tap to know more* and a tap sends
+   *"Tell me more about this: …"* (localized), otherwise the bot just repeats itself. Only the
+   newest answer's list is tappable (first button highlighted yellow), not while a reply is in
+   flight or after End chat. Roman Hinglish replies get each sentence capitalised (`capSentences`).
 4. Errors (or an empty answer) show *"Sorry, I couldn't get an answer right now…"* with *Try
    again*; the raw detail goes to the console.
 
@@ -81,3 +85,17 @@ yellow **tap hint** ring (as in 03b).
 
 Code: `src/lib/api.ts` (`streamTurn`), `src/lib/store.tsx` (`submitText`, `summaryToMessages`),
 `src/components/chat/Bubbles.tsx`, `src/components/chat/Composer.tsx`.
+
+## Reply layouts (`ui`)
+
+An answer can carry one of three cards inside the bubble (contract: [backend-fixes.md](backend-fixes.md) item 13):
+
+| `ui.type` | Shows | On tap |
+|---|---|---|
+| `choice` | one question, 2–6 options (yellow + radio when picked) | sends the option as the next message |
+| `quiz` | 1–5 questions one at a time, `1 / 3` + progress bar, multi-select with Next, Back, photo row | after the last one sends "Question — answer" lines + `answers` |
+| `facts` | metrics box (label → bold value) + titled ✓ checklists | — (suggested questions still show) |
+
+Validated in the browser (`parseReplyUi`); anything malformed falls back to the plain answer. Only
+the newest answer's card is tappable; after sending it shows the picks read-only. Try every layout
+with worst-case data at `/dev/replies?data=worst` (dev only).

@@ -35,3 +35,23 @@ export function plainText(text: string): string {
     .replace(/(^|[\s(])[*_]([^*_\n]+)[*_](?=[\s.,!?;:)]|$)/gm, "$1$2") // *emphasis* / _emphasis_
     .replace(/`([^`\n]+)`/g, "$1"); // `code`
 }
+
+/** First letter upper-cased (Latin only; Devanagari has no case). */
+export function capFirst(text: string): string {
+  return text.replace(/^(\s*)([a-z])/, (_, sp: string, c: string) => sp + c.toUpperCase());
+}
+
+/**
+ * Roman Hinglish replies sometimes come back with every sentence lowercase ("kaali mitti… isliye…").
+ * Capitalises the first letter of each sentence; words mid-sentence are left alone.
+ */
+export function capSentences(text: string): string {
+  return text.replace(/(^\s*|[.!?।]\s+)([a-z])/g, (_, lead: string, c: string) => lead + c.toUpperCase());
+}
+
+/** A list of short strings from untrusted JSON: strings only, trimmed, non-empty, capped. */
+export function stringList(v: unknown, max = 6, len = 200): string[] {
+  return Array.isArray(v)
+    ? v.filter((k): k is string => typeof k === "string" && !!k.trim()).slice(0, max).map((k) => k.trim().slice(0, len))
+    : [];
+}

@@ -128,3 +128,27 @@ hint and buttons never clipped, the orb and mic button in the same place in ever
 ### Left as is
 
 Adding a `@custom-variant` to `globals.css` needs a dev server restart; Turbopack keeps serving the old CSS.
+
+## 2026-11-13 — Reply layouts and expert card (mobile)
+
+Page: `/dev/replies?data=demo|worst|empty|one` (dev only; 404 in production). Fixtures in
+`src/app/dev/replies/fixtures.ts` are raw backend-shaped replies, so they go through the same
+parsers as the chat. Worst case: Devanagari quiz with 5 questions × 6 long options, unbreakable
+words and a 110-char URL, 40-char metric labels/values, 3 long suggestions, an 80-char helpdesk
+name, a long email, and a malformed reply (`key_points` as a string, `serious: "yes"`,
+`javascript:` phone, `http:` booking link, quiz with one option).
+
+| # | Severity | Field | What happened | Fix |
+|---|---|---|---|---|
+| 1 | Broken | `ui` (malformed) | Whole chat replaced by the error page | Validate `ui` in the browser; per-message `RowBoundary` |
+| 2 | Broken | `key_points` not a list | Crash in suggestions | `stringList()` on untrusted lists |
+| 3 | Ugly | metric label + long value | Label crushed, split mid-word ("Composit/e") | Row wraps; value drops under the label |
+| 4 | Ugly | `condition` | `structural_diagonal_crack_near_opening` shown raw | `_`/`-` → spaces |
+| 5 | Ugly | Back / Next / photo row | Under 44 px tall | `min-h-11` |
+| 6 | Fragile | long words / URLs in cards | Could push past the bubble at 280 px | `overflow-wrap:anywhere` |
+| 7 | Fragile | contact links | Unsafe schemes would become links | Only `tel:`, `mailto:`, `wa.me`, `https:` |
+| 8 | Fragile | double tap on last quiz option | Could send twice | `advancing` guard + answers sent once per card |
+
+Verified at 280, 320 and 393 px: no horizontal scroll, no tap target under 40 px, no console
+errors. Known, not fixed: at 320 px the composer's chip row wraps to two lines (readable, costs
+~36 px of height).

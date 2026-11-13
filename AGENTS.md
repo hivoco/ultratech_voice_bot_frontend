@@ -23,6 +23,7 @@ Start here. Each doc below covers **one** topic or use case; read only the ones 
 | Lighthouse scores and performance rules | [docs/lighthouse.md](docs/lighthouse.md) |
 | Security, accessibility, React and React Scan reviews | [docs/reviews.md](docs/reviews.md) |
 | Worst-case stress test, chat and call mode (findings and fixes) | [docs/break-ui.md](docs/break-ui.md) |
+| Reply layouts (choice / quiz / facts) + backend to-do list | [docs/backend-fixes.md](docs/backend-fixes.md) |
 | What changed and when | [docs/changelog.md](docs/changelog.md) |
 
 ## Common tasks → doc
@@ -38,6 +39,8 @@ Start here. Each doc below covers **one** topic or use case; read only the ones 
 
 - Stage not sent to voice calls (`/voice/token` has no `stage`) — [01](docs/01-onboarding.md#backend-gap)
 - `expert` data topic + site-visit booking — [05](docs/05-expert-and-video-cards.md)
+- Everything the backend still owes (security, `suggested_questions`, `contact`, `ui` layouts) —
+  [docs/backend-fixes.md](docs/backend-fixes.md), the hand-over file for the backend dev
 - Done on 2026-11-13: stage on `/session`, `lang` on `/turn`, photos (`/turn/image`, `/voice/photo`),
   tap-to-interrupt `control` topic.
 

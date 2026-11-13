@@ -70,7 +70,7 @@ export function VoiceScreen() {
   const orbMode: OrbMode = errored || !voice.micEnabled ? "muted" : phase === "thinking" ? "thinking" : phase === "speaking" ? "speaking" : "listening";
   const userTalking = phase === "listening" && !!userTurnIsLatest && !!user?.interim;
 
-  const retry = () => void voice.start(backendLang(state.profile.lang));
+  const retry = () => void voice.start(backendLang(state.profile.lang), { stage: state.profile.stage, uiLang: state.profile.lang });
 
   // The voice worker can stall in "thinking" (seen live on 2026-11-13: no answer after 60 s+). After
   // 20 s on the same question, say so and invite the caller to ask again (the mic stays open).

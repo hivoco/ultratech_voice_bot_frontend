@@ -28,6 +28,11 @@ Card per Figma: yellow avatar with hard-hat icon, name + role, green shield, dar
 with phone icon, **Book a site visit** (yellow, calendar icon) and a phone button (`tel:` link,
 only if `phone` is present).
 
+**Now (2026-11-13):** the card shows a button only for channels the backend sends
+(`booking_url`, `phone`, `whatsapp`, `email`, validated in `src/lib/contact.ts`); with none it
+shows only the localized "pause work and get it inspected" note. It appears for any `serious`
+reply (chat photo, typed turn, call `escalation`). Contract: [backend-fixes.md](backend-fixes.md) item 9.
+
 **Backend TODO:** when the worker escalates a structural/safety question, publish this payload on
 topic `expert`. *Book a site visit* has no endpoint yet — wire it to the lead/CRM API when it
 exists (client wants name + number capture, see backend [client_feedback.md](https://github.com/hivoco/ultratech_voice_bot_backend/blob/main/docs/client_feedback.md) #12).

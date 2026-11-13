@@ -1,4 +1,6 @@
 // Browser-side calls to our own /api/* proxy routes (see src/app/api).
+import type { UiAnswers } from "./replyUi";
+import type { ContactChannels } from "./contact";
 
 export interface VoiceToken {
   url: string;
@@ -14,7 +16,12 @@ export interface Health {
 export interface TurnReply {
   text: string;
   key_points: string[];
+  /** Follow-up questions, once the backend sends them (preferred over key_points). */
+  suggested_questions?: string[];
   serious: boolean;
+  /** Raw backend layout; validate with `parseReplyUi` before use. */
+  ui?: unknown;
+  contact?: ContactChannels & { name?: string; role?: string };
 }
 
 async function errorDetail(res: Response): Promise<string> {
@@ -36,8 +43,13 @@ async function postJson<T>(path: string, body: unknown): Promise<T> {
   return (await res.json()) as T;
 }
 
-export const fetchVoiceToken = (user_uuid: string, lang: "en" | "hi") =>
-  postJson<VoiceToken>("/api/voice/token", { user_uuid, lang });
+export const fetchVoiceToken = (user_uuid: string, lang: "en" | "hi", opts?: { stage?: string; uiLang?: string }) =>
+  postJson<VoiceToken>("/api/voice/token", {
+    user_uuid,
+    lang,
+    ...(opts?.stage ? { stage: opts.stage } : {}),
+    ...(opts?.uiLang ? { ui_lang: opts.uiLang } : {}),
+  });
 
 /** `stage` makes the AI stage-aware from the first turn (backend `set_profile`). */
 export const createSession = (user_uuid: string, stage?: string) =>
@@ -75,8 +87,8 @@ export function sendVoicePhoto(photo: string, opts: { caption: string; lang: "en
 }
 
 /** POST a typed question. `lang` ("en" | "hi" | "hinglish") picks the reply's language and script. */
-export const askTurn = (session_id: string, text: string, lang?: string) =>
-  postJson<TurnReply>("/api/turn", lang ? { session_id, text, lang } : { session_id, text });
+export const askTurn = (session_id: string, text: string, lang?: string, answers?: UiAnswers) =>
+  postJson<TurnReply>("/api/turn", { session_id, text, ...(lang ? { lang } : {}), ...(answers ? { answers } : {}) });
 
 export interface TranscriptTurn {
   caller: string;
@@ -91,5 +103,5 @@ export interface ConversationSummary {
   pdf_url: string | null;
 }
 
-export const fetchSummary = (room: string, lang: "en" | "hi", transcript: TranscriptTurn[]) =>
-  postJson<ConversationSummary>("/api/session/summary", { room, lang, transcript });
+export const fetchSummary = (room: string, lang: "en" | "hi", transcript: TranscriptTurn[], uiLang?: string) =>
+  postJson<ConversationSummary>("/api/session/summary", { room, lang, transcript, ...(uiLang ? { ui_lang: uiLang } : {}) });
