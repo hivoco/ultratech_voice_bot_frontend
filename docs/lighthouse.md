@@ -25,6 +25,8 @@ LCP = Largest Contentful Paint, TBT = Total Blocking Time, CLS = Cumulative Layo
 | **Desktop — 2026-11-12** | **100** | **100** | **100** | **100** | 0.7 s | 0 ms | 0 |
 | **Mobile — 2026-11-12 (language asked in chat)**, median of 3 (89 / 91 / 91) | **91** | **100** | **100** | **100** | 3.5 s | 10–20 ms | 0 |
 | **Desktop — 2026-11-12 (language asked in chat)** | **100** | **100** | **100** | **100** | 0.7 s | 0 ms | 0 |
+| **Mobile — 2026-11-13 (language-based onboarding lines)**, median of 3 (91 / 91 / 91) | **91** | **100** | **100** | **100** | 3.4 s | 0–20 ms | 0 |
+| **Desktop — 2026-11-13** | **100** | **100** | **100** | **100** | 0.7 s | 0 ms | 0 |
 
 Observed (unthrottled) LCP is ~0.1 s; the mobile number is Lighthouse's simulation and moves
 ±1 point between runs.

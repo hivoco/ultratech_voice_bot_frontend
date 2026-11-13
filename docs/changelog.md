@@ -2,6 +2,28 @@
 
 Newest first. Started 2026-11-09; earlier history is in `git log`.
 
+## 2026-11-13 — Stage question for every conversation
+
+- **Changed** a stage pick to reach the backend: it's sent to the AI as a chat message (*My home is at
+  the Foundation stage.*, in the chosen language; the terse *Stage of my home: Foundation* got a
+  Hindi reply for English users in a live test) and the engineer's real answer is shown instead of the
+  fixed *Foundation stage — got it.* The session history now carries the stage for every later
+  answer. One paid AI answer per stage pick. Voice calls still don't get it (backend ask).
+
+- **Perf:** picking a language or stage no longer re-renders every option bubble (logic moved into
+  the reducer, callbacks stable; React Scan: language change 24 → 12 chip renders). Lighthouse
+  unchanged: mobile 91 / 100 / 100 / 100, desktop 100 × 4 ([reviews](reviews.md#react-scan)).
+
+- **Changed** returning users (stage saved) to get the same flow as the design: the standard
+  greeting, the language card, then *Which stage is your home at right now?* with the saved stage
+  ticked. Before, they got *Namaste! I'm with you at the {stage} stage.* and no stage question.
+- The stage is asked at the start of every conversation only; a mid-chat language change doesn't
+  ask it again. Switching language before choosing a stage re-asks it in the new language (it was
+  dropped, leaving no usable stage chips).
+- **Changed** the engineer's onboarding lines (language reply, stage question, stage reply, "ask me
+  anything", change-language question) to follow the picked language: Devanagari for हिंदी, Roman
+  Hindi for Hinglish ([01](01-onboarding.md#language-mapping)).
+
 ## 2026-11-13 — Camera disabled until the backend takes photos
 
 - **Disabled** the composer camera button and the call's *Send photo* button (still shown, faded to

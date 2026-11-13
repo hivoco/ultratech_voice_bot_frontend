@@ -102,7 +102,7 @@ export function ChatScreen() {
                 // Only what each row needs, so a streamed chunk re-renders just the streaming bubble.
                 optionsActive={
                   m.kind === "engineer" &&
-                  ((m.options === "lang" && idx === lastLangIdx) || (m.options === "stage" && idx === lastStageIdx && !profile.stage))
+                  ((m.options === "lang" && idx === lastLangIdx) || (m.options === "stage" && idx === lastStageIdx && idx === messages.length - 1))
                 }
                 selected={m.kind === "engineer" ? (m.options === "lang" ? profile.lang : m.options === "stage" ? profile.stage : undefined) : undefined}
                 sending={m.kind === "engineer" && m.error ? sending : false}

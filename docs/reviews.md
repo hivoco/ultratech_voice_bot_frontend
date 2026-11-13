@@ -103,6 +103,21 @@ typing 28 keys → `Composer` ×28 only; send + reply → `MessageRow` 3, `Engin
 `UserBubble` 1; End chat → summary ready → one render each; menu → `HeaderMenu` 2; voice open
 (token error) → `VoiceOrb` 3. Same as the 11-12 baseline; only console error is the mocked 503.
 
+**Re-run 2026-11-13** (language-based onboarding lines, stage question every chat). New phases for
+the onboarding taps found every option row re-rendering on a language or stage pick: `chooseLang` /
+`chooseStage` depended on state, so each pick gave the memoized rows new callbacks. The logic moved
+into the reducer and both callbacks are now stable:
+
+| Phase | `Chip` | `MessageRow` |
+|---|---|---|
+| pick language | 9 → 9 | 4 → 3 |
+| switch language before stage | 15 → 15 | 6 → 4 |
+| pick stage | 15 → 12 | 7 → 3 |
+| change language via chip | 24 → 12 | 12 → 6 |
+
+What's left is the new bubbles plus the option rows whose tick actually changes. Typing, streamed
+reply, End chat, menu and voice phases unchanged.
+
 **Re-run 2026-11-12** (v5 light design), same commit-hook scan on the dev server, with the
 streamed reply, summary and voice token mocked (no paid calls):
 

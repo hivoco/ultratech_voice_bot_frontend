@@ -45,33 +45,77 @@ type Action =
   | { type: "endChat"; at: number }
   /** Change language: ask again, unless the newest message already is that question. */
   | { type: "askLang" }
+  /** Language picked in the chat: saved, plus the user bubble and the reply (stage question or not). */
+  | { type: "chooseLang"; lang: LangChoice }
+  /** Stage picked: saved, plus the engineer's (streaming) reply to the stage message sent to the AI. */
+  | { type: "chooseStage"; stage: Stage; replyId: string }
   | { type: "reset" };
 
-const STAGE_PROMPT = "Which stage is your home at right now?";
+/**
+ * The engineer's onboarding lines in the chosen language. Hindi is Devanagari with construction
+ * words kept in Roman ("stage", "mic"), like the bot's own answers; Hinglish is Roman Hindi.
+ * The greeting and first language card stay English: they come before a language is picked.
+ */
+const ONBOARDING: Record<
+  LangChoice,
+  { great: string; stage: string; stageMsg: (s: Stage) => string; askAnything: string; changeLang: string }
+> = {
+  en: {
+    great: "Great, I'll talk with you in English.",
+    stage: "Which stage is your home at right now?",
+    // A full sentence: the terse "Stage of my home: Foundation" got a Hindi reply (live test).
+    stageMsg: (s) => `My home is at the ${s} stage.`,
+    askAnything: "Ask me anything: tap the mic to talk, or type your question below.",
+    changeLang: "Which language would you like to talk in?",
+  },
+  hi: {
+    great: "बढ़िया, अब मैं आपसे हिंदी में बात करूँगा।",
+    stage: "आपका घर अभी किस stage पर है?",
+    stageMsg: (s) => `मेरा घर अभी ${s} stage पर है।`,
+    askAnything: "कुछ भी पूछिए: बोलने के लिए mic दबाएँ, या नीचे लिखें।",
+    changeLang: "आप किस भाषा में बात करना चाहेंगे?",
+  },
+  hinglish: {
+    great: "Badhiya, ab main aapse Hinglish mein baat karunga.",
+    stage: "Aapka ghar abhi kis stage par hai?",
+    stageMsg: (s) => `Mera ghar abhi ${s} stage par hai.`,
+    askAnything: "Kuch bhi poochiye: bolne ke liye mic dabaiye, ya neeche type kariye.",
+    changeLang: "Aap kis language mein baat karna chahenge?",
+  },
+};
+const copyFor = (lang: LangChoice | undefined) => ONBOARDING[lang ?? "en"];
+
+/** A typed question, or a stage pick turned into its chat message. */
+interface AskVars {
+  text?: string;
+  stage?: Stage;
+  replyId: string;
+}
+const askText = ({ text, stage }: Pick<AskVars, "text" | "stage">, lang: LangChoice | undefined) =>
+  stage ? copyFor(lang).stageMsg(stage) : (text ?? "");
 
 /**
  * v5 "01 · Welcome": the greeting asks for the language in the chat (every load, a separate card
  * with the chips); the language reply then asks for the stage (see chooseLang). No name step.
  */
-function openingMessages(p: Profile): ChatMessage[] {
+function openingMessages(): ChatMessage[] {
   return [
     {
       id: GREETING_ID,
       kind: "engineer",
       voiceMeta: "UltraTech Engineer",
-      lead: p.stage
-        ? `Namaste! I'm with you at the ${p.stage} stage.`
-        : "Namaste! I'm your UltraTech Home-Building Expert. Building a home is a big decision, and I'm with you at every step.",
+      // Same for new and returning users, as in the design; the saved stage shows as the ticked chip.
+      lead: "Namaste! I'm your UltraTech Home-Building Expert. Building a home is a big decision, and I'm with you at every step.",
       prompt: "Which language is easiest for you?",
     },
     { id: GREETING_LANG_ID, kind: "engineer", prompt: "Tap one — you can change it anytime.", options: "lang" },
   ];
 }
 
-const langQuestion = (): ChatMessage => ({
+const langQuestion = (lang: LangChoice | undefined): ChatMessage => ({
   id: uid(),
   kind: "engineer",
-  prompt: "Which language would you like to talk in?",
+  prompt: copyFor(lang).changeLang,
   options: "lang",
 });
 
@@ -82,7 +126,7 @@ function reducer(state: State, action: Action): State {
         ...state,
         hydrated: true,
         profile: action.profile,
-        messages: openingMessages(action.profile),
+        messages: openingMessages(),
         conversationId: newConversationId(),
       };
     case "screen":
@@ -93,6 +137,35 @@ function reducer(state: State, action: Action): State {
       return { ...state, screen: state.cameraReturn };
     case "profile":
       return { ...state, profile: { ...state.profile, ...action.patch } };
+    case "chooseLang": {
+      const copy = copyFor(action.lang);
+      // v5 "01 · Welcome": the language reply asks the stage (saved stage ticked) until it's chosen in
+      // this conversation (a "got it" reply, id prefix "stage") or the chat has real answers. So
+      // switching language before picking a stage re-asks it, a mid-chat change doesn't.
+      const askStage = !state.messages.some((m) => m.kind === "engineer" && (m.id.startsWith("stage-") || !!m.text));
+      const reply: ChatMessage = {
+        id: uid(),
+        kind: "engineer",
+        lead: copy.great,
+        prompt: askStage ? copy.stage : copy.askAnything,
+        options: askStage ? "stage" : undefined,
+      };
+      return {
+        ...state,
+        profile: { ...state.profile, lang: action.lang },
+        startedAt: state.startedAt ?? Date.now(),
+        messages: [...state.messages, { id: uid(), kind: "user", text: LANG_LABEL[action.lang] }, reply],
+      };
+    }
+    case "chooseStage":
+      return {
+        ...state,
+        profile: { ...state.profile, stage: action.stage },
+        messages: [
+          ...state.messages,
+          { id: action.replyId, kind: "engineer", text: "", voiceMeta: "UltraTech Engineer", streaming: true },
+        ],
+      };
     case "push":
       return {
         ...state,
@@ -133,14 +206,14 @@ function reducer(state: State, action: Action): State {
     case "askLang": {
       const last = state.messages.at(-1);
       if (last?.kind === "engineer" && last.options === "lang") return state;
-      return { ...state, messages: [...state.messages, langQuestion()] };
+      return { ...state, messages: [...state.messages, langQuestion(state.profile.lang)] };
     }
     case "reset":
       return {
         ...state,
         screen: "chat",
         pendingPhoto: null,
-        messages: openingMessages(state.profile),
+        messages: openingMessages(),
         conversationId: newConversationId(),
         startedAt: null,
         ended: false,
@@ -220,7 +293,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     screen: "chat",
     cameraReturn: "chat",
     profile: { uuid: "" },
-    messages: openingMessages({ uuid: "" }),
+    messages: openingMessages(),
     pendingPhoto: null,
     conversationId: "",
     startedAt: null,
@@ -269,10 +342,12 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const online = health.isPending ? undefined : health.isSuccess && health.data.ok;
 
   const ask = useMutation({
-    mutationFn: async ({ text, replyId }: { text: string; replyId: string }) => {
+    // `stage`: a stage pick, sent to the AI as a chat message ("My home is at the Foundation stage.", in the
+    // chosen language) so the backend keeps it in the conversation history for every later answer.
+    mutationFn: async ({ text, stage, replyId }: AskVars) => {
       const sessionId = await ensureSession();
       let reply = "";
-      for await (const ev of streamTurn(sessionId, text)) {
+      for await (const ev of streamTurn(sessionId, askText({ text, stage }, state.profile.lang))) {
         if (ev.type === "text") {
           reply += ev.delta;
           dispatch({ type: "patch", id: replyId, patch: { text: reply } });
@@ -288,7 +363,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
         }
       }
     },
-    onError: (err, { text, replyId }) => {
+    onError: (err, { text, stage, replyId }) => {
       console.warn("[ultratech] text turn failed:", err.message);
       sessionRef.current = null;
       dispatch({
@@ -298,7 +373,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
           streaming: false,
           error: true,
           text: "Sorry, I couldn't get an answer right now. Please try again in a moment.",
-          retryText: text,
+          retryText: askText({ text, stage }, state.profile.lang),
         },
       });
     },
@@ -332,43 +407,19 @@ export function AppProvider({ children }: { children: ReactNode }) {
     dispatch({ type: "screen", screen: "chat" });
   }, []);
 
-  const chooseLang = useCallback(
-    (lang: LangChoice) => {
-      const label = LANG_LABEL[lang];
-      dispatch({ type: "profile", patch: { lang } });
-      dispatch({
-        type: "push",
-        messages: [
-          { id: uid(), kind: "user", text: label },
-          {
-            id: uid(),
-            kind: "engineer",
-            lead: `Great, I'll talk with you in ${label}.`,
-            prompt: state.profile.stage
-              ? "Ask me anything — tap the mic or type below."
-              : STAGE_PROMPT,
-            options: state.profile.stage ? undefined : "stage",
-          },
-        ],
-      });
+  // Stable callbacks (the logic lives in the reducer): the memoized message rows get them as props,
+  // so a new identity on every pick would re-render every option bubble.
+  const chooseLang = useCallback((lang: LangChoice) => dispatch({ type: "chooseLang", lang }), []);
+  // Stage pick: tick the chip and send the stage to the AI as a message; its reply streams in below.
+  const { mutate: askMutate } = ask;
+  const chooseStage = useCallback(
+    (stage: Stage) => {
+      const replyId = uid("stage");
+      dispatch({ type: "chooseStage", stage, replyId });
+      askMutate({ stage, replyId });
     },
-    [state.profile.stage],
+    [askMutate],
   );
-
-  const chooseStage = useCallback((stage: Stage) => {
-    dispatch({ type: "profile", patch: { stage } });
-    dispatch({
-      type: "push",
-      messages: [
-        {
-          id: uid(),
-          kind: "engineer",
-          lead: `${stage} stage — got it.`,
-          prompt: "Ask me anything: tap the mic to talk, or type your question below.",
-        },
-      ],
-    });
-  }, []);
 
   const startVoice = useCallback(() => {
     dispatch({ type: "screen", screen: "voice" });
