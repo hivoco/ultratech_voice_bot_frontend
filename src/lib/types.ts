@@ -27,6 +27,10 @@ export type ChatMessage =
       prompt?: string;
       /** Body text of an answer (transcript style). */
       text?: string;
+      /** Short takeaways under a typed answer (the yellow key-points card). */
+      keyPoints?: string[];
+      /** Card title in the chat's language ("Key points" / "मुख्य बातें" / "Mukhya baatein"). */
+      keyPointsTitle?: string;
       /** "UltraTech Engineer · 0:42" meta row for spoken answers. */
       voiceMeta?: string;
       options?: OptionKind;
@@ -34,6 +38,8 @@ export type ChatMessage =
       error?: boolean;
       /** Question to resend from the error bubble's "Try again". */
       retryText?: string;
+      /** Photo to resend with it (a failed photo turn). */
+      retryPhoto?: string;
     }
   | { id: string; kind: "user"; text: string; photo?: string; photoLabel?: string }
   | { id: string; kind: "divider"; text: string }

@@ -2,6 +2,24 @@
 
 Newest first. Started 2026-11-09; earlier history is in `git log`.
 
+## 2026-11-13 — Backend integration: stage, language, key points, photos
+
+Wired to the backend's new APIs (`FRONTEND_INTEGRATION.md`, backend commits 2bb0960…6c4da6e):
+
+- **Stage on `/session`:** the Expert is stage-aware from the first answer. The stage pick is a
+  local, instant *Foundation stage — got it.* again (no paid AI call per pick).
+- **Typed chat on `/turn` with `lang`:** answers in the picked language's script (Roman Hinglish
+  works now) with key points; no TTS is generated. Replaces `/api/turn/stream` (removed).
+- **Key-points card:** yellow card under each answer, "•" lines (v5 04b).
+- **Photos on:** chat photos → `/api/turn/image`; call photos → `/api/voice/photo`, relayed to
+  the worker on `voice_photo` so the bot speaks the reply, with *Looking at your photo…* while
+  it's checked. `serious` photos add a site-engineer card (chat) or arrive as the worker's
+  `escalation` (call). *Try again* on a failed photo resends the photo.
+- Checked: mocked suites; paid end-to-end on the live backend — Hindi chat → Hinglish switch →
+  crack photo (card) → End chat → S3 PDF with 3 turns; English call → spoken question → crack
+  photo (spoken reply, card) → End chat → S3 PDF. Lint, types, build clean; Lighthouse mobile
+  90 / 100 / 100 / 100, desktop 100 × 4; React Scan unchanged (stage pick now cheaper).
+
 ## 2026-11-13 — Crash-proofing and small fixes
 
 - **Changed:** the composer is locked until both onboarding questions are answered in the

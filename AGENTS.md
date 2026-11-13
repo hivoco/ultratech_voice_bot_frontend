@@ -36,11 +36,10 @@ Start here. Each doc below covers **one** topic or use case; read only the ones 
 
 ## Known backend gaps (UI ready, backend TODO)
 
-- Stage not sent to the backend — [01](docs/01-onboarding.md#backend-gap)
-- Language not sent for typed chat, voice only — [01](docs/01-onboarding.md#backend-gap)
-- Tap-to-interrupt `control` topic — [02](docs/02-voice-call.md#tap-to-interrupt)
-- No photo / vision endpoint (camera shown disabled via `PHOTOS_ENABLED` until it exists) — [04](docs/04-photo-capture.md#backend-gap)
+- Stage not sent to voice calls (`/voice/token` has no `stage`) — [01](docs/01-onboarding.md#backend-gap)
 - `expert` data topic + site-visit booking — [05](docs/05-expert-and-video-cards.md)
+- Done on 2026-11-13: stage on `/session`, `lang` on `/turn`, photos (`/turn/image`, `/voice/photo`),
+  tap-to-interrupt `control` topic.
 
 ## Rules for changes
 

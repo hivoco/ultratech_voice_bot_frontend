@@ -2,12 +2,8 @@
 
 Users photograph a site problem; the photo joins the chat or the live call.
 
-> **Switched off since 2026-11-13.** `PHOTOS_ENABLED = false` in `src/lib/features.ts` keeps the
-> composer camera button and the call's *Send photo* button visible but faded (40 %) and disabled
-> (*Photos coming soon*), and hides the tap hint. A photo never reached the
-> backend (`/turn/stream` is text-only, the voice worker has no photo topic), so the engineer
-> answered without seeing it. All the code below is unchanged; set the switch to `true` once the
-> backend accepts images ([backend gap](#backend-gap)).
+> **On since 2026-11-13** (backend `/turn/image` and `/voice/photo`). `PHOTOS_ENABLED` in
+> `src/lib/features.ts` switches photos off again (buttons faded and disabled) if needed.
 
 Figma: **04a · Camera — Crack photo**, **04b · Voice transcript — Photo diagnosis**.
 
@@ -39,12 +35,20 @@ Photos are downscaled to max 1280 px JPEG (q 0.85) data URLs in the browser.
 | Chat composer | attached as a pending photo above the composer; sent with the next message as a yellow photo bubble (*1 photo* tag), like 04b |
 | Live voice call | added to the call timeline; appears in the transcript when the call ends |
 
-## Backend gap
+## Where the photo goes
 
-The backend has **no image / vision endpoint** today, so the photo is shown in the conversation
-but only the user's text goes to `/turn/stream`. To diagnose photos, add e.g.
-`POST /turn/photo` (multipart `session_id`, `text`, `file`) backed by a vision model, then send
-the data URL from `submitText` in `src/lib/store.tsx`. For voice calls, the photo could be sent
-over LiveKit (`room.localParticipant.sendFile` / byte stream) to the worker.
+**Chat:** `POST /api/turn/image {session_id, image_b64, caption, mime, lang}` (4 MB body cap, 10/min,
+60 s timeout) → `{text, key_points, serious, condition}`. The answer and key points show like a
+typed answer; `serious` adds the site-engineer card. *Try again* on a failed photo resends it.
+
+**Voice call:** the photo joins the call timeline, then `POST /api/voice/photo {image_b64, lang,
+stage, room}` (backend login required, 6/min) → `{reply, serious, condition, query}`. The browser
+relays that to the worker on the LiveKit data topic **`voice_photo`**, and the bot speaks the
+reply in the call. While it's being checked the voice screen shows *Looking at your photo…*. If
+`serious`, the worker sends an **`escalation`** message and the site-engineer card is added to the
+call transcript. Failures only log; the call goes on.
+
+Tested live 2026-11-13 with a wall-crack photo: chat (serious → card) and a call (reply spoken
+~25 s after the photo, card in the transcript).
 
 Code: `src/components/screens/CameraScreen.tsx`, `src/lib/store.tsx` (`capturePhoto`).

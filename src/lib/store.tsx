@@ -2,7 +2,7 @@
 
 import { createContext, use, useCallback, useEffect, useMemo, useReducer, useRef, type ReactNode } from "react";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { createSession, fetchHealth, streamTurn } from "./api";
+import { askImageTurn, askTurn, createSession, fetchHealth } from "./api";
 import { clock, longDuration, uid } from "./id";
 import { backendLang, LANG_LABEL, type ChatMessage, type LangChoice, type Profile, type Screen, type Stage } from "./types";
 import { turnText, useVoiceCall, type CallSummary, type VoiceCall } from "./useVoiceCall";
@@ -47,8 +47,8 @@ type Action =
   | { type: "askLang" }
   /** Language picked in the chat: saved, plus the user bubble and the reply (stage question or not). */
   | { type: "chooseLang"; lang: LangChoice }
-  /** Stage picked: saved, plus the engineer's (streaming) reply to the stage message sent to the AI. */
-  | { type: "chooseStage"; stage: Stage; replyId: string }
+  /** Stage picked: saved, plus the "got it" reply (the stage reaches the AI on `/session`). */
+  | { type: "chooseStage"; stage: Stage }
   | { type: "reset" };
 
 /**
@@ -58,41 +58,57 @@ type Action =
  */
 const ONBOARDING: Record<
   LangChoice,
-  { great: string; stage: string; stageMsg: (s: Stage) => string; askAnything: string; changeLang: string }
+  {
+    great: string;
+    stage: string;
+    gotStage: (s: Stage) => string;
+    askAnything: string;
+    changeLang: string;
+    keyPoints: string;
+    /** Site-engineer card after a photo the backend flags as serious. */
+    escalation: string;
+  }
 > = {
   en: {
     great: "Great, I'll talk with you in English.",
     stage: "Which stage is your home at right now?",
-    // A full sentence: the terse "Stage of my home: Foundation" got a Hindi reply (live test).
-    stageMsg: (s) => `My home is at the ${s} stage.`,
+    gotStage: (s) => `${s} stage — got it.`,
+    keyPoints: "Key points",
+    escalation: "A site engineer should check this",
     askAnything: "Ask me anything: tap the mic to talk, or type your question below.",
     changeLang: "Which language would you like to talk in?",
   },
   hi: {
     great: "बढ़िया, अब मैं आपसे हिंदी में बात करूँगा।",
     stage: "आपका घर अभी किस stage पर है?",
-    stageMsg: (s) => `मेरा घर अभी ${s} stage पर है।`,
+    gotStage: (s) => `ठीक है, ${s} stage.`,
+    keyPoints: "मुख्य बातें",
+    escalation: "इसे site engineer से check करवाएँ",
     askAnything: "कुछ भी पूछिए: बोलने के लिए mic दबाएँ, या नीचे लिखें।",
     changeLang: "आप किस भाषा में बात करना चाहेंगे?",
   },
   hinglish: {
     great: "Badhiya, ab main aapse Hinglish mein baat karunga.",
     stage: "Aapka ghar abhi kis stage par hai?",
-    stageMsg: (s) => `Mera ghar abhi ${s} stage par hai.`,
+    gotStage: (s) => `Theek hai, ${s} stage.`,
+    keyPoints: "Mukhya baatein",
+    escalation: "Ise site engineer se check karwayein",
     askAnything: "Kuch bhi poochiye: bolne ke liye mic dabaiye, ya neeche type kariye.",
     changeLang: "Aap kis language mein baat karna chahenge?",
   },
 };
 const copyFor = (lang: LangChoice | undefined) => ONBOARDING[lang ?? "en"] ?? ONBOARDING.en;
 
-/** A typed question, or a stage pick turned into its chat message. */
+/** Bubble text for a photo sent without a note (not sent to the AI as a caption). */
+const PHOTO_ONLY_TEXT = "I took a photo — can you take a look?";
+
+/** A chat turn: typed text, or a photo (data URL) with what the user typed as its caption. */
 interface AskVars {
-  text?: string;
-  stage?: Stage;
+  text: string;
   replyId: string;
+  photo?: string;
+  caption?: string;
 }
-const askText = ({ text, stage }: Pick<AskVars, "text" | "stage">, lang: LangChoice | undefined) =>
-  stage ? copyFor(lang).stageMsg(stage) : (text ?? "");
 
 /**
  * v5 "01 · Welcome": the greeting asks for the language in the chat (every load, a separate card
@@ -157,15 +173,17 @@ function reducer(state: State, action: Action): State {
         messages: [...state.messages, { id: uid(), kind: "user", text: LANG_LABEL[action.lang] }, reply],
       };
     }
-    case "chooseStage":
+    case "chooseStage": {
+      const copy = copyFor(state.profile.lang);
       return {
         ...state,
         profile: { ...state.profile, stage: action.stage },
         messages: [
           ...state.messages,
-          { id: action.replyId, kind: "engineer", text: "", voiceMeta: "UltraTech Engineer", streaming: true },
+          { id: uid("stage"), kind: "engineer", lead: copy.gotStage(action.stage), prompt: copy.askAnything },
         ],
       };
+    }
     case "push":
       return {
         ...state,
@@ -224,7 +242,7 @@ function reducer(state: State, action: Action): State {
 }
 
 /** Turn a finished call's timeline into chat transcript messages. */
-function summaryToMessages({ timeline, durationSec }: CallSummary): ChatMessage[] {
+function summaryToMessages({ timeline, durationSec }: CallSummary, lang: LangChoice | undefined): ChatMessage[] {
   const out: ChatMessage[] = [];
   for (const item of timeline) {
     if (item.type === "turn") {
@@ -243,6 +261,13 @@ function summaryToMessages({ timeline, durationSec }: CallSummary): ChatMessage[
       out.push({ id: uid(), kind: "user", text: item.caption, photo: item.photo, photoLabel: "1 photo" });
     } else if (item.type === "video") {
       out.push({ id: uid(), kind: "video", url: item.url, title: item.title });
+    } else if (item.type === "escalation") {
+      out.push({
+        id: uid("esc"),
+        kind: "expert",
+        name: copyFor(lang).escalation,
+        role: item.condition ? `Photo: ${item.condition}` : "From your photo",
+      });
     } else {
       out.push({ id: uid(), kind: "expert", name: item.name, role: item.role, callSlot: item.callSlot, phone: item.phone });
     }
@@ -267,7 +292,8 @@ interface AppContextValue {
   goTo: (screen: Screen) => void;
   openCamera: () => void;
   closeCamera: () => void;
-  submitText: (text: string) => void;
+  /** `retryPhoto`: resend a failed photo turn with its photo. */
+  submitText: (text: string, retryPhoto?: string) => void;
   /** Language picked on LanguageScreen (not shown since v5): saves it and opens the chat. */
   pickLanguage: (lang: LangChoice) => void;
   chooseLang: (lang: LangChoice) => void;
@@ -303,16 +329,18 @@ export function AppProvider({ children }: { children: ReactNode }) {
   });
   const voice = useVoiceCall(state.profile.uuid);
   // Text-chat session, created ahead of the first question (see warmSession) to save a round trip.
+  // It carries the picked stage, so the AI is stage-aware from turn 1 (`/session {stage}`). The
+  // composer only unlocks after the stage is picked, so the session never starts without it.
   const sessionRef = useRef<Promise<string> | null>(null);
   const ensureSession = useCallback(() => {
-    sessionRef.current ??= createSession(state.profile.uuid)
+    sessionRef.current ??= createSession(state.profile.uuid, state.profile.stage)
       .then((r) => r.session_id)
       .catch((e: unknown) => {
         sessionRef.current = null;
         throw e;
       });
     return sessionRef.current;
-  }, [state.profile.uuid]);
+  }, [state.profile.uuid, state.profile.stage]);
 
   // Load (or create) the stable per-device profile; the uuid doubles as the LiveKit identity.
   useEffect(() => {
@@ -347,28 +375,43 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const online = health.isPending ? undefined : health.isSuccess && health.data.ok;
 
   const ask = useMutation({
-    // `stage`: a stage pick, sent to the AI as a chat message ("My home is at the Foundation stage.", in the
-    // chosen language) so the backend keeps it in the conversation history for every later answer.
-    mutationFn: async ({ text, stage, replyId }: AskVars) => {
+    // Typing dots show until the whole answer arrives (~1–3 s), in the picked language's script.
+    // With a photo: `/turn/image` (caption = what the user typed, if anything).
+    mutationFn: async ({ text, replyId, photo, caption }: AskVars) => {
       const sessionId = await ensureSession();
-      let reply = "";
-      for await (const ev of streamTurn(sessionId, askText({ text, stage }, state.profile.lang))) {
-        if (ev.type === "text") {
-          reply += typeof ev.delta === "string" ? ev.delta : "";
-          dispatch({ type: "patch", id: replyId, patch: { text: reply } });
-        } else if (ev.type === "audio" || ev.type === "done") {
-          // Text is complete once audio synthesis starts; no need to wait for it.
-          const final = ev.type === "done" && typeof ev.text === "string" && ev.text ? ev.text : reply;
-          // An empty answer gets the error bubble (with Try again), never a blank one.
-          if (!final.trim()) throw new Error("Empty answer");
-          dispatch({ type: "patch", id: replyId, patch: { text: final, streaming: false } });
-          if (ev.type === "audio") return;
-        } else if (ev.type === "error") {
-          throw new Error(ev.detail);
-        }
+      const res = photo
+        ? await askImageTurn(sessionId, photo, caption ?? "", state.profile.lang)
+        : await askTurn(sessionId, text, state.profile.lang);
+      const answer = typeof res.text === "string" ? res.text : "";
+      // An empty answer gets the error bubble (with Try again), never a blank one.
+      if (!answer.trim()) throw new Error("Empty answer");
+      dispatch({
+        type: "patch",
+        id: replyId,
+        patch: {
+          text: answer,
+          streaming: false,
+          keyPoints: Array.isArray(res.key_points) && res.key_points.length ? res.key_points : undefined,
+          keyPointsTitle: copyFor(state.profile.lang).keyPoints,
+        },
+      });
+      // A photo the backend flags as serious gets the site-engineer card under the answer.
+      if (photo && res.serious) {
+        const condition = "condition" in res && typeof res.condition === "string" ? res.condition : "";
+        dispatch({
+          type: "push",
+          messages: [
+            {
+              id: uid("esc"),
+              kind: "expert",
+              name: copyFor(state.profile.lang).escalation,
+              role: condition ? `Photo: ${condition}` : "From your photo",
+            },
+          ],
+        });
       }
     },
-    onError: (err, { text, stage, replyId }) => {
+    onError: (err, { text, replyId, photo }) => {
       console.warn("[ultratech] text turn failed:", err.message);
       sessionRef.current = null;
       dispatch({
@@ -378,20 +421,21 @@ export function AppProvider({ children }: { children: ReactNode }) {
           streaming: false,
           error: true,
           text: "Sorry, I couldn't get an answer right now. Please try again in a moment.",
-          retryText: askText({ text, stage }, state.profile.lang),
+          retryText: text,
+          retryPhoto: photo,
         },
       });
     },
   });
 
   const submitText = useCallback(
-    (raw: string) => {
+    (raw: string, retryPhoto?: string) => {
       const text = raw.trim();
-      const photo = state.pendingPhoto;
+      const photo = retryPhoto ?? state.pendingPhoto;
       if (state.ended || (!text && !photo)) return;
 
       const replyId = uid();
-      const question = text || "I took a photo — can you take a look?";
+      const question = text || PHOTO_ONLY_TEXT;
       dispatch({ type: "pendingPhoto", photo: null });
       dispatch({
         type: "push",
@@ -402,7 +446,9 @@ export function AppProvider({ children }: { children: ReactNode }) {
           { id: replyId, kind: "engineer", text: "", voiceMeta: "UltraTech Engineer", streaming: true },
         ],
       });
-      ask.mutate({ text: question, replyId });
+      // The caption is only what the user typed (a retry of a photo-only turn resends the stand-in text).
+      const caption = text === PHOTO_ONLY_TEXT ? "" : text;
+      ask.mutate(photo ? { text: question, replyId, photo, caption } : { text: question, replyId });
     },
     [ask, state.ended, state.pendingPhoto],
   );
@@ -415,16 +461,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   // Stable callbacks (the logic lives in the reducer): the memoized message rows get them as props,
   // so a new identity on every pick would re-render every option bubble.
   const chooseLang = useCallback((lang: LangChoice) => dispatch({ type: "chooseLang", lang }), []);
-  // Stage pick: tick the chip and send the stage to the AI as a message; its reply streams in below.
-  const { mutate: askMutate } = ask;
-  const chooseStage = useCallback(
-    (stage: Stage) => {
-      const replyId = uid("stage");
-      dispatch({ type: "chooseStage", stage, replyId });
-      askMutate({ stage, replyId });
-    },
-    [askMutate],
-  );
+  const chooseStage = useCallback((stage: Stage) => dispatch({ type: "chooseStage", stage }), []);
 
   const startVoice = useCallback(() => {
     dispatch({ type: "screen", screen: "voice" });
@@ -434,10 +471,10 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const endVoice = useCallback(
     async (next: Screen = "chat", opts?: { summary?: boolean }) => {
       const call = await voice.end();
-      dispatch({ type: "callEnded", messages: summaryToMessages(call), summary: !!opts?.summary, at: Date.now() });
+      dispatch({ type: "callEnded", messages: summaryToMessages(call, state.profile.lang), summary: !!opts?.summary, at: Date.now() });
       dispatch({ type: "screen", screen: next });
     },
-    [voice],
+    [voice, state.profile.lang],
   );
 
   // Stable identities: the composer's action chips shouldn't re-render on every streamed chunk.
@@ -455,13 +492,16 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const capturePhoto = useCallback(
     (photo: string) => {
       if (state.cameraReturn === "voice" && voice.status === "live") {
-        voice.addPhoto(photo, "I took a photo of the problem.");
+        voice.addPhoto(photo, "I took a photo of the problem.", {
+          lang: backendLang(state.profile.lang),
+          stage: state.profile.stage,
+        });
       } else {
         dispatch({ type: "pendingPhoto", photo });
       }
       dispatch({ type: "closeCamera" });
     },
-    [state.cameraReturn, voice],
+    [state.cameraReturn, voice, state.profile.lang, state.profile.stage],
   );
 
   const value = useMemo<AppContextValue>(

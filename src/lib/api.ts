@@ -10,12 +10,12 @@ export interface Health {
   ok: boolean;
 }
 
-export type StreamEvent =
-  | { type: "meta"; transcript: string; mode: string }
-  | { type: "text"; delta: string }
-  | { type: "audio" | "full_audio"; idx?: number }
-  | { type: "done"; text: string }
-  | { type: "error"; detail: string };
+/** A typed answer: the reply text (already in the picked language's script) and its key points. */
+export interface TurnReply {
+  text: string;
+  key_points: string[];
+  serious: boolean;
+}
 
 async function errorDetail(res: Response): Promise<string> {
   try {
@@ -39,8 +39,9 @@ async function postJson<T>(path: string, body: unknown): Promise<T> {
 export const fetchVoiceToken = (user_uuid: string, lang: "en" | "hi") =>
   postJson<VoiceToken>("/api/voice/token", { user_uuid, lang });
 
-export const createSession = (user_uuid: string) =>
-  postJson<{ session_id: string }>("/api/session", { user_uuid });
+/** `stage` makes the AI stage-aware from the first turn (backend `set_profile`). */
+export const createSession = (user_uuid: string, stage?: string) =>
+  postJson<{ session_id: string }>("/api/session", stage ? { user_uuid, stage } : { user_uuid });
 
 export async function fetchHealth(): Promise<Health> {
   const res = await fetch("/api/health");
@@ -48,38 +49,34 @@ export async function fetchHealth(): Promise<Health> {
   return (await res.json()) as Health;
 }
 
-/** POST a typed question and yield NDJSON events as the reply streams in. */
-export async function* streamTurn(session_id: string, text: string): AsyncGenerator<StreamEvent> {
-  const res = await fetch("/api/turn/stream", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ session_id, text }),
-  });
-  if (!res.ok || !res.body) throw new Error(await errorDetail(res));
-
-  const reader = res.body.getReader();
-  const decoder = new TextDecoder();
-  let buffer = "";
-  for (;;) {
-    const { value, done } = await reader.read();
-    if (done) break;
-    buffer += decoder.decode(value, { stream: true });
-    let nl: number;
-    while ((nl = buffer.indexOf("\n")) >= 0) {
-      const line = buffer.slice(0, nl).trim();
-      buffer = buffer.slice(nl + 1);
-      if (!line) continue;
-      // A malformed line is skipped, not fatal: the rest of the answer still arrives.
-      let ev: unknown;
-      try {
-        ev = JSON.parse(line);
-      } catch {
-        continue;
-      }
-      if (ev && typeof ev === "object" && typeof (ev as { type?: unknown }).type === "string") yield ev as StreamEvent;
-    }
-  }
+/** A photo answer: like a typed one, plus `serious` (show the site-engineer card) and the condition. */
+export interface ImageReply extends TurnReply {
+  condition: string;
 }
+
+/** POST a chat photo (data URL from the camera) with an optional caption. */
+export function askImageTurn(session_id: string, photo: string, caption: string, lang?: string) {
+  const [head, data = ""] = photo.split(",", 2);
+  const mime = head.includes("image/png") ? "image/png" : "image/jpeg";
+  return postJson<ImageReply>("/api/turn/image", { session_id, image_b64: data, caption, mime, ...(lang ? { lang } : {}) });
+}
+
+/** The backend's spoken reply to a photo taken during a call (relayed to the worker on "voice_photo"). */
+export interface VoicePhotoReply {
+  reply: string;
+  serious: boolean;
+  condition: string;
+  query: string;
+}
+
+export function sendVoicePhoto(photo: string, opts: { caption: string; lang: "en" | "hi"; stage?: string; room?: string }) {
+  const data = photo.split(",", 2)[1] ?? "";
+  return postJson<VoicePhotoReply>("/api/voice/photo", { image_b64: data, ...opts });
+}
+
+/** POST a typed question. `lang` ("en" | "hi" | "hinglish") picks the reply's language and script. */
+export const askTurn = (session_id: string, text: string, lang?: string) =>
+  postJson<TurnReply>("/api/turn", lang ? { session_id, text, lang } : { session_id, text });
 
 export interface TranscriptTurn {
   caller: string;

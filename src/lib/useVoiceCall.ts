@@ -4,7 +4,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { useMutation } from "@tanstack/react-query";
 // Types only: the livekit-client runtime (~200 KB) is loaded on demand when a call starts.
 import type { Participant, RemoteAudioTrack, RemoteTrack, Room, TranscriptionSegment } from "livekit-client";
-import { fetchVoiceToken } from "./api";
+import { fetchVoiceToken, sendVoicePhoto } from "./api";
 import { uid } from "./id";
 import type { ExpertContact } from "./types";
 
@@ -31,6 +31,8 @@ export type TimelineItem =
   | VoiceTurn
   | { type: "video"; id: string; url: string; title: string }
   | { type: "photo"; id: string; photo: string; caption: string }
+  /** The worker flagged a call photo as serious: show the site-engineer card. */
+  | { type: "escalation"; id: string; condition: string }
   | ({ type: "expert"; id: string } & ExpertContact);
 
 export interface CallSummary {
@@ -138,6 +140,8 @@ export function useVoiceCall(userUuid: string) {
   const [agentState, setAgentState] = useState<AgentState | null>(null);
   const [agentSpeaking, setAgentSpeaking] = useState(false);
   const [micEnabled, setMicEnabled] = useState(true);
+  /** A call photo is being checked (upload + classify + reply), ~10–20 s. */
+  const [photoPending, setPhotoPending] = useState(false);
   const [interrupted, setInterrupted] = useState(false);
   // Source of truth for event handlers and end(); kept in sync synchronously so a segment that
   // lands right before end() is never lost to a pending state update.
@@ -222,9 +226,15 @@ export function useVoiceCall(userUuid: string) {
         })
         .on(RoomEvent.DataReceived, (payload: Uint8Array, sender?: Participant, _k?: unknown, topic?: string) => {
           // Cards may only come from the agent worker, never from another participant.
-          if ((topic !== "video" && topic !== "expert") || !sender?.isAgent) return;
+          if ((topic !== "video" && topic !== "expert" && topic !== "escalation") || !sender?.isAgent) return;
           try {
-            const item = parseCard(topic, JSON.parse(new TextDecoder().decode(payload)));
+            const data = JSON.parse(new TextDecoder().decode(payload)) as Record<string, unknown>;
+            if (topic === "escalation") {
+              const condition = typeof data.condition === "string" ? data.condition.slice(0, 60) : "";
+              updateTimeline((prev) => [...prev, { type: "escalation", id: uid("x"), condition }]);
+              return;
+            }
+            const item = parseCard(topic, data);
             if (item) updateTimeline((prev) => [...prev, item]);
           } catch {
             /* ignore malformed data messages */
@@ -306,9 +316,26 @@ export function useVoiceCall(userUuid: string) {
     room.localParticipant.publishData(payload, { reliable: true, topic: "control" }).catch(() => {});
   }, []);
 
+  /**
+   * A photo taken during the call: shown in the transcript, sent to `/api/voice/photo`, and the
+   * returned reply relayed to the worker on the "voice_photo" topic so the bot speaks it (the
+   * worker then sends an "escalation" card if it's serious). Failures only log: the call goes on.
+   */
   const addPhoto = useCallback(
-    (photo: string, caption: string) => {
+    (photo: string, caption: string, opts: { lang: "en" | "hi"; stage?: string }) => {
       updateTimeline((prev) => [...prev, { type: "photo", id: uid("p"), photo, caption }]);
+      const room = roomRef.current;
+      setPhotoPending(true);
+      void sendVoicePhoto(photo, { caption: "", lang: opts.lang, stage: opts.stage, room: room?.name })
+        .then((res) => {
+          if (!res.reply || roomRef.current !== room || !room) return;
+          const payload = new TextEncoder().encode(
+            JSON.stringify({ reply: res.reply, serious: res.serious, condition: res.condition, query: res.query }),
+          );
+          return room.localParticipant.publishData(payload, { reliable: true, topic: "voice_photo" });
+        })
+        .catch((e: unknown) => console.warn("[ultratech] voice photo failed:", e instanceof Error ? e.message : e))
+        .finally(() => setPhotoPending(false));
     },
     [updateTimeline],
   );
@@ -346,6 +373,7 @@ export function useVoiceCall(userUuid: string) {
     errorKind,
     errorDetail,
     micEnabled,
+    photoPending,
     timeline,
     lastTurn,
     lastUserTurn,

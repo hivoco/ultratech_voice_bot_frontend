@@ -85,6 +85,8 @@ export function VoiceScreen() {
 
   let hint = "";
   if (phase === "thinking") hint = slow ? "Taking longer than usual… try asking again." : "Thinking about your question…";
+  // Between sending a call photo and the engineer starting to speak about it.
+  else if (phase === "listening" && status === "live" && voice.photoPending) hint = "Looking at your photo…";
   // v5 "Orb · Listening": the caption under the orb while the mic is open.
   else if (phase === "listening" && status === "live" && voice.micEnabled) hint = "Listening… speak naturally";
   else if (phase === "speaking") hint = "Tap the orb if you want to interrupt";

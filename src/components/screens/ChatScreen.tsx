@@ -7,7 +7,7 @@ import { LANG_LABEL, STAGES, type ChatMessage, type LangChoice, type Stage } fro
 import { Header, HeaderMenu, type MenuItem } from "../ui/Header";
 import { Chip } from "../ui/Chip";
 import { Icon } from "../ui/Icon";
-import { DurationChip, EngineerBubble, ExpertCard, SummaryCard, UserBubble, VideoCard } from "../chat/Bubbles";
+import { DurationChip, EngineerBubble, ExpertCard, KeyPoints, SummaryCard, UserBubble, VideoCard } from "../chat/Bubbles";
 import { Composer } from "../chat/Composer";
 
 const LANG_OPTIONS: LangChoice[] = ["en", "hi", "hinglish"];
@@ -149,60 +149,64 @@ interface MessageRowProps {
   sending: boolean;
   onLang: (lang: LangChoice) => void;
   onStage: (stage: Stage) => void;
-  onRetry?: (text: string) => void;
+  onRetry?: (text: string, photo?: string) => void;
 }
 
 const MessageRow = memo(function MessageRow({ m, optionsActive, selected, sending, onLang, onStage, onRetry }: MessageRowProps) {
   switch (m.kind) {
     case "engineer":
       return (
-        <EngineerBubble
-          animateIn={m.id !== GREETING_ID && m.id !== GREETING_LANG_ID}
-          lead={m.lead}
-          prompt={m.prompt}
-          text={m.text}
-          voiceMeta={m.voiceMeta}
-          streaming={m.streaming}
-        >
-          {m.options === "lang" && (
-            <div className="flex w-full flex-wrap gap-2" role="group" aria-label="Language">
-              {LANG_OPTIONS.map((opt) => (
-                <Chip
-                  key={opt}
-                  label={LANG_LABEL[opt]}
-                  lang={opt === "hi" ? "hi" : undefined}
-                  selected={selected === opt}
-                  disabled={!optionsActive}
-                  onClick={() => onLang(opt)}
-                />
-              ))}
-            </div>
-          )}
-          {m.options === "stage" && (
-            <div className="flex w-full flex-wrap gap-2" role="group" aria-label="Home stage">
-              {STAGES.map((stage) => (
-                <Chip
-                  key={stage}
-                  label={stage}
-                  selected={selected === stage}
-                  disabled={!optionsActive}
-                  onClick={() => onStage(stage)}
-                />
-              ))}
-            </div>
-          )}
-          {m.error && m.retryText && onRetry && (
-            <button
-              type="button"
-              onClick={() => onRetry(m.retryText!)}
-              disabled={sending}
-              className="flex items-center gap-1.5 rounded-full bg-brand px-3.5 py-2 text-[13px] font-[590] text-ink transition-[background-color,transform] enabled:hover:bg-brand-hover active:scale-95 disabled:opacity-50"
-            >
-              <Icon src="/icons/retry.svg" size={16} />
-              Try again
-            </button>
-          )}
-        </EngineerBubble>
+        <>
+          <EngineerBubble
+            animateIn={m.id !== GREETING_ID && m.id !== GREETING_LANG_ID}
+            lead={m.lead}
+            prompt={m.prompt}
+            text={m.text}
+            voiceMeta={m.voiceMeta}
+            streaming={m.streaming}
+          >
+            {m.options === "lang" && (
+              <div className="flex w-full flex-wrap gap-2" role="group" aria-label="Language">
+                {LANG_OPTIONS.map((opt) => (
+                  <Chip
+                    key={opt}
+                    label={LANG_LABEL[opt]}
+                    lang={opt === "hi" ? "hi" : undefined}
+                    selected={selected === opt}
+                    disabled={!optionsActive}
+                    onClick={() => onLang(opt)}
+                  />
+                ))}
+              </div>
+            )}
+            {m.options === "stage" && (
+              <div className="flex w-full flex-wrap gap-2" role="group" aria-label="Home stage">
+                {STAGES.map((stage) => (
+                  <Chip
+                    key={stage}
+                    label={stage}
+                    selected={selected === stage}
+                    disabled={!optionsActive}
+                    onClick={() => onStage(stage)}
+                  />
+                ))}
+              </div>
+            )}
+            {m.error && m.retryText && onRetry && (
+              <button
+                type="button"
+                onClick={() => onRetry(m.retryText!, m.retryPhoto)}
+                disabled={sending}
+                className="flex items-center gap-1.5 rounded-full bg-brand px-3.5 py-2 text-[13px] font-[590] text-ink transition-[background-color,transform] enabled:hover:bg-brand-hover active:scale-95 disabled:opacity-50"
+              >
+                <Icon src="/icons/retry.svg" size={16} />
+                Try again
+              </button>
+            )}
+          </EngineerBubble>
+          {/* v5 04b: key points sit in their own yellow card under the answer. */}
+          {!m.error && m.keyPoints && m.keyPoints.length > 0 && <KeyPoints title={m.keyPointsTitle} items={m.keyPoints} />}
+        </>
       );
     case "user":
       return <UserBubble text={m.text} photo={m.photo} photoLabel={m.photoLabel} />;

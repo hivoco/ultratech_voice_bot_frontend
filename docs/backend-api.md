@@ -18,8 +18,10 @@ turn 30. Inputs are validated: `user_uuid` `^[A-Za-z0-9-]{8,64}$`, `session_id` 
 | This app | Backend | Body → response |
 |---|---|---|
 | `POST /api/voice/token` | `POST /voice/token` | `{user_uuid, lang:"en"\|"hi"}` → `{url, token, room}` |
-| `POST /api/session` | `POST /session` | `{user_uuid}` → `{session_id}` |
-| `POST /api/turn/stream` | `POST /turn/stream` | `{session_id, text}` → NDJSON stream (also carries the stage pick as a message, see [01](01-onboarding.md#backend-gap)) |
+| `POST /api/session` | `POST /session` | `{user_uuid, stage?}` → `{session_id}` (stage = one of the 6 picker values) |
+| `POST /api/turn` | `POST /turn` | `{session_id, text, lang?}` → `{text, key_points, serious}` (`want_audio:false`; only these fields are relayed). 30/min, 45 s timeout |
+| `POST /api/turn/image` | `POST /turn/image` | `{session_id, image_b64, caption?, mime?, lang?}` → `{text, key_points, serious, condition}`. 10/min, 4 MB body, 60 s timeout |
+| `POST /api/voice/photo` | `POST /voice/photo` (login) | `{image_b64, caption?, stage?, lang:"en"\|"hi", room?}` → `{reply, serious, condition, query}`. 6/min, 4 MB body |
 | `POST /api/session/summary` | `POST /session/summary` | `{room, lang, transcript:[{caller, bot}]}` → `{summary, lang, turns, pdf_url}` (`pdf_url` = backend `s3_link` if https, else null). Limit 5/min, 512 KB body, ≤120 turns × 4000 chars, 60 s timeout |
 | `GET /api/health` | `GET /health` | → `{ok}` (other backend fields are dropped) |
 
@@ -49,8 +51,7 @@ With the backend running without its `.env`:
 
 - `/api/health` → 200 (at the time the proxy also relayed `kb_entries: 100` and `missing_keys: [OPENAI, GEMINI, GROQ, FISH]`; call the backend's `/health` directly to see these now)
 - `/api/session` → 200 with a `session_id`
-- `/api/turn/stream` → streams, then `{"type":"error"}` (router/LLM key missing) — the UI shows
-  the friendly error bubble
+- `/api/turn` → error (router/LLM key missing) — the UI shows the friendly error bubble
 - `/api/voice/token` → 500 *LiveKit not configured* — the UI shows *Couldn't connect* + Try again
 
 Everything works once the backend `.env` has the provider and LiveKit keys.

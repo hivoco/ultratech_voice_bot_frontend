@@ -1,19 +1,27 @@
 # 03 · Text chat + call transcript
 
-Users type a question and watch the answer stream in; a finished voice call lands here as a transcript.
+Users type a question (or send a photo) and get the answer with its key points; a finished voice call lands here as a transcript.
 
 Figma: **03b · Voice transcript — Direct answer** (also the layout for [04b](04-photo-capture.md) and [05b](05-expert-and-video-cards.md)).
 
 ## Typed questions
 
-1. First question creates a backend session: `POST /api/session {user_uuid}` → `session_id`
-   (kept in memory; reset on error or *Start a new chat*).
-2. `POST /api/turn/stream {session_id, text}` returns NDJSON (newline-delimited JSON, one event per line):
-   `meta` → many `text {delta}` → `audio …` → `done {text}` (or `error {detail}`).
-3. The user bubble is added immediately; an engineer bubble shows typing dots, then the
-   streamed text with a yellow caret. The reply is marked complete at the first `audio` event
-   (TTS of a text-only chat isn't needed) or at `done`.
-4. Errors show *"Sorry, I couldn't get an answer right now…"*; the raw detail goes to the console.
+1. First question creates a backend session: `POST /api/session {user_uuid, stage}` → `session_id`
+   (kept in memory; reset on error or *Start a new chat*). The stage makes the Expert
+   stage-aware from turn 1; the composer only unlocks once a stage is picked.
+2. `POST /api/turn {session_id, text, lang}` (`lang` = `en` | `hi` | `hinglish`) →
+   `{text, key_points, serious}`. Not the stream on purpose: `/turn` returns the reply in the
+   right script (Roman for Hinglish; the stream sends Devanagari deltas first) plus the key
+   points, and `want_audio: false` skips TTS (the stream always synthesizes it). ~1–3 s.
+3. The user bubble is added immediately; the engineer bubble shows typing dots until the answer
+   arrives. The key points go in their own yellow card under the answer (v5 04b, "•" lines).
+4. Errors (or an empty answer) show *"Sorry, I couldn't get an answer right now…"* with *Try
+   again*; the raw detail goes to the console.
+
+**Photos:** a pending photo goes with the next send to `POST /api/turn/image {session_id,
+image_b64, caption, mime, lang}` → `{text, key_points, serious, condition}`. The caption is only
+what the user typed. If `serious`, a site-engineer card follows (*A site engineer should check
+this* · *Photo: cracks*). See [04](04-photo-capture.md).
 
 The composer's mic button turns into a yellow **send** arrow while there is text or a pending
 photo. Enter sends.

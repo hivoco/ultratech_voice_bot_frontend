@@ -63,6 +63,29 @@ export function EngineerBubble({
   );
 }
 
+/**
+ * v5 key-points card (frame 04b): its own yellow "tip" card under the answer, one "•" line per
+ * point, no visible title (the localized title is the list's accessible name).
+ */
+export function KeyPoints({ title, items }: { title?: string; items: string[] }) {
+  return (
+    <motion.div
+      {...enter}
+      lang={textLang(...items)}
+      className="w-[340px] max-w-[94%] rounded-[18px] border border-tip-line bg-tip px-4 py-3"
+    >
+      <ul aria-label={title ?? "Key points"} className="flex flex-col gap-1">
+        {items.map((k, i) => (
+          <li key={i} className="flex gap-2 text-[15px] leading-[21px] text-ink">
+            <span aria-hidden>•</span>
+            <span className="min-w-0 break-words">{plainText(k)}</span>
+          </li>
+        ))}
+      </ul>
+    </motion.div>
+  );
+}
+
 function TypingDots() {
   return (
     <span className="flex h-[22px] items-center gap-1.5" role="status">

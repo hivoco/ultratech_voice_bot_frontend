@@ -1,0 +1,51 @@
+import { backendFetch } from "@/lib/backend";
+import { guardPost, MAX_TEXT_CHARS, SESSION_ID_RE } from "@/lib/guard";
+
+// POST /api/turn  {session_id, text, lang?} -> {text, key_points, serious}
+// Typed chat. Non-streaming on purpose: `/turn` returns the reply in the right script for the
+// picked language (Roman for Hinglish; the stream sends Devanagari deltas first) plus the key
+// points, and with `want_audio: false` the backend skips TTS (the stream always synthesizes it).
+const LANGS = new Set(["en", "hi", "hinglish"]);
+const TIMEOUT_MS = 45_000;
+
+export async function POST(request: Request) {
+  const body = await guardPost(request, "turn", 30);
+  if (body instanceof Response) return body;
+  const { session_id, text, lang } = body;
+  if (typeof session_id !== "string" || !SESSION_ID_RE.test(session_id)) {
+    return Response.json({ detail: "Invalid session_id" }, { status: 400 });
+  }
+  if (typeof text !== "string" || !text.trim() || text.length > MAX_TEXT_CHARS) {
+    return Response.json({ detail: `text must be 1–${MAX_TEXT_CHARS} characters` }, { status: 400 });
+  }
+  try {
+    const upstream = await backendFetch("/turn", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        session_id,
+        text,
+        want_audio: false,
+        ...(typeof lang === "string" && LANGS.has(lang) ? { lang } : {}),
+      }),
+      signal: AbortSignal.timeout(TIMEOUT_MS),
+    });
+    const raw = await upstream.text();
+    if (!upstream.ok) {
+      if (upstream.status >= 500) console.error(`[backend] /turn returned ${upstream.status}: ${raw.slice(0, 500)}`);
+      return Response.json({ detail: "Couldn't get an answer" }, { status: upstream.status === 404 ? 404 : 502 });
+    }
+    const data = JSON.parse(raw) as Record<string, unknown>;
+    // Only what the chat shows; kb_items, timings and the rest stay server-side.
+    const keyPoints = Array.isArray(data.key_points)
+      ? data.key_points.filter((k): k is string => typeof k === "string" && !!k.trim()).slice(0, 6).map((k) => k.slice(0, 200))
+      : [];
+    return Response.json({
+      text: typeof data.text === "string" ? data.text : "",
+      key_points: keyPoints,
+      serious: data.serious === true,
+    });
+  } catch {
+    return Response.json({ detail: "Backend unreachable" }, { status: 502 });
+  }
+}

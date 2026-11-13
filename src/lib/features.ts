@@ -8,8 +8,8 @@
  * for a photo). When off, both buttons show at 40% opacity and can't be tapped ("Photos coming
  * soon"), and the tap hint is hidden.
  *
- * Off until the backend can receive images: today a photo never leaves the browser (`/turn/stream`
- * takes text only and the voice worker has no photo topic), so the engineer would answer without
- * seeing it. Turn on once the backend has an image input. See docs/04-photo-capture.md.
+ * On since 2026-11-13: chat photos go to `/turn/image`, call photos to `/voice/photo` and are
+ * relayed to the worker on the "voice_photo" topic. Set to false to switch photos off again
+ * (e.g. if the backend's image input is down). See docs/04-photo-capture.md.
  */
-export const PHOTOS_ENABLED = false;
+export const PHOTOS_ENABLED = true;

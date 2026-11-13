@@ -12,9 +12,8 @@ Figma: **01 · Welcome — Name & language** (v5 section `193:7231`, `docs/desig
 2. Option card: **Tap one — you can change it anytime.** with `English · हिंदी · Hinglish`.
 3. User bubble with the language → *"Great, I'll talk with you in {lang}."* + **Which stage is your
    home at right now?** with chips `Plot · Plan · Foundation · Structure · Plaster · Finishing`.
-4. Stage chosen → the chip is ticked and the stage goes to the AI as a chat message (*My home is at
-   the Foundation stage.*, in the chosen language; no user bubble). The engineer's real answer streams in
-   below, and the backend keeps the stage in the session history for every later answer.
+4. Stage chosen → the chip is ticked and the engineer replies *Foundation stage — got it.* (local,
+   no AI call). The stage is sent when the session is created, with the first question.
 
 This runs on every page load and on *Start a new chat*. **The composer is locked until both are
 picked:** the text box, mic and *Talk by voice* (chip and menu) are disabled and the text box is faded
@@ -71,7 +70,9 @@ The engineer's onboarding lines follow the picked language (`ONBOARDING` in `src
 |---|---|---|---|
 | Language reply | Great, I'll talk with you in English. | बढ़िया, अब मैं आपसे हिंदी में बात करूँगा। | Badhiya, ab main aapse Hinglish mein baat karunga. |
 | Stage question | Which stage is your home at right now? | आपका घर अभी किस stage पर है? | Aapka ghar abhi kis stage par hai? |
-| Stage message sent to the AI | My home is at the Foundation stage. | मेरा घर अभी Foundation stage पर है। | Mera ghar abhi Foundation stage par hai. |
+| Stage reply | Foundation stage — got it. | ठीक है, Foundation stage. | Theek hai, Foundation stage. |
+| Key points (screen-reader label) | Key points | मुख्य बातें | Mukhya baatein |
+| Photo escalation card | A site engineer should check this | इसे site engineer से check करवाएँ | Ise site engineer se check karwayein |
 | Ask anything | Ask me anything: tap the mic to talk, or type your question below. | कुछ भी पूछिए: बोलने के लिए mic दबाएँ, या नीचे लिखें। | Kuch bhi poochiye: bolne ke liye mic dabaiye, ya neeche type kariye. |
 | Change language | Which language would you like to talk in? | आप किस भाषा में बात करना चाहेंगे? | Aap kis language mein baat karna chahenge? |
 
@@ -81,19 +82,13 @@ app's own buttons and hints (End chat, Talk by voice, placeholders).
 
 ## Backend gap
 
-**Text chat:** the stage reaches the AI as a chat message (step 4), so it's in the session history
-with no backend change. Each stage pick is one paid AI answer. If it fails, the error bubble's *Try
-again* resends it.
+**Text chat (since 2026-11-13):** the stage goes on `/session {stage}` and the language on every
+`/turn {lang}` (`en` | `hi` | `hinglish`, Roman script for Hinglish). The stage pick itself is a
+free, instant local reply (*Foundation stage — got it.*); no AI call.
 
 **Voice calls don't get the stage:** a call is a separate LiveKit session and `/voice/token` takes
 only `user_uuid` + `lang`. To fix, accept `stage` on `/voice/token`, put it in the participant
-metadata and read it in `agent/worker.py`. A cleaner text-chat version would also be a `stage`
-field on `/session` calling the existing `set_profile(session_id, stage=…)` (`core/memory/context.py`,
-used by `brain.build_context` as "Construction stage: …").
-
-**The language reaches voice calls only.** Typed chat sends no language: `/session` has no `lang`
-field and `/api/turn/stream` sends only `session_id` + `text`. (The old composer hint *Same
-for typing and speaking* was removed with the action row on 2026-11-11.)
+metadata and read it in `agent/worker.py`. (Call photos do send the stage, on `/voice/photo`.)
 
 Code: `src/lib/store.tsx` (`openingMessages`, `submitText`, `chooseLang`, `chooseStage`),
 `src/components/screens/ChatScreen.tsx`, `src/components/ui/Chip.tsx`.
