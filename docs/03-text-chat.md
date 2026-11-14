@@ -10,14 +10,15 @@ Figma: **03b · Voice transcript — Direct answer** (also the layout for [04b](
    (kept in memory; reset on error or *Start a new chat*). The stage makes the Expert
    stage-aware from turn 1; the composer only unlocks once a stage is picked.
 2. `POST /api/turn {session_id, text, lang}` (`lang` = `en` | `hi` | `hinglish`) →
-   `{text, key_points, serious}`. Not the stream on purpose: `/turn` returns the reply in the
+   `{text, suggested_questions, serious}`. Not the stream on purpose: `/turn` returns the reply in the
    right script (Roman for Hinglish; the stream sends Devanagari deltas first) plus the key
    points, and `want_audio: false` skips TTS (the stream always synthesizes it). ~1–3 s.
 3. The user bubble is added immediately; the engineer bubble shows typing dots until the answer
    arrives. Up to 3 tappable follow-ups show inside the answer bubble (`buildSuggestions` in
-   `store.tsx`). If the backend sends `suggested_questions`, they show under *At this stage,
-   people often ask* and a tap sends the question as-is. Until then the `key_points` are used:
-   they're statements summarising the answer, so the heading is *Tap to know more* and a tap sends
+   `store.tsx`). The backend's `suggested_questions` show under *At this stage, people often ask*
+   and a tap sends the question as-is; the backend never repeats one within a session and sends
+   none on greetings, thanks or off-topic refusals. Fallback for an older backend that still sends
+   only `key_points`: they're statements summarising the answer, so the heading is *Tap to know more* and a tap sends
    *"Tell me more about this: …"* (localized), otherwise the bot just repeats itself. Only the
    newest answer's list is tappable (first button highlighted yellow), not while a reply is in
    flight or after End chat. Roman Hinglish replies get each sentence capitalised (`capSentences`).
@@ -25,7 +26,7 @@ Figma: **03b · Voice transcript — Direct answer** (also the layout for [04b](
    again*; the raw detail goes to the console.
 
 **Photos:** a pending photo goes with the next send to `POST /api/turn/image {session_id,
-image_b64, caption, mime, lang}` → `{text, key_points, serious, condition}`. The caption is only
+image_b64, caption, mime, lang}` → `{text, suggested_questions, serious, condition}`. The caption is only
 what the user typed. If `serious`, a site-engineer card follows (*A site engineer should check
 this* · *Photo: cracks*). See [04](04-photo-capture.md).
 

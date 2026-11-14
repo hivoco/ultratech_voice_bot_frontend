@@ -9,7 +9,9 @@ import type { ExpertContact } from "./types";
 export type ContactChannels = Pick<ExpertContact, "phone" | "whatsapp" | "email" | "bookingUrl" | "callSlot">;
 
 const PHONE_RE = /^\+?[0-9 -]{6,20}$/;
-const EMAIL_RE = /^[^\s@<>"]{1,64}@[A-Za-z0-9.-]{1,190}\.[A-Za-z]{2,24}$/;
+// Local part limited to plain characters: no "?", "&" or "#", which would let a backend value
+// smuggle extra mailto: fields (a hidden bcc, a prefilled body).
+const EMAIL_RE = /^[A-Za-z0-9._%+-]{1,64}@[A-Za-z0-9.-]{1,190}\.[A-Za-z]{2,24}$/;
 
 function str(v: unknown, max: number): string | undefined {
   return typeof v === "string" && v.trim() ? v.trim().slice(0, max) : undefined;

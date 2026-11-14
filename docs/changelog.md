@@ -2,6 +2,47 @@
 
 Newest first. Started 2026-11-09; earlier history is in `git log`.
 
+## 2026-11-14 — Audit: security, crash and render fixes
+
+Checked with Lighthouse (mobile 95 / 100 / 100 / 100, desktop 100s; LCP is Lantern-simulated,
+observed 0.09 s), a render scan of the full mocked flow at 393 px, the break-ui layouts at
+280 / 320 / 393, `npm audit` (0) and a code review.
+
+- **Voice call kept connecting after you left it.** Leaving the voice screen while the call was
+  still connecting let it go live in the background (mic open, agent session billed). `start()`
+  now gives up after each await once `end()` has run (generation counter in `useVoiceCall`);
+  verified with a delayed token: 1 LiveKit connection before, 0 after. Mic toggle / interrupt
+  failures (permission revoked mid-call) no longer throw unhandled rejections.
+- **Every chat row re-rendered on every update.** `submitText` / `answerUi` / `openCamera` changed
+  identity on each message, defeating the memoized rows. They now read the latest state from a ref:
+  rows rendered per reply went from 14–23 to 4–5.
+- A late answer for a chat you already restarted is dropped (and frees the composer).
+- Long chats always get a summary: the transcript is trimmed (newest 120 turns, 4000 characters
+  per side, ~120k total) instead of the whole request being rejected.
+- Quiz answers longer than 1000 characters are shortened instead of failing on every retry;
+  duplicate question ids from the backend are renumbered; single-choice questions are a
+  `radiogroup`.
+- Shutter double tap can't send two (paid) photo checks; the timer is cancelled if the camera closes.
+- Backend 4xx bodies (validation details that echo the input) are no longer relayed to the browser;
+  a 401/403 from the backend shows as a 502 (our credentials are wrong, not the user's request).
+- Contact emails can't carry `?`/`&` (no hidden `bcc` in the `mailto:` link).
+- Rate limiter no longer wipes every bucket when it fills up (oldest / expired are evicted).
+- `/api/health` caches the backend answer for 10 s.
+
+## 2026-11-14 — Synced with backend 917b663
+
+- The backend now sends real `suggested_questions` (never repeated in a session, none on
+  greetings / refusals) and retires `key_points` (always `[]`). The chips show them under *At this
+  stage, people often ask* and a tap sends the question as-is. The *Tap to know more* path stays
+  only as a fallback for an older backend. No UI change needed.
+- `/session/summary` with `ui_lang:"hinglish"` now returns the summary in Roman with
+  `lang:"hinglish"`. The proxy relays `hinglish` instead of folding it into `hi`, so the
+  print-to-PDF fallback uses English date/`lang` for Roman text.
+- The backend now requires Basic auth on `/session`, `/turn*` and `/admin/test-alert`; the proxy
+  already sends it on every call, so nothing changed here. Stage on `/voice/token` is now used by
+  the voice worker.
+- `docs/backend-fixes.md`: checklist updated (done: 1, 2, 5, 6, 7, 8 for chat PDFs, 10, 11).
+
 ## 2026-11-13 — Onboarding feels alive: typing, pop-ins, waiting glow, UI sounds
 
 - Scripted expert lines (the language card, the stage question, "got it") show typing dots first

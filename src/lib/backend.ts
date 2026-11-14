@@ -43,6 +43,13 @@ export async function proxyJson(path: string, body?: unknown): Promise<Response>
       console.error(`[backend] ${path} returned ${upstream.status}: ${text.slice(0, 500)}`);
       return Response.json({ detail: "Backend error" }, { status: 502 });
     }
+    if (!upstream.ok) {
+      // 4xx bodies (FastAPI validation errors echo the input, field names) stay server-side too.
+      // A 401/403 means our own credentials are wrong: a config error, not the user's.
+      console.error(`[backend] ${path} returned ${upstream.status}: ${text.slice(0, 500)}`);
+      if (upstream.status === 401 || upstream.status === 403) return Response.json({ detail: "Backend error" }, { status: 502 });
+      return Response.json({ detail: upstream.status === 404 ? "Not found" : "Request rejected" }, { status: upstream.status });
+    }
     return new Response(text, {
       status: upstream.status,
       headers: { "Content-Type": "application/json" },

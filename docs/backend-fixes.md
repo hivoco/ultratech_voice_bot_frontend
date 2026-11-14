@@ -315,19 +315,58 @@ instead of a `booking_url` link.
 
 ---
 
+## Live test on 917b663 (14 Nov, English, 3 chats, 25 turns)
+
+Works: auth, follow-up questions (2–3 per answer, none on greetings, thanks or off-topic),
+off-topic refusal, memory ("you said black cotton soil"), short closings, summaries + PDF,
+~2 s per turn, no errors.
+
+14. **A typed serious problem gets no expert card.** "There is a diagonal crack in my column,
+    about 3 mm wide, and it is growing" → the reply says stop work and get it inspected, but
+    `serious: false`. `serious` is only ever set on photo turns (`/turn/image`). Set it on
+    `/turn` too (Jev already classifies the risk trigger; "structural cracks" is in
+    `CONSULT_TRIGGERS`) and add `contact` (item 9).
+15. **Follow-up questions the bot then refuses to answer.** The suggestions offer numbers and
+    specifics that the reply prompt won't give, so a tap ends in "as advised by a qualified
+    expert" and the same answer again:
+    - "What is the ideal water curing duration?" → same deflection as the turn before
+      (plaster chat, turns 1 and 2 almost identical).
+    - "How long should the wet sack stay moist?", "What is the standard span length for
+      props?", "What depth should the foundation be?", "Can you suggest a qualified lab?",
+      "How much load can this column safely carry?".
+    Only suggest questions the KB can actually answer (pass the KB items / allowed topics to
+    `core/suggest.py`, or drop suggestions the answer prompt would deflect). Also no invented
+    specifics ("prop spacing for a 12-inch slab") and no questions aimed at the user ("Do you
+    suggest a specific lab?").
+16. **Too much "qualified expert".** 16 of 25 answers defer to "a qualified expert", even for
+    basics the KB has (plaster curing days). The few-shot in `prompt.py` gives OPC/PPC numbers,
+    but chat answers don't. Answer from the KB when it has the fact; defer only for
+    site-specific judgement.
+17. **Near-duplicate suggestions across turns.** "What depth should the foundation be?" then
+    "What is the typical foundation depth?" next turn: the repeat check is exact-match only.
+18. **"ok" gets a full reply + 3 suggestions.** Fine as a non-closing, but "Is there anything
+    else you would like to check" plus suggestions is a lot for "ok".
+
 ## Checklist
 
-- [ ] 1 Auth on `/session`, `/turn*`, `/turn/image`
-- [ ] 2 Lock `/admin/test-alert`
+Status checked against backend `917b663` (2026-11-14). Still open: 3 (the default password is
+still in `main.py`), 4, 8 voice captions, 9, 12 (can't verify from the repo), 13.
+
+- [x] 1 Auth on `/session`, `/turn*`, `/turn/image`
+- [x] 2 Lock `/admin/test-alert`
 - [ ] 3 New `DEMO_PASS`, no default in code
 - [ ] 4 `agent_name` + explicit dispatch
-- [ ] 5 `suggested_questions`: real next questions, never repeated in a session, none on refusals
-- [ ] 6 No first-person advice in hi/hinglish
-- [ ] 7 Capitalise Hinglish
-- [ ] 8 Hinglish summary PDF: Roman only, `lang:"hinglish"` (+ captions)
+- [x] 5 `suggested_questions`: real next questions, never repeated in a session, none on refusals
+- [x] 6 No first-person advice in hi/hinglish
+- [x] 7 Capitalise Hinglish
+- [x] 8 Hinglish summary PDF: Roman only, `lang:"hinglish"` (voice captions still Devanagari: open)
 - [ ] 9 `contact` on serious replies (chat + voice `escalation`), or a booking endpoint
-- [ ] 10 `stage` on `/voice/token`
-- [ ] 11 Worker timeout on stalls
+- [x] 10 `stage` on `/voice/token`
+- [x] 11 Worker timeout on stalls
 - [ ] 12 Clean test PDFs from S3
 - [ ] 13 `ui` layouts (`choice`, `quiz`, `facts`) + accept `answers` on `/turn`
+- [ ] 14 `serious` (+ `contact`) on typed `/turn` for structural problems
+- [ ] 15 Suggest only questions the bot will answer
+- [ ] 16 Fewer "qualified expert" deflections when the KB has the fact
+- [ ] 17 Fuzzy repeat check for suggestions
 - [ ] Tested in en / hi / hinglish, chat + voice

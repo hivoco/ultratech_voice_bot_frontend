@@ -1,7 +1,7 @@
 import { backendFetch } from "@/lib/backend";
 import { guardPost } from "@/lib/guard";
 
-// POST /api/session/summary  {room, lang, transcript:[{caller, bot}]} -> {summary, lang, turns, pdf_url}
+// POST /api/session/summary  {room, lang, transcript:[{caller, bot}]} -> {summary, lang (en|hi|hinglish), turns, pdf_url}
 // Each call runs a paid Sarvam summary, so it is tightly limited. The transcript can be long,
 // so this route allows a bigger body than the others.
 
@@ -16,15 +16,18 @@ interface Turn {
   bot: string;
 }
 
+// Over-long input is trimmed (newest turns kept, each side cut), not rejected: a long chat
+// should still get its summary. The body cap above bounds the total.
 function cleanTranscript(raw: unknown): Turn[] | null {
-  if (!Array.isArray(raw) || raw.length === 0 || raw.length > MAX_TURNS) return null;
+  if (!Array.isArray(raw) || raw.length === 0) return null;
   const out: Turn[] = [];
-  for (const t of raw) {
+  for (const t of raw.slice(-MAX_TURNS)) {
     if (!t || typeof t !== "object") return null;
     const { caller, bot } = t as Record<string, unknown>;
     if (typeof caller !== "string" || typeof bot !== "string") return null;
-    if (caller.length > MAX_TURN_CHARS || bot.length > MAX_TURN_CHARS) return null;
-    if (caller.trim() || bot.trim()) out.push({ caller: caller.trim(), bot: bot.trim() });
+    const c = caller.trim().slice(0, MAX_TURN_CHARS);
+    const b = bot.trim().slice(0, MAX_TURN_CHARS);
+    if (c || b) out.push({ caller: c, bot: b });
   }
   return out.length ? out : null;
 }
@@ -44,7 +47,7 @@ export async function POST(request: Request) {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       // `ui_lang` lets the backend write a Hinglish chat's PDF in Roman (docs/backend-fixes.md item 8);
-      // `lang` stays en/hi for today's backend, which ignores unknown fields.
+      // `lang` stays en/hi (the summary is generated in Hindi, then romanized).
       body: JSON.stringify({
         room,
         lang: lang === "en" ? "en" : "hi",
@@ -63,7 +66,8 @@ export async function POST(request: Request) {
     const link = typeof data.s3_link === "string" && data.s3_link.startsWith("https://") ? data.s3_link : null;
     return Response.json({
       summary: typeof data.summary === "string" ? data.summary : "",
-      lang: data.lang === "en" ? "en" : "hi",
+      // A Hinglish chat's summary comes back in Roman with lang "hinglish" (backend 917b663).
+      lang: data.lang === "en" || data.lang === "hinglish" ? data.lang : "hi",
       turns: typeof data.turns === "number" ? data.turns : transcript.length,
       pdf_url: link,
     });

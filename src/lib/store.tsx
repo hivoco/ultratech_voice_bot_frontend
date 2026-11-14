@@ -181,6 +181,8 @@ interface AskVars {
   photo?: string;
   caption?: string;
   answers?: UiAnswers;
+  /** The conversation the question was asked in; a late answer for an older one is dropped. */
+  conversationId: string;
 }
 
 /**
@@ -411,6 +413,13 @@ export function AppProvider({ children }: { children: ReactNode }) {
     ended: false,
   });
   const voice = useVoiceCall(state.profile.uuid);
+  // Latest state for callbacks that must keep a stable identity (memoized chat rows get them as
+  // props: a new function on every message would re-render every row) and for async work that
+  // has to know whether the conversation it started in is still the current one.
+  const stateRef = useRef(state);
+  useEffect(() => {
+    stateRef.current = state;
+  });
   // Text-chat session, created ahead of the first question (see warmSession) to save a round trip.
   // It carries the picked stage, so the AI is stage-aware from turn 1 (`/session {stage}`). The
   // composer only unlocks after the stage is picked, so the session never starts without it.
@@ -463,11 +472,13 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const ask = useMutation({
     // Typing dots show until the whole answer arrives (~1–3 s), in the picked language's script.
     // With a photo: `/turn/image` (caption = what the user typed, if anything).
-    mutationFn: async ({ text, replyId, photo, caption, answers }: AskVars) => {
+    mutationFn: async ({ text, replyId, photo, caption, answers, conversationId }: AskVars) => {
       const sessionId = await ensureSession();
       const res = photo
         ? await askImageTurn(sessionId, photo, caption ?? "", state.profile.lang)
         : await askTurn(sessionId, text, state.profile.lang, answers);
+      // The user started a new chat while this was in flight: drop the late answer (and its card).
+      if (stateRef.current.conversationId !== conversationId) return;
       const answer = typeof res.text === "string" ? res.text : "";
       const ui = parseReplyUi(res.ui);
       // An empty answer gets the error bubble (with Try again), never a blank one.
@@ -489,8 +500,9 @@ export function AppProvider({ children }: { children: ReactNode }) {
         dispatch({ type: "push", messages: [escalationCard(state.profile.lang, condition, parseContact(res.contact), !!photo)] });
       }
     },
-    onError: (err, { text, replyId, photo, answers }) => {
+    onError: (err, { text, replyId, photo, answers, conversationId }) => {
       console.warn("[ultratech] text turn failed:", err.message);
+      if (stateRef.current.conversationId !== conversationId) return;
       sessionRef.current = null;
       dispatch({
         type: "patch",
@@ -507,8 +519,10 @@ export function AppProvider({ children }: { children: ReactNode }) {
     },
   });
 
+  const { mutate: askMutate, reset: askReset } = ask;
   const submitText = useCallback(
     (raw: string, retryPhoto?: string, answers?: UiAnswers) => {
+      const state = stateRef.current;
       const text = raw.trim();
       // Quiz answers are a reply on their own: a photo waiting in the composer stays there.
       const photo = answers ? undefined : (retryPhoto ?? state.pendingPhoto);
@@ -529,21 +543,23 @@ export function AppProvider({ children }: { children: ReactNode }) {
       });
       // The caption is only what the user typed (a retry of a photo-only turn resends the stand-in text).
       const caption = text === PHOTO_ONLY_TEXT ? "" : text;
-      ask.mutate(photo ? { text: question, replyId, photo, caption } : { text: question, replyId, answers });
+      const conversationId = state.conversationId;
+      askMutate(photo ? { text: question, replyId, photo, caption, conversationId } : { text: question, replyId, answers, conversationId });
     },
-    [ask, state.ended, state.pendingPhoto],
+    [askMutate],
   );
 
   const answerUi = useCallback(
     (messageId: string, answers: UiAnswers) => {
-      const m = state.messages.find((x) => x.id === messageId);
+      const m = stateRef.current.messages.find((x) => x.id === messageId);
       // Once only: the card turns read-only with these picks.
       if (!m || m.kind !== "engineer" || !m.ui || m.uiAnswers) return;
       dispatch({ type: "patch", id: messageId, patch: { uiAnswers: answers } });
       submitText(answersText(m.ui, answers), undefined, answers);
     },
-    [state.messages, submitText],
+    [submitText],
   );
+  const openCamera = useCallback(() => dispatch({ type: "openCamera" }), []);
 
   const pickLanguage = useCallback((lang: LangChoice) => {
     dispatch({ type: "profile", patch: { lang } });
@@ -572,8 +588,10 @@ export function AppProvider({ children }: { children: ReactNode }) {
   // Stable identities: the composer's action chips shouldn't re-render on every streamed chunk.
   const restart = useCallback(() => {
     sessionRef.current = null;
+    // A question still in flight belongs to the old chat: free the composer now.
+    askReset();
     dispatch({ type: "reset" });
-  }, []);
+  }, [askReset]);
   const changeLanguage = useCallback(() => dispatch({ type: "askLang" }), []);
 
   const endChat = useCallback(async () => {
@@ -603,7 +621,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       online,
       sending: ask.isPending,
       goTo: (screen) => dispatch({ type: "screen", screen }),
-      openCamera: () => dispatch({ type: "openCamera" }),
+      openCamera,
       closeCamera: () => dispatch({ type: "closeCamera" }),
       submitText,
       answerUi,
@@ -621,7 +639,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
         if (state.profile.uuid) ensureSession().catch(() => {});
       },
     }),
-    [state, voice, online, ask.isPending, submitText, answerUi, pickLanguage, chooseLang, chooseStage, startVoice, endVoice, endChat, capturePhoto, ensureSession, restart, changeLanguage],
+    [state, voice, online, ask.isPending, submitText, answerUi, openCamera, pickLanguage, chooseLang, chooseStage, startVoice, endVoice, endChat, capturePhoto, ensureSession, restart, changeLanguage],
   );
 
   return <AppContext value={value}>{children}</AppContext>;

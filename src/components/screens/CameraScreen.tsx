@@ -27,6 +27,9 @@ export function CameraScreen() {
   const videoRef = useRef<HTMLVideoElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
+  /** Pending shutter timer (after the flash): blocks a second shot, cancelled if the screen closes. */
+  const shotRef = useRef(0);
+  useEffect(() => () => window.clearTimeout(shotRef.current), []);
   const [facing, setFacing] = useState<Facing>("environment");
   // Facing of the stream actually on screen. Mirroring follows this, not `facing`: flipping on the
   // tap would mirror the old camera's picture for the moment before the new one opens.
@@ -111,9 +114,11 @@ export function CameraScreen() {
       fileRef.current?.click();
       return;
     }
+    // One photo per tap: a double tap would otherwise send two (paid) photo checks.
+    if (shotRef.current) return;
     setFlash((f) => f + 1);
     const photo = toDataUrl(video, video.videoWidth, video.videoHeight);
-    window.setTimeout(() => capturePhoto(photo), 220);
+    shotRef.current = window.setTimeout(() => capturePhoto(photo), 220);
   }
 
   function onFile(file: File | undefined) {

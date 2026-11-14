@@ -45,8 +45,9 @@ export async function POST(request: Request) {
     // Only what the chat shows; kb_items, timings and the rest stay server-side.
     return Response.json({
       text: typeof data.text === "string" ? data.text : "",
+      // Retired by the backend (always []); older backends still send it.
       key_points: stringList(data.key_points),
-      // Not sent by the backend yet (docs/backend-fixes.md item 5); used instead of key_points once it is.
+      // Real next questions, never repeated in a session, [] on greetings/refusals (backend 917b663).
       suggested_questions: stringList(data.suggested_questions, 3),
       serious: data.serious === true,
       // Optional rich layout (docs/backend-fixes.md item 13); null = plain answer.

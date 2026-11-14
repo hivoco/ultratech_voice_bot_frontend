@@ -15,8 +15,9 @@ export interface Health {
 /** A typed answer: the reply text (already in the picked language's script) and its key points. */
 export interface TurnReply {
   text: string;
+  /** Retired by the backend (always []); kept as a fallback for older backends. */
   key_points: string[];
-  /** Follow-up questions, once the backend sends them (preferred over key_points). */
+  /** Follow-up questions the user may ask next (preferred over key_points). */
   suggested_questions?: string[];
   serious: boolean;
   /** Raw backend layout; validate with `parseReplyUi` before use. */
@@ -26,8 +27,8 @@ export interface TurnReply {
 
 async function errorDetail(res: Response): Promise<string> {
   try {
-    const body = (await res.json()) as { detail?: string };
-    return body.detail ?? `HTTP ${res.status}`;
+    const body = (await res.json()) as { detail?: unknown };
+    return typeof body.detail === "string" ? body.detail : `HTTP ${res.status}`;
   } catch {
     return `HTTP ${res.status}`;
   }
@@ -97,7 +98,8 @@ export interface TranscriptTurn {
 
 export interface ConversationSummary {
   summary: string;
-  lang: "en" | "hi";
+  /** "hinglish" = the summary is in Roman script. */
+  lang: "en" | "hi" | "hinglish";
   turns: number;
   /** Backend-made PDF (S3 presigned link), or null when the backend has no S3 configured. */
   pdf_url: string | null;

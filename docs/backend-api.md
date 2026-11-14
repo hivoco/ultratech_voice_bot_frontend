@@ -17,12 +17,12 @@ turn 30. Inputs are validated: `user_uuid` `^[A-Za-z0-9-]{8,64}$`, `session_id` 
 
 | This app | Backend | Body → response |
 |---|---|---|
-| `POST /api/voice/token` | `POST /voice/token` | `{user_uuid, lang:"en"\|"hi"}` → `{url, token, room}` |
+| `POST /api/voice/token` | `POST /voice/token` | `{user_uuid, lang:"en"\|"hi", stage?, ui_lang?}` → `{url, token, room}` (the worker reads `stage` from the token metadata) |
 | `POST /api/session` | `POST /session` | `{user_uuid, stage?}` → `{session_id}` (stage = one of the 6 picker values) |
-| `POST /api/turn` | `POST /turn` | `{session_id, text, lang?}` → `{text, key_points, suggested_questions, serious}` (`suggested_questions` is `[]` until the backend adds it) (`want_audio:false`; only these fields are relayed). 30/min, 45 s timeout |
-| `POST /api/turn/image` | `POST /turn/image` | `{session_id, image_b64, caption?, mime?, lang?}` → `{text, key_points, serious, condition}`. 10/min, 4 MB body, 60 s timeout |
+| `POST /api/turn` | `POST /turn` | `{session_id, text, lang?, answers?}` → `{text, key_points, suggested_questions, serious, ui, contact}` (`key_points` is retired by the backend, always `[]`) (`want_audio:false`; only these fields are relayed). 30/min, 45 s timeout |
+| `POST /api/turn/image` | `POST /turn/image` | `{session_id, image_b64, caption?, mime?, lang?}` → `{text, key_points, suggested_questions, serious, condition}`. 10/min, 4 MB body, 60 s timeout |
 | `POST /api/voice/photo` | `POST /voice/photo` (login) | `{image_b64, caption?, stage?, lang:"en"\|"hi", room?}` → `{reply, serious, condition, query}`. 6/min, 4 MB body |
-| `POST /api/session/summary` | `POST /session/summary` | `{room, lang, transcript:[{caller, bot}]}` → `{summary, lang, turns, pdf_url}` (`pdf_url` = backend `s3_link` if https, else null). Limit 5/min, 512 KB body, ≤120 turns × 4000 chars, 60 s timeout |
+| `POST /api/session/summary` | `POST /session/summary` | `{room, lang, ui_lang?, transcript:[{caller, bot}]}` → `{summary, lang:"en"\|"hi"\|"hinglish", turns, pdf_url}` (`ui_lang:"hinglish"` → Roman summary/PDF) (`pdf_url` = backend `s3_link` if https, else null). Limit 5/min, 512 KB body, ≤120 turns × 4000 chars, 60 s timeout |
 | `GET /api/health` | `GET /health` | → `{ok}` (other backend fields are dropped) |
 
 ## Realtime contract (LiveKit, direct browser ⇄ LiveKit Cloud)

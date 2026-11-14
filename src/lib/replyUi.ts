@@ -69,10 +69,17 @@ export function parseReplyUi(v: unknown): ReplyUi | null {
       return q ? { type: "choice", id: id(u.id, "choice"), question: q, photoPrompt } : null;
     }
     case "quiz": {
+      const ids = new Set<string>();
       const questions = (Array.isArray(u.questions) ? u.questions : [])
         .slice(0, 5)
         .map(question)
-        .filter((q): q is UiQuestion => q !== null);
+        .filter((q): q is UiQuestion => q !== null)
+        // Repeated ids would clash as React keys and in `answers`: renumber the repeats.
+        .map((q, i) => {
+          const qid = ids.has(q.id) ? `q${i + 1}_${ids.size}` : q.id;
+          ids.add(qid);
+          return qid === q.id ? q : { ...q, id: qid };
+        });
       return questions.length ? { type: "quiz", id: id(u.id, "quiz"), questions, photoPrompt } : null;
     }
     case "facts": {
@@ -128,9 +135,12 @@ export function uiQuestions(ui: ReplyUi): UiQuestion[] {
  * `answers` still understands the reply.
  */
 export function answersText(ui: ReplyUi, answers: UiAnswers): string {
-  if (ui.type === "choice") return answers.items[0]?.answer.join(", ") ?? "";
-  return answers.items.map((a) => `${a.question} — ${a.answer.join(", ")}`).join("\n");
+  const text = ui.type === "choice" ? (answers.items[0]?.answer.join(", ") ?? "") : answers.items.map((a) => `${a.question} — ${a.answer.join(", ")}`).join("\n");
+  // /api/turn takes at most 1000 characters (MAX_TEXT_CHARS); the full picks also go as `answers`.
+  return text.length > MAX_ANSWER_TEXT ? `${text.slice(0, MAX_ANSWER_TEXT - 1)}…` : text;
 }
+
+const MAX_ANSWER_TEXT = 1000;
 
 /** Plain-text version of a layout for the PDF transcript (the bubble's text alone would drop it). */
 export function uiPlainText(ui: ReplyUi): string {

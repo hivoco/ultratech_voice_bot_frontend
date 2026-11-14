@@ -123,6 +123,8 @@ export function turnText(turn: VoiceTurn) {
 
 export function useVoiceCall(userUuid: string) {
   const roomRef = useRef<Room | null>(null);
+  /** Bumped by every start()/end(): a start() that is no longer current gives up after its awaits. */
+  const genRef = useRef(0);
   const agentTracksRef = useRef<RemoteAudioTrack[]>([]);
   const startedAtRef = useRef(0);
 
@@ -172,6 +174,11 @@ export function useVoiceCall(userUuid: string) {
   const start = useCallback(
     async (lang: "en" | "hi", opts?: { stage?: string; uiLang?: string }) => {
       if (roomRef.current) return;
+      // Each start/end bumps the generation. After every await, a start whose generation is no
+      // longer current (the user left, or tapped again) stops: otherwise a call ended while still
+      // connecting would go live in the background with the mic open.
+      const gen = ++genRef.current;
+      const stale = () => gen !== genRef.current;
       setStatus("connecting");
       setErrorKind(null);
       setErrorDetail("");
@@ -183,11 +190,13 @@ export function useVoiceCall(userUuid: string) {
       try {
         [token, lk] = await Promise.all([tokenMutation.mutateAsync({ lang, ...opts }), import("livekit-client")]);
       } catch (e) {
+        if (stale()) return;
         setStatus("error");
         setErrorKind("connect");
         setErrorDetail(e instanceof Error ? e.message : String(e));
         return;
       }
+      if (stale()) return;
 
       const { Room, RoomEvent, Track } = lk;
       const room = new Room({
@@ -248,21 +257,31 @@ export function useVoiceCall(userUuid: string) {
       try {
         await room.connect(token.url, token.token);
       } catch (e) {
+        if (stale()) return; // end() already disconnected and tore down
         teardown();
         setStatus("error");
         setErrorKind("connect");
         setErrorDetail(e instanceof Error ? e.message : String(e));
         return;
       }
+      if (stale()) {
+        void room.disconnect().catch(() => {});
+        return;
+      }
       try {
         await room.localParticipant.setMicrophoneEnabled(true);
       } catch (e) {
+        if (stale()) return;
         roomRef.current = null;
         await room.disconnect();
         teardown();
         setStatus("error");
         setErrorKind("mic");
         setErrorDetail(e instanceof Error ? e.message : String(e));
+        return;
+      }
+      if (stale()) {
+        void room.disconnect().catch(() => {});
         return;
       }
       startedAtRef.current = performance.now();
@@ -273,11 +292,12 @@ export function useVoiceCall(userUuid: string) {
 
   /** End the call and hand back everything that was said, for the chat transcript. */
   const end = useCallback(async (): Promise<CallSummary> => {
+    genRef.current++; // cancels a start() that is still connecting
     const room = roomRef.current;
     const durationSec = startedAtRef.current ? (performance.now() - startedAtRef.current) / 1000 : 0;
     startedAtRef.current = 0;
     roomRef.current = null;
-    if (room) await room.disconnect();
+    if (room) await room.disconnect().catch(() => {});
     teardown();
     setStatus("idle");
     setErrorKind(null);
@@ -290,8 +310,14 @@ export function useVoiceCall(userUuid: string) {
     const room = roomRef.current;
     if (!room) return;
     const next = !room.localParticipant.isMicrophoneEnabled;
-    await room.localParticipant.setMicrophoneEnabled(next);
-    setMicEnabled(next);
+    try {
+      await room.localParticipant.setMicrophoneEnabled(next);
+      setMicEnabled(next);
+    } catch (e) {
+      // e.g. mic permission revoked mid-call: say so instead of an unhandled rejection.
+      setErrorKind("mic");
+      setErrorDetail(e instanceof Error ? e.message : String(e));
+    }
   }, []);
 
   /**
@@ -305,8 +331,13 @@ export function useVoiceCall(userUuid: string) {
     agentTracksRef.current.forEach((t) => t.setVolume(0));
     setInterrupted(true);
     if (!room.localParticipant.isMicrophoneEnabled) {
-      await room.localParticipant.setMicrophoneEnabled(true);
-      setMicEnabled(true);
+      try {
+        await room.localParticipant.setMicrophoneEnabled(true);
+        setMicEnabled(true);
+      } catch (e) {
+        setErrorKind("mic");
+        setErrorDetail(e instanceof Error ? e.message : String(e));
+      }
     }
     const payload = new TextEncoder().encode(JSON.stringify({ type: "interrupt" }));
     room.localParticipant.publishData(payload, { reliable: true, topic: "control" }).catch(() => {});
@@ -338,7 +369,8 @@ export function useVoiceCall(userUuid: string) {
 
   useEffect(
     () => () => {
-      roomRef.current?.disconnect();
+      genRef.current++;
+      void roomRef.current?.disconnect().catch(() => {});
     },
     [],
   );

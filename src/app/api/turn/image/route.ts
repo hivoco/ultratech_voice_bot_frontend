@@ -4,7 +4,7 @@ import { stringList } from "@/lib/id";
 import { capUi } from "@/lib/replyUi";
 import { parseContact } from "@/lib/contact";
 
-// POST /api/turn/image  {session_id, image_b64, caption?, mime?, lang?} -> {text, key_points, serious, condition}
+// POST /api/turn/image  {session_id, image_b64, caption?, mime?, lang?} -> {text, key_points, suggested_questions, serious, condition}
 // A photo in the text chat: the backend classifies it (Jev) and the Expert answers on it.
 // Photos are downscaled in the browser (≤1280 px JPEG, usually 150–400 KB), so 4 MB is plenty.
 const LANGS = new Set(["en", "hi", "hinglish"]);
@@ -48,8 +48,9 @@ export async function POST(request: Request) {
     const data = JSON.parse(raw) as Record<string, unknown>;
     return Response.json({
       text: typeof data.text === "string" ? data.text : "",
+      // Retired by the backend (always []); older backends still send it.
       key_points: stringList(data.key_points),
-      // Not sent by the backend yet (docs/backend-fixes.md item 5); used instead of key_points once it is.
+      // Real next questions, never repeated in a session, [] on greetings/refusals (backend 917b663).
       suggested_questions: stringList(data.suggested_questions, 3),
       serious: data.serious === true,
       // Optional rich layout (docs/backend-fixes.md item 13); null = plain answer.

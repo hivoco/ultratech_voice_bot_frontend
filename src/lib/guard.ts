@@ -12,11 +12,21 @@ export const MAX_TEXT_CHARS = 1000;
 
 const buckets = new Map<string, { count: number; resetAt: number }>();
 
+/** Drop expired buckets, then the oldest ones: never wipe everyone's count at once (a flood of
+ *  fake keys must not reset the limit for real users). */
+function evict(now: number) {
+  for (const [k, b] of buckets) if (b.resetAt < now) buckets.delete(k);
+  for (const k of buckets.keys()) {
+    if (buckets.size <= 9_000) break;
+    buckets.delete(k);
+  }
+}
+
 function rateLimited(key: string, limit: number, windowMs: number): boolean {
   const now = Date.now();
   const bucket = buckets.get(key);
   if (!bucket || bucket.resetAt < now) {
-    if (buckets.size > 10_000) buckets.clear();
+    if (buckets.size > 10_000) evict(now);
     buckets.set(key, { count: 1, resetAt: now + windowMs });
     return false;
   }

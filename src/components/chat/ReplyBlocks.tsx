@@ -90,7 +90,7 @@ export function QuestionCard({
   }
 
   return (
-    <div className="flex w-full flex-col gap-3 pt-0.5" role="group" aria-label={q.question} lang={textLang(q.question, ...q.options)}>
+    <div className="flex w-full flex-col gap-3 pt-0.5" role={q.multiple ? "group" : "radiogroup"} aria-label={q.question} lang={textLang(q.question, ...q.options)}>
       <div className="flex w-full items-baseline justify-between gap-3">
         <p className="min-w-0 text-[16px] leading-[21px] font-[590] [overflow-wrap:anywhere] text-ink">{q.question}</p>
         {counted && (

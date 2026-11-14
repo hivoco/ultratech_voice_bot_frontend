@@ -4,7 +4,7 @@ import { useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { fetchSummary } from "./api";
 import { useApp } from "./store";
-import { buildTranscript } from "./transcript";
+import { buildTranscript, fitTranscript } from "./transcript";
 import { backendLang } from "./types";
 
 /**
@@ -24,7 +24,7 @@ export function useConversationSummary(upTo?: number) {
 
   const query = useQuery({
     queryKey: ["summary", conversationId, transcript.length],
-    queryFn: () => fetchSummary(conversationId, lang, transcript, profile.lang),
+    queryFn: () => fetchSummary(conversationId, lang, fitTranscript(transcript), profile.lang),
     enabled: transcript.length > 0 && !!conversationId,
     staleTime: Infinity,
     gcTime: Infinity,
